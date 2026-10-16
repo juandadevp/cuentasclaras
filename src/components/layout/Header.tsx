@@ -10,17 +10,17 @@ const enlaces = [
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
+    <header className="sticky top-0 z-50 bg-neutral-950">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-20">
-        <Link href="/" className="flex items-center gap-2.5 text-xl font-extrabold text-foreground">
-          <Image src="/logo.svg" alt="" width={30} height={35} priority />
+        <Link href="/" className="flex items-center gap-2.5 text-xl font-extrabold text-white">
+          <Image src="/logo-light.svg" alt="" width={30} height={35} priority />
           {siteConfig.nombre}
         </Link>
 
-        <ul className="hidden gap-8 text-[15px] font-medium text-muted md:flex">
+        <ul className="hidden gap-8 text-[15px] font-medium text-neutral-400 md:flex">
           {enlaces.map((e) => (
             <li key={e.href}>
-              <Link href={e.href} className="transition-colors hover:text-foreground">
+              <Link href={e.href} className="transition-colors hover:text-white">
                 {e.etiqueta}
               </Link>
             </li>
@@ -30,13 +30,13 @@ export function Header() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/login"
-            className="rounded-[10px] px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-border/50 sm:px-5"
+            className="rounded-[10px] px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/10 sm:px-5"
           >
             Iniciar sesión
           </Link>
           <Link
             href="/registro"
-            className="rounded-[10px] bg-brand-900 px-3 py-2.5 text-sm font-semibold text-brand-50 transition-colors hover:bg-brand-700 sm:px-5 dark:bg-brand-300 dark:text-brand-900 dark:hover:bg-brand-100"
+            className="rounded-[10px] bg-white px-3 py-2.5 text-sm font-semibold text-neutral-950 transition-colors hover:bg-neutral-200 sm:px-5"
           >
             Crear cuenta gratis
           </Link>
