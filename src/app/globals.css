@@ -3,7 +3,7 @@
 /* Base neutra; el verde del logo se usa solo como acento (botones, logo) */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #343333;
   --surface: #ffffff;
   --muted: #6b7280;
   --border: #e5e7eb;
@@ -21,7 +21,7 @@
   --color-brand-300: #8fd3a5;
   --color-brand-500: #3f9a58;
   --color-brand-700: #266a37;
-  --color-brand-900: #153519;
+  --color-brand-800: #153519;
   --color-accent: #f2b84b;
   --color-manzana: #8fd14f;
   --font-sans: var(--font-geist-sans);
