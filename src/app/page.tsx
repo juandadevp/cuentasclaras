@@ -8,7 +8,7 @@ import { listarGastos } from "@/services/gastos";
 async function TotalMes() {
   await connection();
   const total = totalGastos(await listarGastos());
-  return <p className="text-3xl font-semibold">{formatearMoneda(total)}</p>;
+  return <p className="text-3xl font-semibold text-brand-900 dark:text-brand-300">{formatearMoneda(total)}</p>;
 }
 
 export default function Home() {
