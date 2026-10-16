@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
@@ -13,6 +13,9 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// Evita que el navegador oscurezca la página automáticamente (modo oscuro forzado).
+export const viewport: Viewport = { colorScheme: "only light" };
 
 export const metadata: Metadata = {
   title: siteConfig.nombre,
