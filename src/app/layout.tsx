@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Hero } from "@/components/layout/Hero";
 import { Header } from "@/components/layout/Header";
 import { siteConfig } from "@/config/site";
 
@@ -28,7 +27,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <Header />
-        <Hero />
         <main className="flex-1">{children}</main>
       </body>
     </html>
