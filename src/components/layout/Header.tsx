@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 
@@ -9,22 +10,17 @@ const enlaces = [
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
+    <header className="sticky top-0 z-50 bg-neutral-800">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-20">
-        <Link href="/" className="flex items-center gap-2.5 text-xl font-extrabold text-slate-900 dark:text-white">
-          <span
-            aria-hidden
-            className="grid size-8 place-items-center rounded-[9px] bg-gradient-to-br from-sky-400 to-sky-700 text-base text-white"
-          >
-            $
-          </span>
+        <Link href="/" className="flex items-center gap-2.5 text-xl font-extrabold text-white">
+          <Image src="/logo.svg" alt="" width={30} height={35} priority />
           {siteConfig.nombre}
         </Link>
 
-        <ul className="hidden gap-8 text-[15px] font-medium text-slate-500 md:flex">
+        <ul className="hidden gap-8 text-[15px] font-medium text-neutral-400 md:flex">
           {enlaces.map((e) => (
             <li key={e.href}>
-              <Link href={e.href} className="transition-colors hover:text-slate-900 dark:hover:text-white">
+              <Link href={e.href} className="transition-colors hover:text-white">
                 {e.etiqueta}
               </Link>
             </li>
@@ -34,13 +30,13 @@ export function Header() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/login"
-            className="rounded-[10px] px-3 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100 sm:px-5 dark:text-white dark:hover:bg-slate-800"
+            className="rounded-[10px] px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/10 sm:px-5"
           >
             Iniciar sesión
           </Link>
           <Link
             href="/registro"
-            className="rounded-[10px] bg-slate-900 px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-700 sm:px-5 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+            className="rounded-[10px] bg-white px-3 py-2.5 text-sm font-semibold text-neutral-800 transition-colors hover:bg-neutral-200 sm:px-5"
           >
             Crear cuenta gratis
           </Link>

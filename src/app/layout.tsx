@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Hero } from "@/components/layout/Hero";
 import { Header } from "@/components/layout/Header";
 import { siteConfig } from "@/config/site";
 
@@ -25,8 +26,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col"><Header />
-        <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">{children}</main>
+      <body className="min-h-full flex flex-col">
+        <Header />
+        <Hero />
+        <main className="flex-1">{children}</main>
       </body>
     </html>
   );
