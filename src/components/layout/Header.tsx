@@ -30,7 +30,7 @@ export function Header() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/login"
-            className="rounded-[10px] px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-brand-100 sm:px-5 dark:hover:bg-surface"
+            className="rounded-[10px] px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-border/50 sm:px-5"
           >
             Iniciar sesión
           </Link>
