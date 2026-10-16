@@ -31,7 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="relative flex flex-1 flex-col">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-[calc(50vh-4.5rem)] overflow-hidden">
             <Image src="/fondo.jpg" alt="" fill sizes="100vw" priority className="object-cover" />
-            <div className="absolute inset-0 bg-manzana/80" />
+            <div className="absolute inset-0 bg-manzana/55" />
           </div>
           <main className="relative mx-auto w-full max-w-4xl flex-1 px-4 py-8">{children}</main>
         </div>
