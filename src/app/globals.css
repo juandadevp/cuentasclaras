@@ -7,6 +7,7 @@
   --surface: #ffffff;
   --muted: #6b7280;
   --border: #e5e7eb;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -24,16 +25,6 @@
   --color-accent: #f2b84b;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --surface: #171717;
-    --muted: #a3a3a3;
-    --border: #262626;
-  }
 }
 
 body {

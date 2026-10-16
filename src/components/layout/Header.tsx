@@ -36,7 +36,7 @@ export function Header() {
           </Link>
           <Link
             href="/registro"
-            className="rounded-[10px] bg-brand-900 px-3 py-2.5 text-sm font-semibold text-brand-50 transition-colors hover:bg-brand-700 sm:px-5 dark:bg-brand-300 dark:text-brand-900 dark:hover:bg-brand-100"
+            className="rounded-[10px] bg-brand-900 px-3 py-2.5 text-sm font-semibold text-brand-50 transition-colors hover:bg-brand-700 sm:px-5"
           >
             Crear cuenta gratis
           </Link>
