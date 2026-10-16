@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Hero } from "@/components/layout/Hero";
+import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { siteConfig } from "@/config/site";
 
@@ -14,6 +14,9 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// Evita que el navegador oscurezca la página automáticamente (modo oscuro forzado).
+export const viewport: Viewport = { colorScheme: "only light" };
 
 export const metadata: Metadata = {
   title: siteConfig.nombre,
@@ -28,8 +31,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <Header />
-        <Hero />
         <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );

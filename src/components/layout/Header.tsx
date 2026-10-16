@@ -1,12 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
-
-const enlaces = [
-  { href: "/#funciones", etiqueta: "Funciones" },
-  { href: "/#como-funciona", etiqueta: "Cómo funciona" },
-  { href: "/#precios", etiqueta: "Precios" },
-];
+import { enlacesPrincipales, siteConfig } from "@/config/site";
 
 export function Header() {
   return (
@@ -18,7 +12,7 @@ export function Header() {
         </Link>
 
         <ul className="hidden gap-8 text-[15px] font-medium text-neutral-400 md:flex">
-          {enlaces.map((e) => (
+          {enlacesPrincipales.map((e) => (
             <li key={e.href}>
               <Link href={e.href} className="transition-colors hover:text-white">
                 {e.etiqueta}

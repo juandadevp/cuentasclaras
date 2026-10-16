@@ -11,7 +11,7 @@ export function Hero() {
               por fin claros.
             </span>
           </h1>
-          <p className="mt-6 max-w-xl text-xl leading-relaxed lg:text-2xl text-brand-900/75">
+          <p className="mt-6 max-w-xl text-xl leading-relaxed lg:text-2xl text-brand-800/75">
             Registra lo que gastas en segundos, ve a dónde se va tu dinero y mantente dentro de tu
             presupuesto cada mes.
           </p>
