@@ -10,7 +10,7 @@ export default function RegistroPage() {
     <div className="grid min-h-[calc(100vh-4.5rem)] md:grid-cols-[2fr_3fr]">
       <aside className="hidden flex-col items-center justify-center gap-8 bg-menta px-8 py-12 md:flex">
         <div className="relative h-80 w-full max-w-md">
-          <ImagenDeFondo src="/ilustracion.gif" ajuste="contain" claseImagen="scale-110" />
+          <ImagenDeFondo src="/registro.png" ajuste="contain" />
         </div>
         <div className="max-w-md text-center">
           <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
