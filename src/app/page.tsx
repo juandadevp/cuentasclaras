@@ -1,22 +1,5 @@
-import { Suspense } from "react";
-import { connection } from "next/server";
-import { Card } from "@/components/ui/Card";
-import { formatearMoneda } from "@/lib/format";
-import { totalGastos } from "@/lib/utils";
-import { listarGastos } from "@/services/gastos";
-
-async function TotalMes() {
-  await connection();
-  const total = totalGastos(await listarGastos());
-  return <p className="text-3xl font-semibold text-brand-900">{formatearMoneda(total)}</p>;
-}
+import { Funciones } from "@/components/home/Funciones";
 
 export default function Home() {
-  return (
-    <Card titulo="Total gastado este mes">
-      <Suspense fallback={<p className="text-muted">Cargando…</p>}>
-        <TotalMes />
-      </Suspense>
-    </Card>
-  );
+  return <Funciones />;
 }

@@ -11,10 +11,12 @@ async function Gastos() {
 
 export default function GastosPage() {
   return (
-    <Card titulo="Gastos del mes">
-      <Suspense fallback={<p className="text-muted">Cargando…</p>}>
-        <Gastos />
-      </Suspense>
-    </Card>
+    <div className="mx-auto w-full max-w-4xl px-4 py-8">
+      <Card titulo="Gastos del mes">
+        <Suspense fallback={<p className="text-muted">Cargando…</p>}>
+          <Gastos />
+        </Suspense>
+      </Card>
+    </div>
   );
 }
