@@ -9,8 +9,8 @@ export default function LoginPage() {
   return (
     <div className="grid min-h-[calc(100vh-4.5rem)] md:grid-cols-2">
       <aside className="hidden flex-col items-center justify-center gap-8 bg-menta px-10 py-12 md:flex">
-        <div className="relative h-72 w-full max-w-md">
-          <ImagenDeFondo src="/ilustracion.gif" ajuste="contain" claseImagen="scale-110" />
+        <div className="relative h-80 w-full max-w-lg">
+          <ImagenDeFondo src="/login.webp" ajuste="contain" claseImagen="mix-blend-multiply" />
         </div>
         <div className="max-w-md text-center">
           <h2 className="text-3xl font-extrabold tracking-tight text-foreground">

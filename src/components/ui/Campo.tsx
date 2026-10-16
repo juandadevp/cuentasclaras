@@ -2,22 +2,19 @@ import type { InputHTMLAttributes, ReactNode } from "react";
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   etiqueta: string;
-  /** Contenido a la derecha de la etiqueta, p. ej. un enlace. */
-  extra?: ReactNode;
+  /** Contenido debajo del campo, alineado a la derecha, p. ej. un enlace. */
+  pie?: ReactNode;
   /** Contenido dentro del campo, a la derecha (p. ej. un botón). */
   derecha?: ReactNode;
 }
 
-export function Campo({ etiqueta, extra, derecha, id, className = "", ...props }: Props) {
+export function Campo({ etiqueta, pie, derecha, id, className = "", ...props }: Props) {
   const campoId = id ?? props.name;
   return (
     <div>
-      <div className="mb-1.5 flex items-center justify-between">
-        <label htmlFor={campoId} className="text-sm font-semibold text-foreground">
-          {etiqueta}
-        </label>
-        {extra}
-      </div>
+      <label htmlFor={campoId} className="mb-1.5 block text-sm font-semibold text-foreground">
+        {etiqueta}
+      </label>
       <div className="relative">
         <input
           id={campoId}
@@ -26,6 +23,7 @@ export function Campo({ etiqueta, extra, derecha, id, className = "", ...props }
         />
         {derecha && <div className="absolute inset-y-0 right-2 flex items-center">{derecha}</div>}
       </div>
+      {pie && <div className="mt-2 text-right">{pie}</div>}
     </div>
   );
 }
