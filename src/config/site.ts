@@ -7,6 +7,18 @@ export const siteConfig = {
   locale: "es-CO",
 };
 
+/** Enlaces de navegación compartidos por el menú y el pie de página. */
+export const enlacesPrincipales = [
+  { href: "/#funciones", etiqueta: "Funciones" },
+  { href: "/#como-funciona", etiqueta: "Cómo funciona" },
+  { href: "/#precios", etiqueta: "Precios" },
+];
+
+export const enlacesCuenta = [
+  { href: "/login", etiqueta: "Iniciar sesión" },
+  { href: "/registro", etiqueta: "Crear cuenta" },
+];
+
 export const categorias: { valor: Categoria; etiqueta: string }[] = [
   { valor: "vivienda", etiqueta: "Vivienda" },
   { valor: "alimentacion", etiqueta: "Alimentación" },
