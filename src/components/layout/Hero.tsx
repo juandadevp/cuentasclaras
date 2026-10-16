@@ -4,7 +4,7 @@ export function Hero() {
   return (
     <section className="bg-menta">
       <div className="mx-auto grid min-h-[calc(50vh-4.5rem)] max-w-7xl items-center gap-4 px-6 py-8 md:grid-cols-2 lg:px-20">
-        <div>
+        <div className="md:order-2">
           <h1 className="text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-[56px]">
             Tus gastos del mes,
             <span className="block text-brand-700">
@@ -17,8 +17,8 @@ export function Hero() {
           </p>
         </div>
 
-        <div className="relative h-64 md:h-full md:min-h-72">
-          <ImagenDeFondo src="/ilustracion.gif" ajuste="contain" claseImagen="scale-[1.05] md:object-right" />
+        <div className="relative h-64 md:order-1 md:h-full md:min-h-72">
+          <ImagenDeFondo src="/ilustracion.gif" ajuste="contain" claseImagen="scale-[1.05] md:object-left" />
         </div>
       </div>
     </section>
