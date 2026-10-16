@@ -12,7 +12,7 @@ async function Gastos() {
 export default function GastosPage() {
   return (
     <Card titulo="Gastos del mes">
-      <Suspense fallback={<p className="text-zinc-500">Cargando…</p>}>
+      <Suspense fallback={<p className="text-muted">Cargando…</p>}>
         <Gastos />
       </Suspense>
     </Card>

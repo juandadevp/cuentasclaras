@@ -14,7 +14,7 @@ async function TotalMes() {
 export default function Home() {
   return (
     <Card titulo="Total gastado este mes">
-      <Suspense fallback={<p className="text-zinc-500">Cargando…</p>}>
+      <Suspense fallback={<p className="text-muted">Cargando…</p>}>
         <TotalMes />
       </Suspense>
     </Card>
