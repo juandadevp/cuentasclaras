@@ -5,6 +5,10 @@ interface Props {
   /** Capa de color encima de la imagen, p. ej. "bg-manzana/55". */
   capa?: string;
   className?: string;
+  /** "cover" llena y recorta; "contain" muestra la imagen completa. */
+  ajuste?: "cover" | "contain";
+  /** Clases extra para la imagen, p. ej. "scale-150" para ampliarla. */
+  claseImagen?: string;
 }
 
 /**
@@ -12,7 +16,7 @@ interface Props {
  * (el padre debe ser `relative` y tener alto definido).
  * Cubre todo el espacio recortando lo que sobre, sin deformarse.
  */
-export function ImagenDeFondo({ src, capa, className = "" }: Props) {
+export function ImagenDeFondo({ src, capa, className = "", ajuste = "cover", claseImagen = "" }: Props) {
   return (
     <div aria-hidden className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}>
       <Image
@@ -22,7 +26,7 @@ export function ImagenDeFondo({ src, capa, className = "" }: Props) {
         sizes="100vw"
         quality={90}
         priority
-        className="size-full object-cover object-center"
+        className={`size-full object-center ${ajuste === "cover" ? "object-cover" : "object-contain"} ${claseImagen}`}
       />
       {capa && <div className={`absolute inset-0 ${capa}`} />}
     </div>

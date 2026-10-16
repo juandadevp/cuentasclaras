@@ -28,12 +28,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <Header />
-        <div className="relative flex flex-1 flex-col">
-          <div className="absolute inset-x-0 top-0 h-[calc(50vh-4.5rem)]">
-            <ImagenDeFondo src="/fondo.jpg" capa="bg-manzana/55" />
-          </div>
-          <main className="relative mx-auto w-full max-w-4xl flex-1 px-4 py-8">{children}</main>
-        </div>
+        <section className="relative h-[calc(50vh-4.5rem)] bg-menta">
+          <ImagenDeFondo src="/ilustracion.png" ajuste="contain" claseImagen="scale-[1.3]" />
+        </section>
+        <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">{children}</main>
       </body>
     </html>
   );
