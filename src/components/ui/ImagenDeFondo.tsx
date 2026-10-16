@@ -27,7 +27,7 @@ export function ImagenDeFondo({ src, capa, className = "", ajuste = "cover", cla
         quality={90}
         priority
         unoptimized={src.endsWith(".gif")}
-        className={`size-full object-center ${ajuste === "cover" ? "object-cover" : "object-contain"} ${claseImagen}`}
+        className={`size-full ${ajuste === "cover" ? "object-cover" : "object-contain"} ${claseImagen}`}
       />
       {capa && <div className={`absolute inset-0 ${capa}`} />}
     </div>
