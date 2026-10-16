@@ -29,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <Header />
         <section className="relative h-[calc(50vh-4.5rem)] bg-menta">
-          <ImagenDeFondo src="/ilustracion.png" ajuste="contain" claseImagen="scale-[1.3]" />
+          <ImagenDeFondo src="/ilustracion.gif" ajuste="contain" claseImagen="scale-[1.05]" />
         </section>
         <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">{children}</main>
       </body>
