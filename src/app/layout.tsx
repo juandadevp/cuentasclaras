@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ImagenDeFondo } from "@/components/ui/ImagenDeFondo";
 import { Header } from "@/components/layout/Header";
 import { siteConfig } from "@/config/site";
 
@@ -29,9 +29,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <Header />
         <div className="relative flex flex-1 flex-col">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-[calc(50vh-4.5rem)] overflow-hidden">
-            <Image src="/fondo.jpg" alt="" fill sizes="100vw" priority className="object-cover" />
-            <div className="absolute inset-0 bg-manzana/55" />
+          <div className="absolute inset-x-0 top-0 h-[calc(50vh-4.5rem)]">
+            <ImagenDeFondo src="/fondo.jpg" capa="bg-manzana/55" />
           </div>
           <main className="relative mx-auto w-full max-w-4xl flex-1 px-4 py-8">{children}</main>
         </div>
