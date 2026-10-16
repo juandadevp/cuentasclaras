@@ -24,7 +24,6 @@ export function ImagenDeFondo({ src, capa, className = "", ajuste = "cover", cla
         alt=""
         fill
         sizes="100vw"
-        quality={90}
         priority
         unoptimized={/\.(gif|png)$/.test(src)}
         className={`size-full ${ajuste === "cover" ? "object-cover" : "object-contain"} ${claseImagen}`}
