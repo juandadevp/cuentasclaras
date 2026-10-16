@@ -13,7 +13,7 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-neutral-950">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-20">
         <Link href="/" className="flex items-center gap-2.5 text-xl font-extrabold text-white">
-          <Image src="/logo.svg" alt="" width={30} height={35} priority />
+          <Image src="/logo-vivo.svg" alt="" width={30} height={35} priority />
           {siteConfig.nombre}
         </Link>
 
