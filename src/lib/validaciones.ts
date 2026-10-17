@@ -72,3 +72,26 @@ export function validarRegistro(d: DatosRegistro): ErroresRegistro {
   }
   return errores;
 }
+
+export interface DatosLogin {
+  email: string;
+  clave: string;
+}
+
+export type ErroresLogin = Partial<Record<keyof DatosLogin, string>>;
+
+export function validarLogin(d: DatosLogin): ErroresLogin {
+  const errores: ErroresLogin = {
+    email: validarEmail(d.email),
+    clave: d.clave ? undefined : "Ingresa tu contraseña.",
+  };
+  for (const k of Object.keys(errores) as (keyof DatosLogin)[]) {
+    if (!errores[k]) delete errores[k];
+  }
+  return errores;
+}
+
+/** Normaliza un nombre: quita espacios sobrantes. */
+export function normalizarNombre(valor: string): string {
+  return valor.trim().replace(/\s+/g, " ");
+}
