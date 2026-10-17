@@ -2,11 +2,12 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseClave, supabaseConfigurado, supabaseUrl } from "./config";
 
-const RUTAS_SOLO_INVITADOS = ["/login", "/registro"];
+const RUTAS_SOLO_INVITADOS = ["/", "/login", "/registro"];
+const RUTAS_PRIVADAS = ["/panel"];
 
 /**
  * Refresca la sesión de Supabase en cada petición (renueva las cookies del token)
- * y redirige a /login y /registro al inicio si el usuario ya inició sesión.
+ * y protege las rutas: con sesión, la portada, /login y /registro llevan al panel; sin sesión, /panel lleva a /login.
  */
 export async function actualizarSesion(request: NextRequest) {
   let respuesta = NextResponse.next({ request });
@@ -28,9 +29,15 @@ export async function actualizarSesion(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const haySesion = Boolean(data?.claims);
 
-  if (haySesion && RUTAS_SOLO_INVITADOS.includes(request.nextUrl.pathname)) {
+  const ruta = request.nextUrl.pathname;
+  const aPrivada = RUTAS_PRIVADAS.some((r) => ruta === r || ruta.startsWith(`${r}/`));
+  let destinoRedireccion: string | null = null;
+  if (haySesion && RUTAS_SOLO_INVITADOS.includes(ruta)) destinoRedireccion = "/panel"; // con sesión: su propio inicio
+  if (!haySesion && aPrivada) destinoRedireccion = "/login"; // sin sesión: no puede ver el panel
+
+  if (destinoRedireccion) {
     const destino = request.nextUrl.clone();
-    destino.pathname = "/";
+    destino.pathname = destinoRedireccion;
     destino.search = "";
     const redireccion = NextResponse.redirect(destino);
     respuesta.cookies.getAll().forEach((c) => redireccion.cookies.set(c));

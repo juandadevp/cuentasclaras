@@ -55,7 +55,7 @@ export async function registrar(formData: FormData): Promise<ResultadoAuth> {
     return { errores: { email: "Este correo ya está registrado. Inicia sesión." } };
   }
 
-  if (data.session) redirect("/");
+  if (data.session) redirect("/panel");
   return { requiereConfirmacion: true };
 }
 
@@ -75,7 +75,7 @@ export async function iniciarSesion(formData: FormData): Promise<ResultadoAuth> 
 
   if (error) return { mensaje: traducirErrorAuth(error) };
 
-  redirect("/");
+  redirect("/panel");
 }
 
 export async function cerrarSesion(): Promise<void> {

@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AccionesSesion } from "@/components/layout/AccionesSesion";
-import { enlacesPrincipales, siteConfig } from "@/config/site";
+import { NavegacionCentral } from "@/components/layout/NavegacionCentral";
+import { siteConfig } from "@/config/site";
 
 export function Header() {
   return (
@@ -13,15 +14,9 @@ export function Header() {
           {siteConfig.nombre}
         </Link>
 
-        <ul className="hidden gap-8 text-[15px] font-medium text-neutral-400 md:flex">
-          {enlacesPrincipales.map((e) => (
-            <li key={e.href}>
-              <Link href={e.href} className="transition-colors hover:text-white">
-                {e.etiqueta}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <Suspense fallback={<div className="hidden h-6 w-72 md:block" aria-hidden />}>
+          <NavegacionCentral />
+        </Suspense>
 
         <div className="flex min-h-10 items-center gap-2 sm:gap-3">
           {/* La sesión se lee en el servidor al momento de la petición, por eso va dentro de Suspense. */}

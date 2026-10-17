@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   if (code && supabaseConfigurado()) {
     const supabase = await crearClienteServidor();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(`${origin}/`);
+    if (!error) return NextResponse.redirect(`${origin}/panel`);
   }
 
   return NextResponse.redirect(`${origin}/login`);
