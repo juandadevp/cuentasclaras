@@ -38,3 +38,21 @@ export function variacion(actual: number, anterior: number): number | null {
 export function hoyIso(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(new Date());
 }
+
+/** Color de cada categoría en gráficos y etiquetas (paleta del logo + un acento cálido). */
+export const coloresCategoria: Record<Categoria, string> = {
+  vivienda: "#153519",
+  alimentacion: "#266a37",
+  transporte: "#3f9a58",
+  servicios: "#8fd3a5",
+  ocio: "#f2b84b",
+  salud: "#6b7280",
+  otros: "#c4c9cf",
+};
+
+/** "2026-10" → "Oct". */
+export function mesCorto(mes: string): string {
+  const [anio, m] = mes.split("-").map(Number);
+  const nombre = new Date(anio, m - 1, 1).toLocaleDateString("es-CO", { month: "short" }).replace(".", "");
+  return nombre.charAt(0).toUpperCase() + nombre.slice(1);
+}

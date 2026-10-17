@@ -51,6 +51,39 @@ export async function crearGasto(formData: FormData): Promise<ResultadoGasto> {
   return { ok: true };
 }
 
+export async function actualizarGasto(id: string, formData: FormData): Promise<ResultadoGasto> {
+  const datos = {
+    descripcion: texto(formData, "descripcion"),
+    monto: texto(formData, "monto"),
+    categoria: texto(formData, "categoria"),
+    fecha: texto(formData, "fecha"),
+  };
+
+  const errores = validarGasto(datos, hoyIso());
+  if (Object.keys(errores).length > 0) return { errores };
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return { mensaje: "No encontramos ese gasto." };
+  if (!supabaseConfigurado()) return { mensaje: MENSAJE_SIN_CONFIGURAR };
+
+  const supabase = await crearClienteServidor();
+  // La seguridad por filas hace que solo se pueda editar un gasto propio.
+  const { data, error } = await supabase
+    .from("gastos")
+    .update({
+      descripcion: normalizarDescripcion(datos.descripcion),
+      monto: parsearMonto(datos.monto),
+      categoria: datos.categoria,
+      fecha: datos.fecha,
+    })
+    .eq("id", id)
+    .select("id");
+
+  if (error) return { mensaje: "No pudimos guardar los cambios. Inténtalo de nuevo." };
+  if (!data || data.length === 0) return { mensaje: "No encontramos ese gasto." };
+
+  revalidatePath("/panel", "layout");
+  return { ok: true };
+}
+
 export async function eliminarGasto(formData: FormData): Promise<void> {
   const id = texto(formData, "id");
   if (!/^[0-9a-f-]{36}$/i.test(id) || !supabaseConfigurado()) return;

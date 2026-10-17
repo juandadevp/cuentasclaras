@@ -29,10 +29,13 @@ El registro y el inicio de sesión usan **Supabase Auth** (PostgreSQL). Pasos pa
    - *Confirm email* **desactivado** (solo desarrollo): el usuario entra apenas se registra.
 6. Reinicia `npm run dev`.
 
-Al iniciar sesión (o registrarse sin confirmación de correo) cada usuario entra a **su propio portal** en
-`/panel`, con accesos a:
-- `/panel/registrar`: formulario para anotar un gasto y sus últimos movimientos.
-- `/panel/resumen`: total del mes, gastos por categoría e historial, con selector de mes.
+Al iniciar sesión (o registrarse sin confirmación de correo) cada usuario entra a **su propio panel**, una
+aplicación con barra lateral y barra superior (separada del sitio público):
+- `/panel`: inicio con accesos rápidos, total del mes, gráfico de dona por categoría, barras de los últimos
+  6 meses y los últimos gastos.
+- `/panel/registrar`: formulario para anotar un gasto.
+- `/panel/gastos`: tabla completa con buscador, filtro por categoría, navegación por mes, "Mostrar todo",
+  editar (`/panel/gastos/[id]/editar`) y eliminar.
 
 Sin sesión, cualquier ruta de `/panel` lleva a `/login`.
 
@@ -42,10 +45,11 @@ Sin las variables de entorno el sitio funciona, pero el login y el registro mues
 
 ```
 src/
-├── app/            # Rutas (App Router): páginas, layout y API routes
+├── app/            # Rutas (App Router)
 │   ├── auth/       # Acciones de login/registro/cierre de sesión y callback de confirmación
-│   └── panel/      # Portal personal de cada usuario: registrar/ y resumen/
-├── components/     # ui/ (genéricos), layout/ (estructura), auth/ (login/registro), home/, gastos/
+│   ├── (sitio)/    # Sitio público (portada, login, registro) con menú y pie de página
+│   └── panel/      # Área privada de cada usuario: layout con barra lateral, registrar/ y gastos/
+├── components/     # ui/ (genéricos), layout/ (sitio público), auth/, home/, panel/ (área privada)
 ├── proxy.ts        # Refresca la sesión de Supabase en cada petición
 ├── config/         # Configuración del sitio y categorías
 ├── lib/            # Utilidades, validaciones y clientes de Supabase (lib/supabase)

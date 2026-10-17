@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Registrar gasto" };
 
 export default function RegistrarPage() {
   return (
-    <Suspense fallback={<div className="min-h-[calc(100vh-4.5rem)] bg-neutral-50" aria-busy />}>
+    <Suspense fallback={<div aria-busy className="h-96" />}>
       <Registrar />
     </Suspense>
   );

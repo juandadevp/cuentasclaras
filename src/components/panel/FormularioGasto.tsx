@@ -1,16 +1,33 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useTransition, type ChangeEvent, type FocusEvent, type FormEvent } from "react";
-import { crearGasto, type ResultadoGasto } from "@/app/panel/actions";
+import { actualizarGasto, crearGasto, type ResultadoGasto } from "@/app/panel/actions";
 import { categorias } from "@/config/site";
 import { Campo } from "@/components/ui/Campo";
 import { formatearMontoEscrito, validarGasto, type DatosGasto } from "@/lib/validaciones-gasto";
+import type { Gasto } from "@/types/gasto";
 
 const campos: (keyof DatosGasto)[] = ["descripcion", "monto", "categoria", "fecha"];
 
-export function FormularioGasto({ hoy }: { hoy: string }) {
+interface Props {
+  hoy: string;
+  /** Si se pasa, el formulario edita ese gasto en lugar de crear uno nuevo. */
+  gasto?: Gasto;
+}
+
+export function FormularioGasto({ hoy, gasto }: Props) {
+  const router = useRouter();
   const vacio: DatosGasto = { descripcion: "", monto: "", categoria: "", fecha: hoy };
-  const [datos, setDatos] = useState<DatosGasto>(vacio);
+  const inicial: DatosGasto = gasto
+    ? {
+        descripcion: gasto.descripcion,
+        monto: formatearMontoEscrito(String(Math.round(gasto.monto))),
+        categoria: gasto.categoria,
+        fecha: gasto.fecha,
+      }
+    : vacio;
+  const [datos, setDatos] = useState<DatosGasto>(inicial);
   const [tocados, setTocados] = useState<Partial<Record<keyof DatosGasto, boolean>>>({});
   const [intentoEnvio, setIntentoEnvio] = useState(false);
   const [resultado, setResultado] = useState<ResultadoGasto>({});
@@ -43,8 +60,12 @@ export function FormularioGasto({ hoy }: { hoy: string }) {
     const formData = new FormData();
     campos.forEach((c) => formData.set(c, datos[c]));
     iniciarTransicion(async () => {
-      const r = await crearGasto(formData);
+      const r = gasto ? await actualizarGasto(gasto.id, formData) : await crearGasto(formData);
       setResultado(r);
+      if (r.ok && gasto) {
+        router.push("/panel/gastos");
+        return;
+      }
       if (r.ok) {
         setDatos(vacio);
         setTocados({});
@@ -139,7 +160,7 @@ export function FormularioGasto({ hoy }: { hoy: string }) {
         disabled={pendiente}
         className="w-full rounded-[10px] bg-brand-800 px-5 py-3 text-[15px] font-semibold text-brand-50 transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30 disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {pendiente ? "Guardando…" : "+ Guardar gasto"}
+        {pendiente ? "Guardando…" : gasto ? "Guardar cambios" : "+ Guardar gasto"}
       </button>
     </form>
   );

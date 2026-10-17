@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Portal } from "@/components/panel/Portal";
+import { Inicio } from "@/components/panel/Inicio";
 
-export const metadata: Metadata = { title: "Mi portal" };
+export const metadata: Metadata = { title: "Inicio" };
 
-export default function PortalPage() {
+export default function InicioPage() {
   return (
-    <Suspense fallback={<div className="min-h-[calc(100vh-4.5rem)] bg-neutral-50" aria-busy />}>
-      <Portal />
+    <Suspense fallback={<div aria-busy className="h-96" />}>
+      <Inicio />
     </Suspense>
   );
 }
