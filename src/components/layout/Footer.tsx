@@ -1,13 +1,21 @@
 import { cacheLife } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { enlacesCuenta, enlacesPrincipales, siteConfig } from "@/config/site";
+import { obtenerUsuario } from "@/lib/supabase/usuario";
 
 /** El año se calcula en caché (se renueva a diario) para no bloquear el prerenderizado. */
 async function Anio() {
   "use cache";
   cacheLife("days");
   return new Date().getFullYear();
+}
+
+/** Columna "Cuenta": cambia según haya o no una sesión iniciada. */
+async function ColumnaCuenta() {
+  const usuario = await obtenerUsuario();
+  return <Columna titulo="Cuenta" enlaces={usuario ? [{ href: "/panel", etiqueta: "Mi portal" }] : enlacesCuenta} />;
 }
 
 function Columna({ titulo, enlaces }: { titulo: string; enlaces: { href: string; etiqueta: string }[] }) {
@@ -43,7 +51,9 @@ export function Footer() {
           </div>
 
           <Columna titulo="Producto" enlaces={enlacesPrincipales} />
-          <Columna titulo="Cuenta" enlaces={enlacesCuenta} />
+          <Suspense fallback={<div aria-hidden />}>
+            <ColumnaCuenta />
+          </Suspense>
         </div>
 
         <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-neutral-400 sm:flex-row sm:items-center sm:justify-between">

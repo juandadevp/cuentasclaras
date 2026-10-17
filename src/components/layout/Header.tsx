@@ -1,6 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { enlacesPrincipales, siteConfig } from "@/config/site";
+import { Suspense } from "react";
+import { AccionesSesion } from "@/components/layout/AccionesSesion";
+import { NavegacionCentral } from "@/components/layout/NavegacionCentral";
+import { siteConfig } from "@/config/site";
 
 export function Header() {
   return (
@@ -11,29 +14,15 @@ export function Header() {
           {siteConfig.nombre}
         </Link>
 
-        <ul className="hidden gap-8 text-[15px] font-medium text-neutral-400 md:flex">
-          {enlacesPrincipales.map((e) => (
-            <li key={e.href}>
-              <Link href={e.href} className="transition-colors hover:text-white">
-                {e.etiqueta}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <Suspense fallback={<div className="hidden h-6 w-72 md:block" aria-hidden />}>
+          <NavegacionCentral />
+        </Suspense>
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Link
-            href="/login"
-            className="rounded-[10px] px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/10 sm:px-5"
-          >
-            Iniciar sesión
-          </Link>
-          <Link
-            href="/registro"
-            className="rounded-[10px] bg-white px-3 py-2.5 text-sm font-semibold text-neutral-800 transition-colors hover:bg-neutral-200 sm:px-5"
-          >
-            Crear cuenta gratis
-          </Link>
+        <div className="flex min-h-10 items-center gap-2 sm:gap-3">
+          {/* La sesión se lee en el servidor al momento de la petición, por eso va dentro de Suspense. */}
+          <Suspense fallback={<div className="h-10 w-10" aria-hidden />}>
+            <AccionesSesion />
+          </Suspense>
         </div>
       </nav>
     </header>
