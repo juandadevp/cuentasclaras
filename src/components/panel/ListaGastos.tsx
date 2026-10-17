@@ -3,12 +3,12 @@ import { formatearFecha, formatearMoneda } from "@/lib/format";
 import { etiquetaCategoria } from "@/lib/gastos";
 import type { Gasto } from "@/types/gasto";
 
-export function ListaGastos({ gastos }: { gastos: Gasto[] }) {
+export function ListaGastos({ gastos, vacio }: { gastos: Gasto[]; vacio?: string }) {
   if (gastos.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-border px-6 py-10 text-center">
-        <p className="font-semibold text-foreground">Aún no hay gastos en este mes</p>
-        <p className="mt-1 text-sm text-muted">Agrega el primero con el formulario y aparecerá aquí.</p>
+        <p className="font-semibold text-foreground">Aún no hay gastos</p>
+        <p className="mt-1 text-sm text-muted">{vacio ?? "Cuando registres uno aparecerá aquí."}</p>
       </div>
     );
   }

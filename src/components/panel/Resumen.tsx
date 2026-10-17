@@ -1,23 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { FormularioGasto } from "@/components/panel/FormularioGasto";
+import { EncabezadoPanel } from "@/components/panel/EncabezadoPanel";
 import { GastosPorCategoria } from "@/components/panel/GastosPorCategoria";
 import { ListaGastos } from "@/components/panel/ListaGastos";
 import { formatearMoneda } from "@/lib/format";
 import { etiquetaCategoria, hoyIso, nombreDelMes, rangoDelMes, totalPorCategoria, variacion } from "@/lib/gastos";
 import { supabaseConfigurado } from "@/lib/supabase/config";
+import { gastosEntre } from "@/lib/gastos-servidor";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 import { obtenerUsuario } from "@/lib/supabase/usuario";
 import { totalGastos } from "@/lib/utils";
-import type { Categoria, Gasto } from "@/types/gasto";
-
-interface FilaGasto {
-  id: string;
-  descripcion: string;
-  monto: number | string;
-  categoria: Categoria;
-  fecha: string;
-}
+import type { Gasto } from "@/types/gasto";
 
 function Tarjeta({ titulo, children, className = "" }: { titulo: string; children: React.ReactNode; className?: string }) {
   return (
@@ -38,7 +31,7 @@ function Dato({ etiqueta, valor, detalle }: { etiqueta: string; valor: string; d
   );
 }
 
-export async function Panel({ mesParam }: { mesParam?: string }) {
+export async function Resumen({ mesParam }: { mesParam?: string }) {
   const usuario = await obtenerUsuario();
   if (!usuario) redirect("/login");
 
@@ -54,53 +47,38 @@ export async function Panel({ mesParam }: { mesParam?: string }) {
   if (supabaseConfigurado()) {
     const supabase = await crearClienteServidor();
     const [actual, previo] = await Promise.all([
-      supabase
-        .from("gastos")
-        .select("id, descripcion, monto, categoria, fecha")
-        .gte("fecha", inicio)
-        .lt("fecha", fin)
-        .order("fecha", { ascending: false })
-        .order("creado_en", { ascending: false }),
-      supabase.from("gastos").select("monto").gte("fecha", inicioAnterior).lt("fecha", finAnterior),
+      gastosEntre(supabase, inicio, fin),
+      gastosEntre(supabase, inicioAnterior, finAnterior),
     ]);
-    if (actual.error) falloLaConsulta = true;
-    gastos = ((actual.data ?? []) as FilaGasto[]).map((g) => ({ ...g, monto: Number(g.monto) }));
-    totalAnterior = (previo.data ?? []).reduce((acc, g) => acc + Number(g.monto), 0);
+    falloLaConsulta = Boolean(actual.error);
+    gastos = actual.gastos;
+    totalAnterior = totalGastos(previo.gastos);
   }
 
   const total = totalGastos(gastos);
   const porCategoria = totalPorCategoria(gastos);
   const mayor = porCategoria[0];
   const cambio = variacion(total, totalAnterior);
-  const primerNombre = usuario.nombre.split(" ")[0];
 
   return (
     <div className="bg-neutral-50">
-      <section className="bg-menta">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-10 sm:flex-row sm:items-end sm:justify-between lg:px-20">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-widest text-brand-700">Tu panel</p>
-            <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">Hola, {primerNombre}</h1>
-            <p className="mt-1 text-brand-800/75">Así van tus cuentas en {nombreDelMes(mes).toLowerCase()}.</p>
-          </div>
-
-          <nav aria-label="Cambiar de mes" className="flex items-center gap-1 self-start rounded-xl bg-white/70 p-1 sm:self-auto">
-            <Link href={`/panel?mes=${anterior}`} aria-label="Mes anterior" className="rounded-lg px-3 py-2 text-foreground transition-colors hover:bg-white">
-              ←
+      <EncabezadoPanel etiqueta="Resumen" titulo="Resumen de gastos" subtitulo={`Así van tus cuentas en ${nombreDelMes(mes).toLowerCase()}.`} volver>
+        <nav aria-label="Cambiar de mes" className="flex items-center gap-1 self-start rounded-xl bg-white/70 p-1 sm:self-auto">
+          <Link href={`/panel/resumen?mes=${anterior}`} aria-label="Mes anterior" className="rounded-lg px-3 py-2 text-foreground transition-colors hover:bg-white">
+            ←
+          </Link>
+          <span className="min-w-36 px-2 text-center text-sm font-bold text-foreground">{nombreDelMes(mes)}</span>
+          {esMesActual ? (
+            <span aria-hidden className="rounded-lg px-3 py-2 text-neutral-300">
+              →
+            </span>
+          ) : (
+            <Link href={`/panel/resumen?mes=${siguiente}`} aria-label="Mes siguiente" className="rounded-lg px-3 py-2 text-foreground transition-colors hover:bg-white">
+              →
             </Link>
-            <span className="min-w-36 px-2 text-center text-sm font-bold text-foreground">{nombreDelMes(mes)}</span>
-            {esMesActual ? (
-              <span aria-hidden className="rounded-lg px-3 py-2 text-neutral-300">
-                →
-              </span>
-            ) : (
-              <Link href={`/panel?mes=${siguiente}`} aria-label="Mes siguiente" className="rounded-lg px-3 py-2 text-foreground transition-colors hover:bg-white">
-                →
-              </Link>
-            )}
-          </nav>
-        </div>
-      </section>
+          )}
+        </nav>
+      </EncabezadoPanel>
 
       <div className="mx-auto max-w-7xl space-y-6 px-6 py-8 lg:px-20">
         {falloLaConsulta && (
@@ -132,17 +110,12 @@ export async function Panel({ mesParam }: { mesParam?: string }) {
           />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[2fr_3fr]">
-          <Tarjeta titulo="Agregar gasto">
-            <FormularioGasto hoy={hoy} />
-          </Tarjeta>
-          <Tarjeta titulo="Gastos por categoría">
-            <GastosPorCategoria datos={porCategoria} total={total} />
-          </Tarjeta>
-        </div>
+        <Tarjeta titulo="Gastos por categoría">
+          <GastosPorCategoria datos={porCategoria} total={total} />
+        </Tarjeta>
 
         <Tarjeta titulo={`Gastos de ${nombreDelMes(mes).toLowerCase()}`}>
-          <ListaGastos gastos={gastos} />
+          <ListaGastos gastos={gastos} vacio="Registra un gasto y aparecerá aquí." />
         </Tarjeta>
       </div>
     </div>

@@ -29,8 +29,12 @@ El registro y el inicio de sesión usan **Supabase Auth** (PostgreSQL). Pasos pa
    - *Confirm email* **desactivado** (solo desarrollo): el usuario entra apenas se registra.
 6. Reinicia `npm run dev`.
 
-Al iniciar sesión (o registrarse sin confirmación de correo) cada usuario entra a **su propio panel** en
-`/panel`, con sus gastos, totales y gráfico por categoría. Sin sesión, `/panel` lleva a `/login`.
+Al iniciar sesión (o registrarse sin confirmación de correo) cada usuario entra a **su propio portal** en
+`/panel`, con accesos a:
+- `/panel/registrar`: formulario para anotar un gasto y sus últimos movimientos.
+- `/panel/resumen`: total del mes, gastos por categoría e historial, con selector de mes.
+
+Sin sesión, cualquier ruta de `/panel` lleva a `/login`.
 
 Sin las variables de entorno el sitio funciona, pero el login y el registro muestran un aviso de que falta configurar Supabase.
 
@@ -40,7 +44,7 @@ Sin las variables de entorno el sitio funciona, pero el login y el registro mues
 src/
 ├── app/            # Rutas (App Router): páginas, layout y API routes
 │   ├── auth/       # Acciones de login/registro/cierre de sesión y callback de confirmación
-│   └── panel/      # Panel personal de cada usuario (gastos)
+│   └── panel/      # Portal personal de cada usuario: registrar/ y resumen/
 ├── components/     # ui/ (genéricos), layout/ (estructura), auth/ (login/registro), home/, gastos/
 ├── proxy.ts        # Refresca la sesión de Supabase en cada petición
 ├── config/         # Configuración del sitio y categorías

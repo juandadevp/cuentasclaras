@@ -15,7 +15,7 @@ async function Anio() {
 /** Columna "Cuenta": cambia según haya o no una sesión iniciada. */
 async function ColumnaCuenta() {
   const usuario = await obtenerUsuario();
-  return <Columna titulo="Cuenta" enlaces={usuario ? [{ href: "/panel", etiqueta: "Mi panel" }] : enlacesCuenta} />;
+  return <Columna titulo="Cuenta" enlaces={usuario ? [{ href: "/panel", etiqueta: "Mi portal" }] : enlacesCuenta} />;
 }
 
 function Columna({ titulo, enlaces }: { titulo: string; enlaces: { href: string; etiqueta: string }[] }) {

@@ -47,7 +47,7 @@ export async function crearGasto(formData: FormData): Promise<ResultadoGasto> {
     return { mensaje: "No pudimos guardar el gasto. Inténtalo de nuevo." };
   }
 
-  revalidatePath("/panel");
+  revalidatePath("/panel", "layout");
   return { ok: true };
 }
 
@@ -58,5 +58,5 @@ export async function eliminarGasto(formData: FormData): Promise<void> {
   const supabase = await crearClienteServidor();
   // La seguridad por filas garantiza que solo se borren gastos del propio usuario.
   await supabase.from("gastos").delete().eq("id", id);
-  revalidatePath("/panel");
+  revalidatePath("/panel", "layout");
 }
