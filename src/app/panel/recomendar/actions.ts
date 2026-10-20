@@ -1,6 +1,7 @@
 "use server";
 
-import { buscarOfertas, esCategoriaValida } from "@/lib/precios/buscar";
+import { buscarOfertas } from "@/lib/precios/buscar";
+import { esRubro } from "@/lib/precios/rubros";
 import { codigoDeError, type ResultadoBusqueda } from "@/lib/precios/tipos";
 import { MENSAJE_SIN_CONFIGURAR, supabaseConfigurado } from "@/lib/supabase/config";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
@@ -10,7 +11,8 @@ const INTERVALO_MS = 1500;
 
 const fallo = (mensaje: string): ResultadoBusqueda => ({ ok: false, ofertas: [], modo: "real", actualizado: new Date().toISOString(), mensaje });
 
-export async function buscarPrecios(consulta: string, categoria: string): Promise<ResultadoBusqueda> {
+/** `rubro` vacío = detectar el tipo de producto automáticamente. */
+export async function buscarPrecios(consulta: string, rubro: string): Promise<ResultadoBusqueda> {
   const texto = String(consulta ?? "")
     .replace(/[\u0000-\u001f\u007f]/g, " ")
     .trim()
@@ -29,7 +31,7 @@ export async function buscarPrecios(consulta: string, categoria: string): Promis
   ultimaBusqueda.set(data.user.id, ahora);
 
   try {
-    return await buscarOfertas(texto, esCategoriaValida(categoria) ? categoria : undefined);
+    return await buscarOfertas(texto, esRubro(rubro) ? rubro : undefined);
   } catch (e) {
     const codigo = codigoDeError(e);
     const mensajes = {

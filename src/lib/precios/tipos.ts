@@ -1,3 +1,5 @@
+import type { Rubro } from "./rubros";
+
 export interface Oferta {
   titulo: string;
   /** Nombre de la tienda tal como la devuelve el proveedor. */
@@ -9,6 +11,8 @@ export interface Oferta {
   imagen?: string;
   /** Texto extra: envío, calificación, etc. */
   detalle?: string;
+  /** true si la tienda vende este tipo de producto (p. ej. una farmacia para un medicamento). */
+  relevante?: boolean;
 }
 
 export interface ResultadoBusqueda {
@@ -19,6 +23,12 @@ export interface ResultadoBusqueda {
   /** Momento de la consulta (ISO). */
   actualizado: string;
   mensaje?: string;
+  /** Tipo de producto detectado o elegido; null si no se pudo reconocer. */
+  rubro?: Rubro | null;
+  /** true si el tipo se detectó solo a partir del texto; false si lo eligió la persona. */
+  automatico?: boolean;
+  /** Tiendas que venden este tipo de producto. */
+  tiendasDelTipo?: string[];
 }
 
 export type CodigoErrorProveedor = "clave" | "limite" | "red" | "respuesta";

@@ -1,7 +1,6 @@
-import { categorias } from "@/config/site";
-import type { Categoria } from "@/types/gasto";
 import { ofertasDeEjemplo } from "./demo";
-import { tiendaEnCategoria } from "./franquicias";
+import { detectarRubro } from "./detectar";
+import { tiendaRelevante, tiendasDelRubro, type Rubro } from "./rubros";
 import { consultarSerpApi } from "./serpapi";
 import type { Oferta, ResultadoBusqueda } from "./tipos";
 
@@ -25,18 +24,27 @@ async function ofertasReales(consulta: string, clave: string): Promise<Oferta[]>
   return ofertas;
 }
 
-export const esCategoriaValida = (v: string): v is Categoria => categorias.some((c) => c.valor === v);
-
-export async function buscarOfertas(consulta: string, categoria?: Categoria): Promise<ResultadoBusqueda> {
+/**
+ * Busca precios de un producto. El tipo de producto (medicamento, alimento, tecnología…) se detecta por el texto,
+ * o lo elige la persona, y cada oferta se marca como relevante si la tienda vende ese tipo de producto.
+ */
+export async function buscarOfertas(consulta: string, rubroElegido?: Rubro): Promise<ResultadoBusqueda> {
   const clave = process.env.SERPAPI_API_KEY;
-  const modo = clave ? "real" : "demo";
+  const rubro = rubroElegido ?? detectarRubro(consulta).rubro;
 
-  let ofertas = clave ? await ofertasReales(consulta, clave) : ofertasDeEjemplo(consulta, categoria);
+  const crudas = clave ? await ofertasReales(consulta, clave) : ofertasDeEjemplo(consulta, rubro);
 
-  if (categoria && clave) {
-    ofertas = ofertas.filter((o) => tiendaEnCategoria(o.tienda, categoria));
-  }
-  ofertas.sort((a, b) => a.precio - b.precio);
+  const ofertas = crudas
+    .map((o) => ({ ...o, relevante: rubro ? tiendaRelevante(o.tienda, rubro) : true }))
+    .sort((a, b) => a.precio - b.precio);
 
-  return { ok: true, ofertas, modo, actualizado: new Date().toISOString() };
+  return {
+    ok: true,
+    ofertas,
+    modo: clave ? "real" : "demo",
+    actualizado: new Date().toISOString(),
+    rubro,
+    automatico: !rubroElegido,
+    tiendasDelTipo: rubro ? tiendasDelRubro(rubro).map((f) => f.nombre) : [],
+  };
 }

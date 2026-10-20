@@ -1,6 +1,6 @@
-import { franquiciasPorCategoria } from "./franquicias";
+import { franquicias } from "./franquicias";
+import { rubros, tiendasDelRubro, type Rubro } from "./rubros";
 import type { Oferta } from "./tipos";
-import type { Categoria } from "@/types/gasto";
 
 function hash(texto: string): number {
   let h = 2166136261;
@@ -9,22 +9,22 @@ function hash(texto: string): number {
 }
 
 /** Datos de EJEMPLO (no son precios reales) para ver la pantalla sin haber configurado un proveedor. */
-export function ofertasDeEjemplo(consulta: string, categoria?: Categoria): Oferta[] {
+export function ofertasDeEjemplo(consulta: string, rubro: Rubro | null): Oferta[] {
   const base = 3_000 + (hash(consulta.toLowerCase()) % 47_000);
-  const tiendas = categoria
-    ? franquiciasPorCategoria[categoria]
-    : [...new Set(Object.values(franquiciasPorCategoria).flatMap((l) => l.slice(0, 2).map((f) => f.nombre)))].map(
-        (nombre) => ({ nombre }),
-      );
+  const propias = rubro ? tiendasDelRubro(rubro).map((f) => f.nombre) : [franquicias.exito.nombre, franquicias.mercadoLibre.nombre, franquicias.falabella.nombre];
+  // Dos tiendas que no venden este tipo de producto, para que se vea el botón "Ver también otras tiendas".
+  const ajenas = (rubro ? [franquicias.amazon.nombre, franquicias.mercadoLibre.nombre] : []).filter((n) => !propias.includes(n));
   const titulo = consulta.charAt(0).toUpperCase() + consulta.slice(1);
 
-  return tiendas.map((t, i) => {
-    const factor = 0.82 + ((hash(`${consulta}|${t.nombre}`) % 45) / 100);
+  return [...propias, ...ajenas].map((tienda, i) => {
+    const factor = 0.82 + (hash(`${consulta}|${tienda}`) % 45) / 100;
     return {
       titulo: `${titulo} · presentación estándar`,
-      tienda: t.nombre,
+      tienda,
       precio: Math.round((base * factor) / 50) * 50,
       detalle: i % 2 === 0 ? "Precio de ejemplo" : "Ejemplo · envío gratis",
     };
   });
 }
+
+export const etiquetaRubro = (rubro: Rubro) => rubros[rubro].etiqueta;

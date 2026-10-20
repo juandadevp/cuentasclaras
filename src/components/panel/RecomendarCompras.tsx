@@ -3,27 +3,16 @@
 import Link from "next/link";
 import { useMemo, useState, useTransition, type FormEvent } from "react";
 import { buscarPrecios } from "@/app/panel/recomendar/actions";
-import { categorias } from "@/config/site";
 import { formatearMoneda } from "@/lib/format";
-import { franquiciasPorCategoria } from "@/lib/precios/franquicias";
+import { listaRubros, rubros, type Rubro } from "@/lib/precios/rubros";
 import type { Oferta, ResultadoBusqueda } from "@/lib/precios/tipos";
-import type { Categoria } from "@/types/gasto";
 
-const ejemplos: Record<Categoria | "todas", string[]> = {
-  todas: ["leche", "arroz", "detergente", "acetaminofén"],
-  alimentacion: ["leche", "arroz", "aceite", "huevos"],
-  vivienda: ["taladro", "pintura", "bombillo led", "colchón"],
-  transporte: ["casco moto", "llanta", "aceite motor", "cadena moto"],
-  servicios: ["router wifi", "audífonos", "cargador", "plan datos"],
-  ocio: ["balón de fútbol", "libro", "videojuego", "bicicleta"],
-  salud: ["acetaminofén", "vitamina c", "protector solar", "tensiómetro"],
-  otros: ["mochila", "termo", "linterna", "candado"],
-};
+const ejemplosGenerales = ["acetaminofén", "leche", "audífonos", "detergente", "taladro", "pañales"];
 
 /** Convierte una oferta en un enlace al formulario de gastos con los datos ya llenos. */
-function enlaceRegistrar(o: Oferta, categoria: string) {
+function enlaceRegistrar(o: Oferta, rubro: Rubro | null | undefined) {
   const p = new URLSearchParams({ descripcion: o.titulo.slice(0, 80), monto: String(o.precio) });
-  if (categoria) p.set("categoria", categoria);
+  if (rubro) p.set("categoria", rubros[rubro].categoriaGasto);
   return `/panel/registrar?${p.toString()}`;
 }
 
@@ -38,21 +27,26 @@ function haceCuanto(iso: string) {
   return s < 60 ? "hace unos segundos" : `hace ${Math.round(s / 60)} min`;
 }
 
+const chip = (activo: boolean) =>
+  `rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${activo ? "bg-brand-800 text-white" : "bg-white text-foreground ring-1 ring-border hover:bg-neutral-50"}`;
+
 export function RecomendarCompras() {
   const [consulta, setConsulta] = useState("");
-  const [categoria, setCategoria] = useState<Categoria | "">("");
+  const [rubro, setRubro] = useState<Rubro | "">("");
   const [resultado, setResultado] = useState<ResultadoBusqueda | null>(null);
   const [buscado, setBuscado] = useState("");
   const [tienda, setTienda] = useState<string | null>(null);
+  const [verOtras, setVerOtras] = useState(false);
   const [orden, setOrden] = useState<"asc" | "desc">("asc");
   const [pendiente, iniciarTransicion] = useTransition();
 
-  function buscar(texto: string, cat: Categoria | "") {
+  function buscar(texto: string, tipo: Rubro | "") {
     const limpio = texto.trim();
     if (!limpio) return;
     setTienda(null);
+    setVerOtras(false);
     iniciarTransicion(async () => {
-      const r = await buscarPrecios(limpio, cat);
+      const r = await buscarPrecios(limpio, tipo);
       setBuscado(limpio);
       setResultado(r);
     });
@@ -60,21 +54,26 @@ export function RecomendarCompras() {
 
   function enviar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    buscar(consulta, categoria);
+    buscar(consulta, rubro);
   }
 
-  const tiendas = useMemo(() => [...new Set((resultado?.ofertas ?? []).map((o) => o.tienda))], [resultado]);
+  const detectado = resultado?.rubro ?? null;
+  const todas = useMemo(() => resultado?.ofertas ?? [], [resultado]);
+  const propias = useMemo(() => todas.filter((o) => o.relevante !== false), [todas]);
+  const ajenas = todas.length - propias.length;
+  const base = verOtras || !detectado ? todas : propias;
+
+  const tiendas = useMemo(() => [...new Set(base.map((o) => o.tienda))], [base]);
   const visibles = useMemo(() => {
-    const lista = (resultado?.ofertas ?? []).filter((o) => !tienda || o.tienda === tienda);
+    const lista = base.filter((o) => !tienda || o.tienda === tienda);
     return [...lista].sort((a, b) => (orden === "asc" ? a.precio - b.precio : b.precio - a.precio));
-  }, [resultado, tienda, orden]);
-  const barata = resultado?.ofertas[0];
-  const relacionadas = categoria ? franquiciasPorCategoria[categoria].map((f) => f.nombre) : [];
+  }, [base, tienda, orden]);
+  const barata = useMemo(() => base.reduce<Oferta | undefined>((m, o) => (!m || o.precio < m.precio ? o : m), undefined), [base]);
 
   return (
     <div className="space-y-6">
       <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
-        <form onSubmit={enviar} className="grid gap-3 md:grid-cols-[1fr_15rem_auto]">
+        <form onSubmit={enviar} className="grid gap-3 md:grid-cols-[1fr_16rem_auto]">
           <div className="relative">
             <label htmlFor="producto" className="sr-only">
               Producto a buscar
@@ -88,24 +87,24 @@ export function RecomendarCompras() {
               value={consulta}
               onChange={(e) => setConsulta(e.target.value)}
               maxLength={80}
-              placeholder="¿Qué quieres comprar? Ej. leche deslactosada 1 litro"
+              placeholder="¿Qué quieres comprar? Ej. acetaminofén 500 mg"
               className="w-full rounded-xl border border-border bg-surface py-3.5 pl-12 pr-4 text-[15px] outline-none transition placeholder:text-neutral-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15"
             />
           </div>
           <div>
-            <label htmlFor="categoria" className="sr-only">
-              Categoría
+            <label htmlFor="rubro" className="sr-only">
+              Tipo de producto
             </label>
             <select
-              id="categoria"
-              value={categoria}
-              onChange={(e) => setCategoria(e.target.value as Categoria | "")}
+              id="rubro"
+              value={rubro}
+              onChange={(e) => setRubro(e.target.value as Rubro | "")}
               className="w-full rounded-xl border border-border bg-surface px-4 py-3.5 text-[15px] outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15"
             >
-              <option value="">Todas las categorías</option>
-              {categorias.map((c) => (
-                <option key={c.valor} value={c.valor}>
-                  {c.etiqueta}
+              <option value="">Detectar tipo solo</option>
+              {listaRubros.map((r) => (
+                <option key={r} value={r}>
+                  {rubros[r].etiqueta}
                 </option>
               ))}
             </select>
@@ -121,13 +120,13 @@ export function RecomendarCompras() {
 
         <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
           <span className="text-muted">Prueba con:</span>
-          {ejemplos[categoria || "todas"].map((e) => (
+          {(rubro ? rubros[rubro].ejemplos : ejemplosGenerales).map((e) => (
             <button
               key={e}
               type="button"
               onClick={() => {
                 setConsulta(e);
-                buscar(e, categoria);
+                buscar(e, rubro);
               }}
               className="rounded-full bg-brand-100 px-3 py-1 font-semibold text-brand-700 transition-colors hover:bg-brand-300/60"
             >
@@ -135,13 +134,9 @@ export function RecomendarCompras() {
             </button>
           ))}
         </div>
-
-        {relacionadas.length > 0 && (
-          <p className="mt-4 text-sm text-muted">
-            Tiendas relacionadas con <strong className="text-foreground">{categorias.find((c) => c.valor === categoria)?.etiqueta}</strong>:{" "}
-            {relacionadas.join(", ")}.
-          </p>
-        )}
+        <p className="mt-3 text-sm text-muted">
+          Detectamos el tipo de producto y te mostramos solo las tiendas donde se vende: farmacias para medicamentos, supermercados para alimentos, tiendas de tecnología para electrónicos…
+        </p>
       </section>
 
       <div aria-live="polite">
@@ -167,12 +162,36 @@ export function RecomendarCompras() {
               </p>
             )}
 
-            {resultado.ofertas.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-border bg-surface px-6 py-12 text-center">
-                <p className="font-semibold text-foreground">No encontramos “{buscado}”{categoria ? " en las tiendas de esa categoría" : ""}</p>
-                <p className="mt-1 text-sm text-muted">
-                  {categoria ? "Prueba con “Todas las categorías” o con otro nombre más general." : "Prueba con otro nombre o una palabra más general."}
+            {detectado ? (
+              <div className="rounded-xl border border-brand-300 bg-brand-100/60 px-5 py-4 text-sm text-brand-800">
+                <p>
+                  {resultado.automatico ? "Detectamos que " : "Buscando como "}
+                  <strong>“{buscado}”</strong>
+                  {resultado.automatico ? " es de tipo " : " de tipo "}
+                  <strong>{rubros[detectado].etiqueta}</strong>.{" "}
+                  {verOtras ? "Mostrando todas las tiendas." : <>Solo mostramos tiendas donde se vende: {resultado.tiendasDelTipo?.join(", ")}.</>}
                 </p>
+                {ajenas > 0 && (
+                  <button type="button" onClick={() => { setVerOtras((v) => !v); setTienda(null); }} className="mt-2 font-bold underline underline-offset-2 hover:text-brand-700">
+                    {verOtras ? "Volver a solo las tiendas del tipo" : `Ver también otras tiendas (${ajenas})`}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <p className="rounded-xl bg-neutral-100 px-5 py-4 text-sm text-foreground">
+                No reconocimos qué tipo de producto es “<strong>{buscado}</strong>”, así que mostramos todas las tiendas. Para afinar la búsqueda, elige el tipo en la lista de arriba.
+              </p>
+            )}
+
+            {propias.length === 0 && detectado && !verOtras && ajenas > 0 ? (
+              <div className="rounded-2xl border border-dashed border-border bg-surface px-6 py-10 text-center">
+                <p className="font-semibold text-foreground">No encontramos “{buscado}” en {rubros[detectado].etiqueta.toLowerCase()}</p>
+                <p className="mt-1 text-sm text-muted">Hay {ajenas} {ajenas === 1 ? "oferta" : "ofertas"} en otras tiendas. Usa “Ver también otras tiendas” para verlas.</p>
+              </div>
+            ) : todas.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border bg-surface px-6 py-12 text-center">
+                <p className="font-semibold text-foreground">No encontramos “{buscado}”</p>
+                <p className="mt-1 text-sm text-muted">Prueba con otro nombre o una palabra más general.</p>
               </div>
             ) : (
               <>
@@ -184,30 +203,18 @@ export function RecomendarCompras() {
                       <strong>{barata.tienda}</strong>.
                     </p>
                     <p className="text-sm text-brand-800/75">
-                      {resultado.ofertas.length} ofertas · {tiendas.length} {tiendas.length === 1 ? "tienda" : "tiendas"} · actualizado{" "}
-                      {haceCuanto(resultado.actualizado)}
+                      {base.length} ofertas · {tiendas.length} {tiendas.length === 1 ? "tienda" : "tiendas"} · actualizado {haceCuanto(resultado.actualizado)}
                     </p>
                   </div>
                 )}
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por tienda">
-                    <button
-                      type="button"
-                      onClick={() => setTienda(null)}
-                      aria-pressed={tienda === null}
-                      className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${tienda === null ? "bg-brand-800 text-white" : "bg-white text-foreground ring-1 ring-border hover:bg-neutral-50"}`}
-                    >
+                    <button type="button" onClick={() => setTienda(null)} aria-pressed={tienda === null} className={chip(tienda === null)}>
                       Todas
                     </button>
                     {tiendas.map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => setTienda(t === tienda ? null : t)}
-                        aria-pressed={tienda === t}
-                        className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${tienda === t ? "bg-brand-800 text-white" : "bg-white text-foreground ring-1 ring-border hover:bg-neutral-50"}`}
-                      >
+                      <button key={t} type="button" onClick={() => setTienda(t === tienda ? null : t)} aria-pressed={tienda === t} className={chip(tienda === t)}>
                         {t}
                       </button>
                     ))}
@@ -228,6 +235,7 @@ export function RecomendarCompras() {
                 <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {visibles.map((o, i) => {
                     const esMejor = o === barata;
+                    const ajena = detectado && o.relevante === false;
                     return (
                       <li
                         key={`${o.tienda}-${o.titulo}-${i}`}
@@ -251,6 +259,7 @@ export function RecomendarCompras() {
                             <div className="flex flex-wrap items-center gap-2">
                               <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-bold text-foreground">{o.tienda}</span>
                               {esMejor && <span className="rounded-full bg-brand-800 px-2.5 py-0.5 text-xs font-bold text-white">Mejor precio</span>}
+                              {ajena && <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-900">Otro tipo de tienda</span>}
                             </div>
                             <p className="mt-2 line-clamp-2 text-sm font-semibold text-foreground">{o.titulo}</p>
                           </div>
@@ -268,10 +277,7 @@ export function RecomendarCompras() {
                           >
                             {o.enlace ? "Ver en tienda ↗" : `Buscar en ${o.tienda} ↗`}
                           </a>
-                          <Link
-                            href={enlaceRegistrar(o, categoria)}
-                            className="rounded-lg bg-accent/25 px-4 py-2 text-sm font-bold text-amber-900 transition-colors hover:bg-accent/50"
-                          >
+                          <Link href={enlaceRegistrar(o, detectado)} className="rounded-lg bg-accent/25 px-4 py-2 text-sm font-bold text-amber-900 transition-colors hover:bg-accent/50">
                             Registrar gasto
                           </Link>
                         </div>
@@ -291,7 +297,7 @@ export function RecomendarCompras() {
         {!pendiente && !resultado && (
           <div className="rounded-2xl border border-dashed border-border bg-surface px-6 py-12 text-center">
             <p className="font-semibold text-foreground">Escribe un producto y compara precios entre tiendas</p>
-            <p className="mt-1 text-sm text-muted">Elige una categoría para ver solo las tiendas relacionadas con ella.</p>
+            <p className="mt-1 text-sm text-muted">Por ejemplo “acetaminofén” te mostrará farmacias; “audífonos”, tiendas de tecnología.</p>
           </div>
         )}
       </div>

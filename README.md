@@ -45,10 +45,18 @@ Sin las variables de entorno el sitio funciona, pero el login y el registro mues
 
 ## Recomendar compras (comparador de precios)
 
-Busca un producto y muestra su precio en varias tiendas de Colombia (Éxito, Carulla, Jumbo, D1, Alkosto,
-Falabella, Homecenter, Farmatodo, Mercado Libre…). Se puede filtrar por categoría de gasto: cada categoría
-tiene sus tiendas relacionadas (`src/lib/precios/franquicias.ts`). Desde cada oferta se puede abrir la tienda o
-**registrar el gasto** con los datos ya llenos.
+Busca un producto y muestra su precio **solo en las tiendas donde ese tipo de producto se vende**: si buscas
+"acetaminofén" salen farmacias (Farmatodo, Cruz Verde, Locatel, La Rebaja…); "leche", supermercados (Éxito,
+Jumbo, D1…); "audífonos", tiendas de tecnología (Alkosto, Ktronix, Falabella…); "taladro", Homecenter y Easy.
+
+- **Detección del tipo de producto (sin IA):** un diccionario de ~700 productos y marcas en 15 tipos
+  (`src/lib/precios/diccionario.ts`) entiende plurales y errores de escritura ("acetamimofen"). Si no
+  reconoce el producto, muestra todas las tiendas y pide elegir el tipo.
+- **Tiendas por tipo:** se definen en `src/lib/precios/rubros.ts` (qué tiendas vende cada tipo) y
+  `franquicias.ts` (cómo reconocer cada tienda en los resultados). Son fáciles de editar.
+- **Se puede cambiar:** el selector "Tipo de producto" fuerza un tipo, y "Ver también otras tiendas" muestra
+  las ofertas de tiendas que no son del tipo, marcadas como tales.
+- Desde cada oferta se puede abrir la tienda o **registrar el gasto**, con la categoría según el tipo.
 
 **Cómo obtiene los precios (sin inteligencia artificial):** consulta Google Shopping de Colombia a través de
 [SerpApi](https://serpapi.com), que devuelve ofertas de muchas tiendas con un solo llamado. Hay que crear una
