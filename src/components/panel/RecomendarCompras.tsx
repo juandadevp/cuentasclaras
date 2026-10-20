@@ -27,6 +27,12 @@ function enlaceRegistrar(o: Oferta, categoria: string) {
   return `/panel/registrar?${p.toString()}`;
 }
 
+/** Búsqueda en Google Shopping de este producto en esa tienda: sirve cuando la oferta no trae un enlace directo. */
+function enlaceBusqueda(o: Oferta, producto: string) {
+  const p = new URLSearchParams({ tbm: "shop", q: `${producto} ${o.tienda}`, gl: "co", hl: "es" });
+  return `https://www.google.com.co/search?${p.toString()}`;
+}
+
 function haceCuanto(iso: string) {
   const s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
   return s < 60 ? "hace unos segundos" : `hace ${Math.round(s / 60)} min`;
@@ -254,16 +260,14 @@ export function RecomendarCompras() {
                         {o.detalle && <p className="mt-1 text-xs text-muted">{o.detalle}</p>}
 
                         <div className="mt-4 flex flex-wrap gap-2 pt-1">
-                          {o.enlace && (
-                            <a
-                              href={o.enlace}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="rounded-lg bg-brand-800 px-4 py-2 text-sm font-bold text-brand-50 transition-colors hover:bg-brand-700"
-                            >
-                              Ver en tienda ↗
-                            </a>
-                          )}
+                          <a
+                            href={o.enlace ?? enlaceBusqueda(o, buscado)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-lg bg-brand-800 px-4 py-2 text-sm font-bold text-brand-50 transition-colors hover:bg-brand-700"
+                          >
+                            {o.enlace ? "Ver en tienda ↗" : `Buscar en ${o.tienda} ↗`}
+                          </a>
                           <Link
                             href={enlaceRegistrar(o, categoria)}
                             className="rounded-lg bg-accent/25 px-4 py-2 text-sm font-bold text-amber-900 transition-colors hover:bg-accent/50"
