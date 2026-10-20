@@ -14,9 +14,11 @@ interface Props {
   hoy: string;
   /** Si se pasa, el formulario edita ese gasto en lugar de crear uno nuevo. */
   gasto?: Gasto;
+  /** Valores para rellenar un gasto nuevo (p. ej. al venir desde "Recomendar compras"). */
+  valoresIniciales?: Partial<DatosGasto>;
 }
 
-export function FormularioGasto({ hoy, gasto }: Props) {
+export function FormularioGasto({ hoy, gasto, valoresIniciales }: Props) {
   const router = useRouter();
   const vacio: DatosGasto = { descripcion: "", monto: "", categoria: "", fecha: hoy };
   const inicial: DatosGasto = gasto
@@ -26,7 +28,7 @@ export function FormularioGasto({ hoy, gasto }: Props) {
         categoria: gasto.categoria,
         fecha: gasto.fecha,
       }
-    : vacio;
+    : { ...vacio, ...valoresIniciales };
   const [datos, setDatos] = useState<DatosGasto>(inicial);
   const [tocados, setTocados] = useState<Partial<Record<keyof DatosGasto, boolean>>>({});
   const [intentoEnvio, setIntentoEnvio] = useState(false);

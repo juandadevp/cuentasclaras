@@ -9,7 +9,7 @@ import { supabaseConfigurado } from "@/lib/supabase/config";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 import type { Gasto } from "@/types/gasto";
 
-export async function Registrar() {
+export async function Registrar({ prellenado }: { prellenado?: { descripcion?: string; monto?: string; categoria?: string } }) {
   // Siempre dinámico: depende de la sesión y de la fecha de hoy.
   await connection();
   const hoy = hoyIso();
@@ -35,7 +35,7 @@ export async function Registrar() {
       )}
 
       <Tarjeta titulo="Nuevo gasto">
-        <FormularioGasto hoy={hoy} />
+        <FormularioGasto hoy={hoy} valoresIniciales={prellenado} />
       </Tarjeta>
 
       <Tarjeta

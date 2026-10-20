@@ -37,9 +37,33 @@ aplicación con barra lateral y barra superior (separada del sitio público):
 - `/panel/gastos`: tabla completa con buscador, filtro por categoría, navegación por mes, "Mostrar todo",
   editar (`/panel/gastos/[id]/editar`) y eliminar.
 
+- `/panel/recomendar`: **Recomendar compras**, un comparador de precios (ver abajo).
+
 Sin sesión, cualquier ruta de `/panel` lleva a `/login`.
 
 Sin las variables de entorno el sitio funciona, pero el login y el registro muestran un aviso de que falta configurar Supabase.
+
+## Recomendar compras (comparador de precios)
+
+Busca un producto y muestra su precio en varias tiendas de Colombia (Éxito, Carulla, Jumbo, D1, Alkosto,
+Falabella, Homecenter, Farmatodo, Mercado Libre…). Se puede filtrar por categoría de gasto: cada categoría
+tiene sus tiendas relacionadas (`src/lib/precios/franquicias.ts`). Desde cada oferta se puede abrir la tienda o
+**registrar el gasto** con los datos ya llenos.
+
+**Cómo obtiene los precios (sin inteligencia artificial):** consulta Google Shopping de Colombia a través de
+[SerpApi](https://serpapi.com), que devuelve ofertas de muchas tiendas con un solo llamado. Hay que crear una
+cuenta (tiene plan gratuito) y poner la clave en `.env.local`:
+
+```
+SERPAPI_API_KEY=tu_clave
+```
+
+La clave es secreta y solo se usa en el servidor. Sin ella, la pantalla funciona en **modo demostración** con
+precios de ejemplo claramente marcados. Las respuestas se guardan 5 minutos en memoria para ahorrar búsquedas, y
+cada usuario puede hacer una búsqueda cada 1,5 segundos.
+
+> Los precios vienen de un buscador de compras: pueden variar según la ciudad o cambiar en minutos.
+> Siempre deben confirmarse en la tienda.
 
 ## Estructura
 
@@ -52,6 +76,6 @@ src/
 ├── components/     # ui/ (genéricos), layout/ (sitio público), auth/, home/, panel/ (área privada)
 ├── proxy.ts        # Refresca la sesión de Supabase en cada petición
 ├── config/         # Configuración del sitio y categorías
-├── lib/            # Utilidades, validaciones y clientes de Supabase (lib/supabase)
+├── lib/            # Utilidades, validaciones, clientes de Supabase (lib/supabase) y comparador de precios (lib/precios)
 └── types/          # Tipos de TypeScript
 ```
