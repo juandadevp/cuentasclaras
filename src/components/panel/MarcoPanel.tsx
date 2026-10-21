@@ -55,6 +55,11 @@ const secciones: { titulo: string; enlaces: Enlace[] }[] = [
         ),
       },
       {
+        href: "/panel/favoritos",
+        etiqueta: "Favoritos",
+        icono: <path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" />,
+      },
+      {
         href: "/panel/gastos",
         etiqueta: "Mis gastos",
         icono: (
@@ -88,6 +93,7 @@ const nombresRuta: Record<string, string> = {
   panel: "Panel",
   registrar: "Registrar gasto",
   recomendar: "Recomendar compras",
+  favoritos: "Favoritos",
   gastos: "Mis gastos",
   editar: "Editar",
 };

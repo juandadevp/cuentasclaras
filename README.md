@@ -18,8 +18,10 @@ El registro y el inicio de sesión usan **Supabase Auth** (PostgreSQL). Pasos pa
 1. Crea un proyecto en https://supabase.com.
 2. En **SQL Editor** ejecuta, en este orden, los dos scripts de `supabase/migrations/`:
    - `20261017000000_perfiles.sql`: tabla `perfiles` y un trigger que guarda el perfil al registrarse.
-   - `20261017010000_gastos.sql`: tabla `gastos`. Ambas tienen seguridad por filas (RLS): cada usuario
-     solo puede ver y modificar sus propios datos.
+   - `20261017010000_gastos.sql`: tabla `gastos`.
+   - `20261021000000_favoritos.sql`: tabla `favoritos` (la ★ de Recomendar compras).
+
+   Las tres tablas tienen seguridad por filas (RLS): cada usuario solo puede ver y modificar sus propios datos.
 3. Copia `.env.example` como `.env.local` y completa `NEXT_PUBLIC_SUPABASE_URL` y
    `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (**Project Settings → API**). Nunca uses la clave `service_role`.
 4. En **Authentication → URL Configuration** agrega `http://localhost:3000/auth/callback`
@@ -38,6 +40,7 @@ aplicación con barra lateral y barra superior (separada del sitio público):
   editar (`/panel/gastos/[id]/editar`) y eliminar.
 
 - `/panel/recomendar`: **Recomendar compras**, un comparador de precios (ver abajo).
+- `/panel/favoritos`: los productos que cada usuario marcó con la ★; se guardan en su cuenta junto con los precios del momento.
 
 Sin sesión, cualquier ruta de `/panel` lleva a `/login`.
 

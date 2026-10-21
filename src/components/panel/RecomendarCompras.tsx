@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState, useTransition, type FormEvent } from "react";
+import { guardarFavorito, quitarFavorito } from "@/app/panel/favoritos/actions";
 import { buscarPrecios } from "@/app/panel/recomendar/actions";
 import { formatearMoneda } from "@/lib/format";
 import { agruparProductos, type Producto } from "@/lib/precios/agrupar";
@@ -65,7 +66,24 @@ function FilaTienda({ oferta, buscado, rubro, mejor, ajena }: { oferta: Oferta; 
 }
 
 /** Un producto, con su precio "desde" y el precio en cada tienda. */
-function TarjetaProducto({ producto, barata, buscado, rubro, marcarAjenas }: { producto: Producto; barata: Oferta | undefined; buscado: string; rubro: Rubro | null | undefined; marcarAjenas: boolean }) {
+function Estrella({ activa, onClick, titulo }: { activa: boolean; onClick: () => void; titulo: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={activa}
+      aria-label={activa ? `Quitar ${titulo} de favoritos` : `Guardar ${titulo} en favoritos`}
+      title={activa ? "Quitar de favoritos" : "Guardar en favoritos"}
+      className={`grid size-9 shrink-0 place-items-center rounded-full transition-colors ${activa ? "bg-accent/30 text-amber-500 hover:bg-accent/50" : "text-neutral-400 hover:bg-neutral-100 hover:text-amber-500"}`}
+    >
+      <svg viewBox="0 0 24 24" className="size-6" fill={activa ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden>
+        <path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" />
+      </svg>
+    </button>
+  );
+}
+
+function TarjetaProducto({ producto, barata, buscado, rubro, marcarAjenas, favorito, onFavorito }: { producto: Producto; barata: Oferta | undefined; buscado: string; rubro: Rubro | null | undefined; marcarAjenas: boolean; favorito: boolean; onFavorito: () => void }) {
   const [primeras, otras] = [producto.ofertas.slice(0, 3), producto.ofertas.slice(3)];
   const esMejor = barata ? producto.ofertas.includes(barata) : false;
   const fila = (o: Oferta, i: number) => (
@@ -88,10 +106,11 @@ function TarjetaProducto({ producto, barata, buscado, rubro, marcarAjenas }: { p
             </svg>
           </span>
         )}
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           {esMejor && <span className="mb-1.5 inline-block rounded-full bg-brand-800 px-2.5 py-0.5 text-xs font-bold text-white">Mejor precio</span>}
           <p className="line-clamp-3 text-sm font-semibold text-foreground">{producto.titulo}</p>
         </div>
+        <Estrella activa={favorito} onClick={onFavorito} titulo={producto.titulo} />
       </div>
 
       <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted">Desde</p>
@@ -117,8 +136,17 @@ function TarjetaProducto({ producto, barata, buscado, rubro, marcarAjenas }: { p
   );
 }
 
-export function RecomendarCompras() {
-  const [consulta, setConsulta] = useState("");
+interface Props {
+  /** Claves de los productos que el usuario ya tiene en favoritos. */
+  favoritosIniciales?: string[];
+  /** Texto con el que arranca el buscador (p. ej. al venir desde Favoritos). */
+  consultaInicial?: string;
+}
+
+export function RecomendarCompras({ favoritosIniciales = [], consultaInicial = "" }: Props) {
+  const [consulta, setConsulta] = useState(consultaInicial);
+  const [favoritos, setFavoritos] = useState<Set<string>>(() => new Set(favoritosIniciales));
+  const [avisoFavorito, setAvisoFavorito] = useState("");
   const [rubro, setRubro] = useState<Rubro | "">("");
   const [resultado, setResultado] = useState<ResultadoBusqueda | null>(null);
   const [buscado, setBuscado] = useState("");
@@ -136,6 +164,36 @@ export function RecomendarCompras() {
       const r = await buscarPrecios(limpio, tipo);
       setBuscado(limpio);
       setResultado(r);
+    });
+  }
+
+  /** Marca o desmarca un producto como favorito: se ve al instante y se confirma con la base de datos. */
+  function alternarFavorito(p: Producto) {
+    const eraFavorito = favoritos.has(p.clave);
+    const cambiar = (activo: boolean) =>
+      setFavoritos((actual) => {
+        const nuevo = new Set(actual);
+        if (activo) nuevo.add(p.clave);
+        else nuevo.delete(p.clave);
+        return nuevo;
+      });
+
+    cambiar(!eraFavorito);
+    setAvisoFavorito("");
+    iniciarTransicion(async () => {
+      const r = eraFavorito
+        ? await quitarFavorito(p.clave)
+        : await guardarFavorito({
+            clave: p.clave,
+            titulo: p.titulo,
+            imagen: p.imagen,
+            rubro: detectado ?? undefined,
+            ofertas: p.ofertas.map((o) => ({ tienda: o.tienda, precio: o.precio, enlace: o.enlace, detalle: o.detalle })),
+          });
+      if (!r.ok) {
+        cambiar(eraFavorito); // se deshace el cambio si no se pudo guardar
+        setAvisoFavorito(r.mensaje ?? "No pudimos actualizar tus favoritos.");
+      }
     });
   }
 
@@ -250,6 +308,12 @@ export function RecomendarCompras() {
               </p>
             )}
 
+            {avisoFavorito && (
+              <p role="alert" className="rounded-xl bg-rose-50 px-5 py-3 text-sm text-rose-700">
+                {avisoFavorito}
+              </p>
+            )}
+
             {detectado ? (
               <div className="rounded-xl border border-brand-300 bg-brand-100/60 px-5 py-4 text-sm text-brand-800">
                 <p>
@@ -330,12 +394,14 @@ export function RecomendarCompras() {
                       buscado={buscado}
                       rubro={detectado}
                       marcarAjenas={Boolean(detectado)}
+                      favorito={favoritos.has(p.clave)}
+                      onFavorito={() => alternarFavorito(p)}
                     />
                   ))}
                 </ul>
 
                 <p className="text-xs text-muted">
-                  Los precios vienen de los buscadores de compras y pueden cambiar o variar según tu ciudad. Confírmalos en la tienda antes de comprar.
+                  Toca la ★ de un producto para guardarlo en <Link href="/panel/favoritos" className="font-bold text-brand-700 hover:underline">Favoritos</Link>. Los precios vienen de los buscadores de compras y pueden cambiar o variar según tu ciudad. Confírmalos en la tienda antes de comprar.
                 </p>
               </>
             )}
