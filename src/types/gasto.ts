@@ -5,6 +5,11 @@ export type Categoria =
   | "servicios"
   | "ocio"
   | "salud"
+  | "tecnologia"
+  | "ropa"
+  | "educacion"
+  | "mascotas"
+  | "bebes"
   | "otros";
 
 export interface Gasto {
@@ -13,6 +18,8 @@ export interface Gasto {
   monto: number;
   categoria: Categoria;
   fecha: string; // ISO yyyy-mm-dd
+  /** Tienda donde se hizo la compra (opcional). */
+  tienda?: string;
 }
 
 export type NuevoGasto = Omit<Gasto, "id">;

@@ -19,7 +19,7 @@ export function TituloPagina({ titulo, subtitulo, children }: Props) {
   );
 }
 
-export function Tarjeta({ titulo, acciones, children, className = "" }: { titulo?: string; acciones?: ReactNode; children: ReactNode; className?: string }) {
+export function Tarjeta({ titulo, acciones, children, className = "" }: { titulo?: ReactNode; acciones?: ReactNode; children: ReactNode; className?: string }) {
   return (
     <section className={`rounded-2xl border border-border bg-surface p-6 shadow-sm ${className}`}>
       {(titulo || acciones) && (

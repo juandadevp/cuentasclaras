@@ -7,9 +7,10 @@ interface FilaGasto {
   monto: number | string;
   categoria: Categoria;
   fecha: string;
+  tienda?: string | null;
 }
 
-const aGasto = (g: FilaGasto): Gasto => ({ ...g, monto: Number(g.monto) });
+const aGasto = (g: FilaGasto): Gasto => ({ ...g, monto: Number(g.monto), tienda: g.tienda ?? undefined });
 
 type Cliente = Awaited<ReturnType<typeof crearClienteServidor>>;
 
@@ -17,7 +18,7 @@ type Cliente = Awaited<ReturnType<typeof crearClienteServidor>>;
 export async function gastosEntre(supabase: Cliente, inicio: string, fin: string) {
   const { data, error } = await supabase
     .from("gastos")
-    .select("id, descripcion, monto, categoria, fecha")
+    .select("id, descripcion, monto, categoria, fecha, tienda")
     .gte("fecha", inicio)
     .lt("fecha", fin)
     .order("fecha", { ascending: false })
@@ -29,7 +30,7 @@ export async function gastosEntre(supabase: Cliente, inicio: string, fin: string
 export async function ultimosGastos(supabase: Cliente, cantidad = 5) {
   const { data, error } = await supabase
     .from("gastos")
-    .select("id, descripcion, monto, categoria, fecha")
+    .select("id, descripcion, monto, categoria, fecha, tienda")
     .order("fecha", { ascending: false })
     .order("creado_en", { ascending: false })
     .limit(cantidad);
@@ -46,7 +47,7 @@ export interface FiltrosGastos {
 export async function gastosFiltrados(supabase: Cliente, inicio: string, fin: string, filtros: FiltrosGastos) {
   let consulta = supabase
     .from("gastos")
-    .select("id, descripcion, monto, categoria, fecha")
+    .select("id, descripcion, monto, categoria, fecha, tienda")
     .gte("fecha", inicio)
     .lt("fecha", fin);
 
@@ -66,7 +67,7 @@ export async function gastosFiltrados(supabase: Cliente, inicio: string, fin: st
 export async function gastoPorId(supabase: Cliente, id: string) {
   const { data, error } = await supabase
     .from("gastos")
-    .select("id, descripcion, monto, categoria, fecha")
+    .select("id, descripcion, monto, categoria, fecha, tienda")
     .eq("id", id)
     .maybeSingle();
   return { gasto: data ? aGasto(data as FilaGasto) : null, error };

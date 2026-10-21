@@ -8,10 +8,9 @@ import { MenuPerfil } from "@/components/auth/MenuPerfil";
 import { siteConfig } from "@/config/site";
 
 interface Enlace {
-  href?: string;
+  href: string;
   etiqueta: string;
   icono: ReactNode;
-  proximamente?: boolean;
 }
 
 const secciones: { titulo: string; enlaces: Enlace[] }[] = [
@@ -44,6 +43,22 @@ const secciones: { titulo: string; enlaces: Enlace[] }[] = [
         ),
       },
       {
+        href: "/panel/recomendar",
+        etiqueta: "Recomendar compras",
+        icono: (
+          <>
+            <circle cx="9" cy="20" r="1.4" />
+            <circle cx="18" cy="20" r="1.4" />
+            <path d="M2 3h3l2.4 11.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L21 7H6" />
+          </>
+        ),
+      },
+      {
+        href: "/panel/favoritos",
+        etiqueta: "Favoritos",
+        icono: <path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" />,
+      },
+      {
         href: "/panel/gastos",
         etiqueta: "Mis gastos",
         icono: (
@@ -53,19 +68,13 @@ const secciones: { titulo: string; enlaces: Enlace[] }[] = [
           </>
         ),
       },
-    ],
-  },
-  {
-    titulo: "Próximamente",
-    enlaces: [
       {
-        etiqueta: "Presupuesto",
-        proximamente: true,
+        href: "/panel/ahorro",
+        etiqueta: "Mi ahorro",
         icono: (
           <>
-            <circle cx="12" cy="12" r="9" />
-            <circle cx="12" cy="12" r="5" />
-            <circle cx="12" cy="12" r="1" />
+            <path d="M3 17l6-6 4 4 8-8" />
+            <path d="M15 7h6v6" />
           </>
         ),
       },
@@ -76,7 +85,10 @@ const secciones: { titulo: string; enlaces: Enlace[] }[] = [
 const nombresRuta: Record<string, string> = {
   panel: "Panel",
   registrar: "Registrar gasto",
+  recomendar: "Recomendar compras",
+  favoritos: "Favoritos",
   gastos: "Mis gastos",
+  ahorro: "Mi ahorro",
   editar: "Editar",
 };
 
@@ -136,16 +148,6 @@ export function MarcoPanel({ nombre, email, children }: Props) {
               <ul className="space-y-1">
                 {seccion.enlaces.map((e) => {
                   const base = "flex items-center gap-3 rounded-lg border-l-4 px-3 py-2.5 text-[15px] font-medium transition-colors";
-                  if (e.proximamente || !e.href) {
-                    return (
-                      <li key={e.etiqueta}>
-                        <span className={`${base} cursor-not-allowed border-transparent text-neutral-500`}>
-                          <Icono>{e.icono}</Icono>
-                          {e.etiqueta}
-                        </span>
-                      </li>
-                    );
-                  }
                   const activo = esActivo(e.href);
                   return (
                     <li key={e.href}>

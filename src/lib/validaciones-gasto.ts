@@ -6,6 +6,8 @@ export interface DatosGasto {
   monto: string;
   categoria: string;
   fecha: string;
+  /** Tienda donde se compró (opcional). */
+  tienda: string;
 }
 
 export type ErroresGasto = Partial<Record<keyof DatosGasto, string>>;
@@ -45,6 +47,8 @@ export function validarGasto(d: DatosGasto, hoy: string): ErroresGasto {
 
   if (!categorias.some((c) => c.valor === d.categoria)) errores.categoria = "Elige una categoría.";
 
+  if (normalizarDescripcion(d.tienda ?? "").length > 80) errores.tienda = "El nombre de la tienda es muy largo (máximo 80).";
+
   if (!/^\d{4}-\d{2}-\d{2}$/.test(d.fecha) || Number.isNaN(Date.parse(d.fecha))) {
     errores.fecha = "Elige una fecha válida.";
   } else if (d.fecha > hoy) errores.fecha = "La fecha no puede ser futura.";
@@ -54,3 +58,9 @@ export function validarGasto(d: DatosGasto, hoy: string): ErroresGasto {
 }
 
 export const esCategoria = (v: string): v is Categoria => categorias.some((c) => c.valor === v);
+
+/** Tienda opcional: texto limpio o null si está vacía. */
+export function normalizarTienda(valor: string): string | null {
+  const limpio = normalizarDescripcion(valor ?? "").slice(0, 80);
+  return limpio || null;
+}

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { hoyIso } from "@/lib/gastos";
 import { MENSAJE_SIN_CONFIGURAR, supabaseConfigurado } from "@/lib/supabase/config";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
-import { normalizarDescripcion, parsearMonto, validarGasto, type ErroresGasto } from "@/lib/validaciones-gasto";
+import { normalizarDescripcion, normalizarTienda, parsearMonto, validarGasto, type ErroresGasto } from "@/lib/validaciones-gasto";
 
 export interface ResultadoGasto {
   errores?: ErroresGasto;
@@ -14,12 +14,25 @@ export interface ResultadoGasto {
 
 const texto = (f: FormData, campo: string) => String(f.get(campo) ?? "");
 
+/** Traduce los errores de la base de datos a algo que la persona pueda entender. */
+function mensajeDeError(error: { code?: string; message?: string }): string {
+  if (error.code === "42P01" || error.code === "PGRST205") {
+    return "Falta crear la tabla de gastos en Supabase. Ejecuta la migración de gastos.";
+  }
+  // La categoría nueva (p. ej. Tecnología) o el campo tienda necesitan la migración más reciente.
+  if (error.code === "PGRST204" || /gastos_categoria_valida|tienda/.test(error.message ?? "")) {
+    return "Falta actualizar la base de datos. Ejecuta la migración «categorias_y_tienda» en el SQL Editor de Supabase.";
+  }
+  return "No pudimos guardar el gasto. Inténtalo de nuevo.";
+}
+
 export async function crearGasto(formData: FormData): Promise<ResultadoGasto> {
   const datos = {
     descripcion: texto(formData, "descripcion"),
     monto: texto(formData, "monto"),
     categoria: texto(formData, "categoria"),
     fecha: texto(formData, "fecha"),
+    tienda: texto(formData, "tienda"),
   };
 
   // Siempre se vuelve a validar en el servidor.
@@ -38,14 +51,10 @@ export async function crearGasto(formData: FormData): Promise<ResultadoGasto> {
     monto: parsearMonto(datos.monto),
     categoria: datos.categoria,
     fecha: datos.fecha,
+    tienda: normalizarTienda(datos.tienda),
   });
 
-  if (error) {
-    if (error.code === "42P01" || error.code === "PGRST205") {
-      return { mensaje: "Falta crear la tabla de gastos en Supabase. Ejecuta la migración de gastos." };
-    }
-    return { mensaje: "No pudimos guardar el gasto. Inténtalo de nuevo." };
-  }
+  if (error) return { mensaje: mensajeDeError(error) };
 
   revalidatePath("/panel", "layout");
   return { ok: true };
@@ -57,6 +66,7 @@ export async function actualizarGasto(id: string, formData: FormData): Promise<R
     monto: texto(formData, "monto"),
     categoria: texto(formData, "categoria"),
     fecha: texto(formData, "fecha"),
+    tienda: texto(formData, "tienda"),
   };
 
   const errores = validarGasto(datos, hoyIso());
@@ -73,11 +83,12 @@ export async function actualizarGasto(id: string, formData: FormData): Promise<R
       monto: parsearMonto(datos.monto),
       categoria: datos.categoria,
       fecha: datos.fecha,
+      tienda: normalizarTienda(datos.tienda),
     })
     .eq("id", id)
     .select("id");
 
-  if (error) return { mensaje: "No pudimos guardar los cambios. Inténtalo de nuevo." };
+  if (error) return { mensaje: mensajeDeError(error) };
   if (!data || data.length === 0) return { mensaje: "No encontramos ese gasto." };
 
   revalidatePath("/panel", "layout");

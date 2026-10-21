@@ -21,7 +21,7 @@ export function TablaGastos({ gastos, vacio }: Props) {
   }
 
   return (
-    <div className="-mx-2 overflow-x-auto">
+    <div className="relative -mx-2 overflow-x-auto">
       <table className="w-full min-w-[640px] text-left text-sm">
         <thead>
           <tr className="border-b border-border text-xs font-bold uppercase tracking-wide text-muted">
@@ -38,7 +38,10 @@ export function TablaGastos({ gastos, vacio }: Props) {
           {gastos.map((g) => (
             <tr key={g.id} className="transition-colors hover:bg-neutral-50">
               <td className="whitespace-nowrap px-3 py-3.5 text-muted">{formatearFecha(g.fecha)}</td>
-              <td className="px-3 py-3.5 font-semibold text-foreground">{g.descripcion}</td>
+              <td className="px-3 py-3.5">
+                <span className="font-semibold text-foreground">{g.descripcion}</span>
+                {g.tienda && <span className="block text-xs text-muted">en {g.tienda}</span>}
+              </td>
               <td className="px-3 py-3.5">
                 <span className="inline-flex items-center gap-2 text-foreground">
                   <span className="size-2.5 rounded-full" style={{ backgroundColor: coloresCategoria[g.categoria] }} aria-hidden />

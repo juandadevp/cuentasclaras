@@ -26,7 +26,7 @@ async function Edicion({ params }: { params: PageProps<"/panel/gastos/[id]/edita
     <div className="mx-auto max-w-4xl">
       <TituloPagina titulo="Editar gasto" subtitulo="Cambia los datos y guarda." />
       <Tarjeta titulo="Datos del gasto">
-        <FormularioGasto hoy={hoyIso()} gasto={gasto} />
+        <FormularioGasto key={gasto.id} hoy={hoyIso()} gasto={gasto} />
       </Tarjeta>
     </div>
   );
