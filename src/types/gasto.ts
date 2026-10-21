@@ -9,6 +9,7 @@ export type Categoria =
   | "ropa"
   | "educacion"
   | "mascotas"
+  | "bebes"
   | "otros";
 
 export interface Gasto {

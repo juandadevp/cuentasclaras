@@ -58,7 +58,7 @@ export const rubros: Record<Rubro, ConfigRubro> = {
   },
   bebes: {
     etiqueta: "Bebés y maternidad",
-    categoriaGasto: "otros",
+    categoriaGasto: "bebes",
     tiendas: [...farmacias, "exito", "carulla", "jumbo", "olimpica", "d1", "falabella", "alkosto", "mercadoLibre"],
     ejemplos: ["pañales", "fórmula infantil", "biberón", "toallitas húmedas"],
   },

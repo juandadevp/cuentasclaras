@@ -51,6 +51,7 @@ export const coloresCategoria: Record<Categoria, string> = {
   ropa: "#b7791f",
   educacion: "#7a9e7e",
   mascotas: "#d97757",
+  bebes: "#e58fb0",
   otros: "#c4c9cf",
 };
 

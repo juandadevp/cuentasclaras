@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { TablaGastos } from "@/components/panel/TablaGastos";
+import { GastosPorCategoria } from "@/components/panel/GastosPorCategoria";
 import { Tarjeta, TituloPagina } from "@/components/panel/TituloPagina";
 import { categorias } from "@/config/site";
-import { formatearMoneda } from "@/lib/format";
 import { hoyIso, nombreDelMes, rangoDelMes } from "@/lib/gastos";
 import { gastosFiltrados } from "@/lib/gastos-servidor";
 import { supabaseConfigurado } from "@/lib/supabase/config";
@@ -131,12 +130,11 @@ export async function Gastos({ mes: mesParam, q, categoria }: Props) {
         )}
       </Tarjeta>
 
-      <Tarjeta
-        titulo={`${gastos.length} ${gastos.length === 1 ? "gasto" : "gastos"}`}
-        acciones={<p className="text-sm text-muted">Total: <strong className="text-lg text-foreground">{formatearMoneda(totalGastos(gastos))}</strong></p>}
-      >
-        <TablaGastos gastos={gastos} vacio={hayFiltros ? "Ningún gasto coincide con tu búsqueda." : "Registra un gasto y aparecerá aquí."} />
-      </Tarjeta>
+      <GastosPorCategoria
+        gastos={gastos}
+        total={totalGastos(gastos)}
+        vacio={hayFiltros ? "Ningún gasto coincide con tu búsqueda." : "Registra un gasto y aparecerá aquí."}
+      />
     </div>
   );
 }
