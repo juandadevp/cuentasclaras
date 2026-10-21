@@ -8,10 +8,9 @@ import { MenuPerfil } from "@/components/auth/MenuPerfil";
 import { siteConfig } from "@/config/site";
 
 interface Enlace {
-  href?: string;
+  href: string;
   etiqueta: string;
   icono: ReactNode;
-  proximamente?: boolean;
 }
 
 const secciones: { titulo: string; enlaces: Enlace[] }[] = [
@@ -66,22 +65,6 @@ const secciones: { titulo: string; enlaces: Enlace[] }[] = [
           <>
             <path d="M8 6h13M8 12h13M8 18h13" />
             <path d="M3 6h.01M3 12h.01M3 18h.01" />
-          </>
-        ),
-      },
-    ],
-  },
-  {
-    titulo: "Próximamente",
-    enlaces: [
-      {
-        etiqueta: "Presupuesto",
-        proximamente: true,
-        icono: (
-          <>
-            <circle cx="12" cy="12" r="9" />
-            <circle cx="12" cy="12" r="5" />
-            <circle cx="12" cy="12" r="1" />
           </>
         ),
       },
@@ -154,16 +137,6 @@ export function MarcoPanel({ nombre, email, children }: Props) {
               <ul className="space-y-1">
                 {seccion.enlaces.map((e) => {
                   const base = "flex items-center gap-3 rounded-lg border-l-4 px-3 py-2.5 text-[15px] font-medium transition-colors";
-                  if (e.proximamente || !e.href) {
-                    return (
-                      <li key={e.etiqueta}>
-                        <span className={`${base} cursor-not-allowed border-transparent text-neutral-500`}>
-                          <Icono>{e.icono}</Icono>
-                          {e.etiqueta}
-                        </span>
-                      </li>
-                    );
-                  }
                   const activo = esActivo(e.href);
                   return (
                     <li key={e.href}>
