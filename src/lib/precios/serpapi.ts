@@ -3,6 +3,7 @@ import { parsearPrecio } from "./parsear-precio";
 
 interface ResultadoGoogle {
   title?: string;
+  product_id?: string | number;
   source?: string;
   price?: string;
   extracted_price?: number;
@@ -68,7 +69,7 @@ export async function consultarSerpApi(consulta: string, clave: string): Promise
   for (const r of datos.shopping_results ?? []) {
     const precio = parsearPrecio(r.price) ?? null;
     if (!r.title || !r.source || precio === null) continue;
-    const clave = `${r.source}|${r.title}|${precio}`;
+    const clave = `${r.source}|${r.title}|${precio}|${r.product_id ?? ""}`;
     if (vistos.has(clave)) continue;
     vistos.add(clave);
 
@@ -77,6 +78,7 @@ export async function consultarSerpApi(consulta: string, clave: string): Promise
       titulo: r.title,
       tienda: r.source,
       precio,
+      idProducto: r.product_id !== undefined ? String(r.product_id) : undefined,
       enlace: soloHttps(r.link) ?? soloHttps(r.product_link),
       imagen: soloHttps(r.thumbnail),
       detalle: partes.length ? partes.join(" · ") : undefined,

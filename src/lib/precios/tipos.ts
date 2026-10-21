@@ -13,6 +13,8 @@ export interface Oferta {
   detalle?: string;
   /** true si la tienda vende este tipo de producto (p. ej. una farmacia para un medicamento). */
   relevante?: boolean;
+  /** Identificador del producto en el buscador: ofertas con el mismo id son el mismo producto en distintas tiendas. */
+  idProducto?: string;
 }
 
 export interface ResultadoBusqueda {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useTransition, type FormEvent } from "react";
 import { buscarPrecios } from "@/app/panel/recomendar/actions";
 import { formatearMoneda } from "@/lib/format";
+import { agruparProductos, type Producto } from "@/lib/precios/agrupar";
 import { listaRubros, rubros, type Rubro } from "@/lib/precios/rubros";
 import type { Oferta, ResultadoBusqueda } from "@/lib/precios/tipos";
 
@@ -29,6 +30,92 @@ function haceCuanto(iso: string) {
 
 const chip = (activo: boolean) =>
   `rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${activo ? "bg-brand-800 text-white" : "bg-white text-foreground ring-1 ring-border hover:bg-neutral-50"}`;
+
+function FilaTienda({ oferta, buscado, rubro, mejor, ajena }: { oferta: Oferta; buscado: string; rubro: Rubro | null | undefined; mejor: boolean; ajena: boolean }) {
+  return (
+    <li className="flex items-center gap-3 py-2.5">
+      <div className="min-w-0 flex-1">
+        <p className="flex flex-wrap items-center gap-1.5 text-sm font-semibold text-foreground">
+          {oferta.tienda}
+          {ajena && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-900">Otro tipo de tienda</span>}
+        </p>
+        {oferta.detalle && <p className="truncate text-xs text-muted">{oferta.detalle}</p>}
+      </div>
+      <p className={`shrink-0 text-base font-extrabold ${mejor ? "text-brand-700" : "text-foreground"}`}>{formatearMoneda(oferta.precio)}</p>
+      <a
+        href={oferta.enlace ?? enlaceBusqueda(oferta, buscado)}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={oferta.enlace ? `Ver en ${oferta.tienda}` : `Buscar en ${oferta.tienda}`}
+        title={oferta.enlace ? "Ver en tienda" : "Buscar en la tienda"}
+        className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand-800 text-brand-50 transition-colors hover:bg-brand-700"
+      >
+        <span aria-hidden>↗</span>
+      </a>
+      <Link
+        href={enlaceRegistrar(oferta, rubro)}
+        aria-label={`Registrar gasto de ${formatearMoneda(oferta.precio)}`}
+        title="Registrar como gasto"
+        className="grid size-8 shrink-0 place-items-center rounded-lg bg-accent/25 text-base font-bold text-amber-900 transition-colors hover:bg-accent/50"
+      >
+        +
+      </Link>
+    </li>
+  );
+}
+
+/** Un producto, con su precio "desde" y el precio en cada tienda. */
+function TarjetaProducto({ producto, barata, buscado, rubro, marcarAjenas }: { producto: Producto; barata: Oferta | undefined; buscado: string; rubro: Rubro | null | undefined; marcarAjenas: boolean }) {
+  const [primeras, otras] = [producto.ofertas.slice(0, 3), producto.ofertas.slice(3)];
+  const esMejor = barata ? producto.ofertas.includes(barata) : false;
+  const fila = (o: Oferta, i: number) => (
+    <FilaTienda key={`${o.tienda}-${i}`} oferta={o} buscado={buscado} rubro={rubro} mejor={o.precio === producto.minimo} ajena={marcarAjenas && o.relevante === false} />
+  );
+
+  return (
+    <li className={`flex flex-col rounded-2xl border bg-surface p-5 shadow-sm ${esMejor ? "border-brand-500 ring-2 ring-brand-500/20" : "border-border"}`}>
+      <div className="flex items-start gap-4">
+        {producto.imagen ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={producto.imagen} alt="" loading="lazy" referrerPolicy="no-referrer" className="size-20 shrink-0 rounded-lg bg-white object-contain" />
+        ) : (
+          <span className="grid size-20 shrink-0 place-items-center rounded-lg bg-neutral-100 text-neutral-400" aria-hidden>
+            <svg viewBox="0 0 24 24" className="size-8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 7h15l-1.5 8h-12z" />
+              <path d="M6 7 5 3H2" />
+              <circle cx="9" cy="19" r="1.5" />
+              <circle cx="18" cy="19" r="1.5" />
+            </svg>
+          </span>
+        )}
+        <div className="min-w-0">
+          {esMejor && <span className="mb-1.5 inline-block rounded-full bg-brand-800 px-2.5 py-0.5 text-xs font-bold text-white">Mejor precio</span>}
+          <p className="line-clamp-3 text-sm font-semibold text-foreground">{producto.titulo}</p>
+        </div>
+      </div>
+
+      <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted">Desde</p>
+      <p className="text-2xl font-extrabold tracking-tight text-foreground">
+        {formatearMoneda(producto.minimo)}
+        {producto.maximo > producto.minimo && <span className="ml-2 text-sm font-semibold text-muted">hasta {formatearMoneda(producto.maximo)}</span>}
+      </p>
+      <p className="text-xs text-muted">
+        en {producto.ofertas.length} {producto.ofertas.length === 1 ? "tienda" : "tiendas"}
+      </p>
+
+      <ul className="mt-3 divide-y divide-border border-t border-border">{primeras.map(fila)}</ul>
+      {otras.length > 0 && (
+        <details className="group border-t border-border">
+          <summary className="cursor-pointer list-none py-2.5 text-sm font-bold text-brand-700 hover:underline">
+            <span className="group-open:hidden">Ver las otras {otras.length} {otras.length === 1 ? "tienda" : "tiendas"}</span>
+            <span className="hidden group-open:inline">Ocultar</span>
+          </summary>
+          <ul className="divide-y divide-border">{otras.map((o, i) => fila(o, i + 3))}</ul>
+        </details>
+      )}
+    </li>
+  );
+}
 
 export function RecomendarCompras() {
   const [consulta, setConsulta] = useState("");
@@ -64,9 +151,10 @@ export function RecomendarCompras() {
   const base = verOtras || !detectado ? todas : propias;
 
   const tiendas = useMemo(() => [...new Set(base.map((o) => o.tienda))], [base]);
-  const visibles = useMemo(() => {
-    const lista = base.filter((o) => !tienda || o.tienda === tienda);
-    return [...lista].sort((a, b) => (orden === "asc" ? a.precio - b.precio : b.precio - a.precio));
+  const productos = useMemo(() => {
+    const ofertasVisibles = base.filter((o) => !tienda || o.tienda === tienda);
+    const lista = agruparProductos(ofertasVisibles);
+    return lista.sort((a, b) => (orden === "asc" ? a.minimo - b.minimo : b.minimo - a.minimo));
   }, [base, tienda, orden]);
   const barata = useMemo(() => base.reduce<Oferta | undefined>((m, o) => (!m || o.precio < m.precio ? o : m), undefined), [base]);
 
@@ -198,12 +286,13 @@ export function RecomendarCompras() {
                 {barata && (
                   <div className="flex flex-col gap-2 rounded-2xl bg-menta px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-brand-800">
-                      El precio más bajo de “{buscado}” es{" "}
+                      El precio más bajo para “{buscado}” es{" "}
                       <strong className="text-2xl font-extrabold text-foreground">{formatearMoneda(barata.precio)}</strong> en{" "}
-                      <strong>{barata.tienda}</strong>.
+                      <strong>{barata.tienda}</strong>
+                      <span className="text-brand-800/80"> ({barata.titulo})</span>.
                     </p>
                     <p className="text-sm text-brand-800/75">
-                      {base.length} ofertas · {tiendas.length} {tiendas.length === 1 ? "tienda" : "tiendas"} · actualizado {haceCuanto(resultado.actualizado)}
+                      {productos.length} {productos.length === 1 ? "producto" : "productos"} · {tiendas.length} {tiendas.length === 1 ? "tienda" : "tiendas"} · actualizado {haceCuanto(resultado.actualizado)}
                     </p>
                   </div>
                 )}
@@ -233,57 +322,16 @@ export function RecomendarCompras() {
                 </div>
 
                 <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {visibles.map((o, i) => {
-                    const esMejor = o === barata;
-                    const ajena = detectado && o.relevante === false;
-                    return (
-                      <li
-                        key={`${o.tienda}-${o.titulo}-${i}`}
-                        className={`flex flex-col rounded-2xl border bg-surface p-5 shadow-sm ${esMejor ? "border-brand-500 ring-2 ring-brand-500/20" : "border-border"}`}
-                      >
-                        <div className="flex items-start gap-4">
-                          {o.imagen ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={o.imagen} alt="" loading="lazy" referrerPolicy="no-referrer" className="size-20 shrink-0 rounded-lg bg-white object-contain" />
-                          ) : (
-                            <span className="grid size-20 shrink-0 place-items-center rounded-lg bg-neutral-100 text-neutral-400" aria-hidden>
-                              <svg viewBox="0 0 24 24" className="size-8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M6 7h15l-1.5 8h-12z" />
-                                <path d="M6 7 5 3H2" />
-                                <circle cx="9" cy="19" r="1.5" />
-                                <circle cx="18" cy="19" r="1.5" />
-                              </svg>
-                            </span>
-                          )}
-                          <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-bold text-foreground">{o.tienda}</span>
-                              {esMejor && <span className="rounded-full bg-brand-800 px-2.5 py-0.5 text-xs font-bold text-white">Mejor precio</span>}
-                              {ajena && <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-900">Otro tipo de tienda</span>}
-                            </div>
-                            <p className="mt-2 line-clamp-2 text-sm font-semibold text-foreground">{o.titulo}</p>
-                          </div>
-                        </div>
-
-                        <p className="mt-4 text-2xl font-extrabold tracking-tight text-foreground">{formatearMoneda(o.precio)}</p>
-                        {o.detalle && <p className="mt-1 text-xs text-muted">{o.detalle}</p>}
-
-                        <div className="mt-4 flex flex-wrap gap-2 pt-1">
-                          <a
-                            href={o.enlace ?? enlaceBusqueda(o, buscado)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-lg bg-brand-800 px-4 py-2 text-sm font-bold text-brand-50 transition-colors hover:bg-brand-700"
-                          >
-                            {o.enlace ? "Ver en tienda ↗" : `Buscar en ${o.tienda} ↗`}
-                          </a>
-                          <Link href={enlaceRegistrar(o, detectado)} className="rounded-lg bg-accent/25 px-4 py-2 text-sm font-bold text-amber-900 transition-colors hover:bg-accent/50">
-                            Registrar gasto
-                          </Link>
-                        </div>
-                      </li>
-                    );
-                  })}
+                  {productos.map((p) => (
+                    <TarjetaProducto
+                      key={p.clave}
+                      producto={p}
+                      barata={barata}
+                      buscado={buscado}
+                      rubro={detectado}
+                      marcarAjenas={Boolean(detectado)}
+                    />
+                  ))}
                 </ul>
 
                 <p className="text-xs text-muted">

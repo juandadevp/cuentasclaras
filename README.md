@@ -56,7 +56,10 @@ Jumbo, D1…); "audífonos", tiendas de tecnología (Alkosto, Ktronix, Falabella
   `franquicias.ts` (cómo reconocer cada tienda en los resultados). Son fáciles de editar.
 - **Se puede cambiar:** el selector "Tipo de producto" fuerza un tipo, y "Ver también otras tiendas" muestra
   las ofertas de tiendas que no son del tipo, marcadas como tales.
-- Desde cada oferta se puede abrir la tienda o **registrar el gasto**, con la categoría según el tipo.
+- **Un producto por tarjeta**, como en Google Shopping: cada producto (marca y presentación) muestra su precio
+  "desde" y el precio en cada tienda, de la más barata a la más cara. Las ofertas del mismo producto se juntan
+  por el identificador del buscador (o por título idéntico) en `src/lib/precios/agrupar.ts`.
+- Desde cada tienda se puede abrir la oferta o **registrar el gasto**, con la categoría según el tipo.
 
 **Cómo obtiene los precios (sin inteligencia artificial):** consulta Google Shopping de Colombia a través de
 [SerpApi](https://serpapi.com), que devuelve ofertas de muchas tiendas con un solo llamado. Hay que crear una
