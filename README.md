@@ -20,6 +20,8 @@ El registro y el inicio de sesión usan **Supabase Auth** (PostgreSQL). Pasos pa
    - `20261017000000_perfiles.sql`: tabla `perfiles` y un trigger que guarda el perfil al registrarse.
    - `20261017010000_gastos.sql`: tabla `gastos`.
    - `20261021000000_favoritos.sql`: tabla `favoritos` (la ★ de Recomendar compras).
+   - `20261022000000_categorias_y_tienda.sql`: categorías nuevas (Tecnología, Ropa y calzado, Educación y
+     papelería, Mascotas) y el campo opcional `tienda` de los gastos.
 
    Las tres tablas tienen seguridad por filas (RLS): cada usuario solo puede ver y modificar sus propios datos.
 3. Copia `.env.example` como `.env.local` y completa `NEXT_PUBLIC_SUPABASE_URL` y
@@ -62,7 +64,9 @@ Jumbo, D1…); "audífonos", tiendas de tecnología (Alkosto, Ktronix, Falabella
 - **Un producto por tarjeta**, como en Google Shopping: cada producto (marca y presentación) muestra su precio
   "desde" y el precio en cada tienda, de la más barata a la más cara. Las ofertas del mismo producto se juntan
   por el identificador del buscador (o por título idéntico) en `src/lib/precios/agrupar.ts`.
-- Desde cada tienda se puede abrir la oferta o **registrar el gasto**, con la categoría según el tipo.
+- Desde cada tienda se puede abrir la oferta o **registrar el gasto**: se abre el formulario con un **resumen de
+  la compra** (producto, precio, tienda, tipo y categoría) y todo ya llenado. La categoría del gasto se elige sola
+  según el tipo de producto (un celular → Tecnología, un medicamento → Salud) y se puede cambiar.
 
 **Cómo obtiene los precios (sin inteligencia artificial):** consulta Google Shopping de Colombia a través de
 [SerpApi](https://serpapi.com), que devuelve ofertas de muchas tiendas con un solo llamado. Hay que crear una

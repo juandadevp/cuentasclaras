@@ -11,10 +11,18 @@ import type { Oferta, ResultadoBusqueda } from "@/lib/precios/tipos";
 
 const ejemplosGenerales = ["acetaminofén", "leche", "audífonos", "detergente", "taladro", "pañales"];
 
-/** Convierte una oferta en un enlace al formulario de gastos con los datos ya llenos. */
-function enlaceRegistrar(o: Oferta, rubro: Rubro | null | undefined) {
-  const p = new URLSearchParams({ descripcion: o.titulo.slice(0, 80), monto: String(o.precio) });
-  if (rubro) p.set("categoria", rubros[rubro].categoriaGasto);
+/**
+ * Enlace al formulario de gastos con todos los datos de la compra: producto, precio, tienda, enlace, foto y tipo.
+ * La categoría del gasto se elige sola según el tipo de producto (tecnología → Tecnología).
+ */
+function enlaceRegistrar(o: Oferta, rubro: Rubro | null | undefined, imagen?: string) {
+  const p = new URLSearchParams({ origen: "recomendar", descripcion: o.titulo.slice(0, 80), monto: String(o.precio), tienda: o.tienda });
+  if (rubro) {
+    p.set("categoria", rubros[rubro].categoriaGasto);
+    p.set("tipo", rubro);
+  }
+  if (o.enlace) p.set("enlace", o.enlace);
+  if (imagen) p.set("imagen", imagen);
   return `/panel/registrar?${p.toString()}`;
 }
 
@@ -32,7 +40,7 @@ function haceCuanto(iso: string) {
 const chip = (activo: boolean) =>
   `rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${activo ? "bg-brand-800 text-white" : "bg-white text-foreground ring-1 ring-border hover:bg-neutral-50"}`;
 
-function FilaTienda({ oferta, buscado, rubro, mejor, ajena }: { oferta: Oferta; buscado: string; rubro: Rubro | null | undefined; mejor: boolean; ajena: boolean }) {
+function FilaTienda({ oferta, buscado, rubro, mejor, ajena, imagen }: { oferta: Oferta; buscado: string; rubro: Rubro | null | undefined; mejor: boolean; ajena: boolean; imagen?: string }) {
   return (
     <li className="flex items-center gap-3 py-2.5">
       <div className="min-w-0 flex-1">
@@ -54,7 +62,7 @@ function FilaTienda({ oferta, buscado, rubro, mejor, ajena }: { oferta: Oferta; 
         <span aria-hidden>↗</span>
       </a>
       <Link
-        href={enlaceRegistrar(oferta, rubro)}
+        href={enlaceRegistrar(oferta, rubro, imagen)}
         aria-label={`Registrar gasto de ${formatearMoneda(oferta.precio)}`}
         title="Registrar como gasto"
         className="grid size-8 shrink-0 place-items-center rounded-lg bg-accent/25 text-base font-bold text-amber-900 transition-colors hover:bg-accent/50"
@@ -87,7 +95,7 @@ function TarjetaProducto({ producto, barata, buscado, rubro, marcarAjenas, favor
   const [primeras, otras] = [producto.ofertas.slice(0, 3), producto.ofertas.slice(3)];
   const esMejor = barata ? producto.ofertas.includes(barata) : false;
   const fila = (o: Oferta, i: number) => (
-    <FilaTienda key={`${o.tienda}-${i}`} oferta={o} buscado={buscado} rubro={rubro} mejor={o.precio === producto.minimo} ajena={marcarAjenas && o.relevante === false} />
+    <FilaTienda key={`${o.tienda}-${i}`} oferta={o} buscado={buscado} rubro={rubro} imagen={producto.imagen} mejor={o.precio === producto.minimo} ajena={marcarAjenas && o.relevante === false} />
   );
 
   return (

@@ -8,7 +8,7 @@ import { Campo } from "@/components/ui/Campo";
 import { formatearMontoEscrito, validarGasto, type DatosGasto } from "@/lib/validaciones-gasto";
 import type { Gasto } from "@/types/gasto";
 
-const campos: (keyof DatosGasto)[] = ["descripcion", "monto", "categoria", "fecha"];
+const campos: (keyof DatosGasto)[] = ["descripcion", "monto", "categoria", "fecha", "tienda"];
 
 interface Props {
   hoy: string;
@@ -16,17 +16,20 @@ interface Props {
   gasto?: Gasto;
   /** Valores para rellenar un gasto nuevo (p. ej. al venir desde "Recomendar compras"). */
   valoresIniciales?: Partial<DatosGasto>;
+  /** true si la categoría inicial se eligió sola según el tipo de producto. */
+  categoriaAutomatica?: boolean;
 }
 
-export function FormularioGasto({ hoy, gasto, valoresIniciales }: Props) {
+export function FormularioGasto({ hoy, gasto, valoresIniciales, categoriaAutomatica }: Props) {
   const router = useRouter();
-  const vacio: DatosGasto = { descripcion: "", monto: "", categoria: "", fecha: hoy };
+  const vacio: DatosGasto = { descripcion: "", monto: "", categoria: "", fecha: hoy, tienda: "" };
   const inicial: DatosGasto = gasto
     ? {
         descripcion: gasto.descripcion,
         monto: formatearMontoEscrito(String(Math.round(gasto.monto))),
         categoria: gasto.categoria,
         fecha: gasto.fecha,
+        tienda: gasto.tienda ?? "",
       }
     : { ...vacio, ...valoresIniciales };
   const [datos, setDatos] = useState<DatosGasto>(inicial);
@@ -144,7 +147,21 @@ export function FormularioGasto({ hoy, gasto, valoresIniciales }: Props) {
             {error("categoria")}
           </p>
         )}
+        {categoriaAutomatica && !gasto && datos.categoria && datos.categoria === valoresIniciales?.categoria && (
+          <p className="mt-1.5 text-sm text-brand-700">✓ Elegida automáticamente según el tipo de producto. Puedes cambiarla.</p>
+        )}
       </div>
+
+      <Campo
+        etiqueta="Tienda (opcional)"
+        name="tienda"
+        placeholder="Ej. Alkosto"
+        maxLength={80}
+        value={datos.tienda}
+        onChange={cambiar}
+        onBlur={salir}
+        error={error("tienda")}
+      />
 
       {resultado.mensaje && (
         <p role="alert" className="rounded-[10px] bg-rose-50 px-4 py-3 text-sm text-rose-700">

@@ -47,6 +47,10 @@ export const coloresCategoria: Record<Categoria, string> = {
   servicios: "#8fd3a5",
   ocio: "#f2b84b",
   salud: "#6b7280",
+  tecnologia: "#1f8a8a",
+  ropa: "#b7791f",
+  educacion: "#7a9e7e",
+  mascotas: "#d97757",
   otros: "#c4c9cf",
 };
 

@@ -24,7 +24,11 @@ export const categorias: { valor: Categoria; etiqueta: string }[] = [
   { valor: "alimentacion", etiqueta: "Alimentación" },
   { valor: "transporte", etiqueta: "Transporte" },
   { valor: "servicios", etiqueta: "Servicios" },
-  { valor: "ocio", etiqueta: "Ocio" },
   { valor: "salud", etiqueta: "Salud" },
+  { valor: "tecnologia", etiqueta: "Tecnología" },
+  { valor: "ropa", etiqueta: "Ropa y calzado" },
+  { valor: "educacion", etiqueta: "Educación y papelería" },
+  { valor: "mascotas", etiqueta: "Mascotas" },
+  { valor: "ocio", etiqueta: "Ocio" },
   { valor: "otros", etiqueta: "Otros" },
 ];

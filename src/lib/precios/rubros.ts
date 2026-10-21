@@ -64,7 +64,7 @@ export const rubros: Record<Rubro, ConfigRubro> = {
   },
   tecnologia: {
     etiqueta: "Tecnología y electrónica",
-    categoriaGasto: "otros",
+    categoriaGasto: "tecnologia",
     tiendas: ["alkosto", "ktronix", "falabella", "exito", "jumbo", "mercadoLibre", "amazon", "samsung", "claro", "movistar", "tigo"],
     ejemplos: ["celular", "audífonos", "portátil", "televisor"],
   },
@@ -94,13 +94,13 @@ export const rubros: Record<Rubro, ConfigRubro> = {
   },
   libros_papeleria: {
     etiqueta: "Libros y papelería",
-    categoriaGasto: "ocio",
+    categoriaGasto: "educacion",
     tiendas: ["panamericana", "falabella", "mercadoLibre", "amazon", "exito", "alkosto"],
     ejemplos: ["libro", "cuaderno", "resma de papel", "calculadora"],
   },
   moda: {
     etiqueta: "Ropa y calzado",
-    categoriaGasto: "otros",
+    categoriaGasto: "ropa",
     tiendas: ["falabella", "exito", "decathlon", "mercadoLibre", "arturoCalle", "studioF", "hm", "zara", "amazon"],
     ejemplos: ["tenis", "camiseta", "jean", "chaqueta"],
   },
@@ -112,7 +112,7 @@ export const rubros: Record<Rubro, ConfigRubro> = {
   },
   mascotas: {
     etiqueta: "Mascotas",
-    categoriaGasto: "otros",
+    categoriaGasto: "mascotas",
     tiendas: ["exito", "jumbo", "carulla", "olimpica", "alkosto", "mercadoLibre", "falabella"],
     ejemplos: ["concentrado para perro", "arena para gato", "collar", "pecera"],
   },
