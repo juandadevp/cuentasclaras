@@ -16,7 +16,7 @@ async function ConFavoritos({ searchParams }: { searchParams: PageProps<"/panel/
   let favoritos: string[] = [];
   if (supabaseConfigurado()) favoritos = await clavesFavoritas(await crearClienteServidor());
   const consultaInicial = typeof q === "string" ? q.replace(/\s+/g, " ").trim().slice(0, 80) : "";
-  return <RecomendarCompras favoritosIniciales={favoritos} consultaInicial={consultaInicial} />;
+  return <RecomendarCompras key={consultaInicial} favoritosIniciales={favoritos} consultaInicial={consultaInicial} />;
 }
 
 export default function RecomendarPage(props: PageProps<"/panel/recomendar">) {

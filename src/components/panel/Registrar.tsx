@@ -108,7 +108,10 @@ export async function Registrar({
       )}
 
       <Tarjeta titulo={compra ? "Confirma y registra el gasto" : "Nuevo gasto"}>
-        <FormularioGasto hoy={hoy} valoresIniciales={prellenado} categoriaAutomatica={Boolean(compra?.tipo)} />
+        <FormularioGasto
+          key={JSON.stringify(prellenado) + (compra?.producto ?? "")}
+          hoy={hoy}
+          valoresIniciales={prellenado} categoriaAutomatica={Boolean(compra?.tipo)} />
       </Tarjeta>
 
       <Tarjeta

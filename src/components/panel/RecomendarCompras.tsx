@@ -154,6 +154,12 @@ interface Props {
 export function RecomendarCompras({ favoritosIniciales = [], consultaInicial = "" }: Props) {
   const [consulta, setConsulta] = useState(consultaInicial);
   const [favoritos, setFavoritos] = useState<Set<string>>(() => new Set(favoritosIniciales));
+  const firmaFavoritos = favoritosIniciales.join("|");
+  const [firmaPrevia, setFirmaPrevia] = useState(firmaFavoritos);
+  if (firmaPrevia !== firmaFavoritos) {
+    setFirmaPrevia(firmaFavoritos);
+    setFavoritos(new Set(favoritosIniciales));
+  }
   const [avisoFavorito, setAvisoFavorito] = useState("");
   const [rubro, setRubro] = useState<Rubro | "">("");
   const [resultado, setResultado] = useState<ResultadoBusqueda | null>(null);
