@@ -53,11 +53,7 @@ export default function ContactoPage() {
         <div aria-hidden className="absolute -right-24 -top-24 size-80 rounded-full bg-white/30" />
         <div aria-hidden className="absolute -bottom-32 right-40 size-72 rounded-full bg-brand-500/10" />
         <div className="relative mx-auto max-w-5xl">
-          <p className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-brand-700">
-            <span className="size-1.5 rounded-full bg-brand-500" aria-hidden />
-            Hablemos
-          </p>
-          <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-brand-800 sm:text-5xl">Contacto</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight text-brand-800 sm:text-5xl">Contacto</h1>
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-brand-800/75">
             ¿Dudas, sugerencias o algún problema con la app? Escríbenos y te respondemos lo antes posible.
           </p>
