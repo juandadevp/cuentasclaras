@@ -60,15 +60,15 @@ export default function ContactoPage() {
         </div>
       </section>
 
-      <section className="bg-neutral-50 px-6 pb-20 lg:px-20">
-        <div className="relative mx-auto -mt-8 grid max-w-5xl gap-8 lg:grid-cols-[1.5fr_1fr]">
+      <section className="bg-neutral-50 px-6 py-14 lg:px-20">
+        <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.5fr_1fr]">
           <div className="rounded-2xl border border-border bg-surface p-6 shadow-lg shadow-black/5 sm:p-9">
             <h2 className="text-xl font-bold text-foreground">Envíanos un mensaje</h2>
             <p className="mb-7 mt-1 text-sm text-muted">Completa el formulario y te escribiremos al correo que indiques.</p>
             <FormularioContacto />
           </div>
 
-          <aside className="space-y-6 lg:pt-8">
+          <aside className="space-y-6">
             <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
               <h2 className="font-bold text-foreground">¿En qué podemos ayudarte?</h2>
               <ul className="mt-5 space-y-5">
