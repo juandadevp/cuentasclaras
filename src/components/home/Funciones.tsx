@@ -5,19 +5,19 @@ const funciones: { numero: string; titulo: string; texto: string; imagen: { src:
     numero: "01",
     titulo: "Registro rápido",
     texto: "Anota un gasto en menos de 5 segundos desde el celular o el computador.",
-    imagen: { src: "/funciones/registro.png", ancho: 863, alto: 777, alt: "Pantalla para registrar un gasto" },
+    imagen: { src: "/funciones/registro-recorte.png", ancho: 808, alto: 456, alt: "Pantalla para registrar un gasto" },
   },
   {
     numero: "02",
     titulo: "Gráficos y reportes",
     texto: "Visualiza por categoría y compara mes a mes para detectar fugas de dinero.",
-    imagen: { src: "/funciones/graficos.png", ancho: 1184, alto: 312, alt: "Gráficos de gastos por categoría y por mes" },
+    imagen: { src: "/funciones/graficos-recorte.png", ancho: 568, alto: 582, alt: "Gráficos de gastos por categoría y por mes" },
   },
   {
     numero: "03",
     titulo: "Ahorro y consejos con IA",
     texto: "Mira cuánto ahorras cada mes y recibe recomendaciones para gastar mejor.",
-    imagen: { src: "/funciones/ahorro.png", ancho: 1231, alto: 479, alt: "Pantalla Mi ahorro con consejos de inteligencia artificial" },
+    imagen: { src: "/funciones/ahorro-recorte.png", ancho: 568, alto: 342, alt: "Pantalla Mi ahorro con consejos de inteligencia artificial" },
   },
 ];
 
@@ -36,13 +36,13 @@ export function Funciones() {
               key={f.titulo}
               className="group overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition-shadow hover:shadow-lg"
             >
-              <div className="flex h-56 items-center justify-center bg-menta p-5">
+              <div className="flex h-64 items-center justify-center bg-menta p-4">
                 <Image
                   src={f.imagen.src}
                   alt={f.imagen.alt}
                   width={f.imagen.ancho}
                   height={f.imagen.alto}
-                  sizes="(min-width: 768px) 30vw, 90vw"
+                  unoptimized
                   className="max-h-full w-auto max-w-full rounded-xl object-contain shadow-md ring-1 ring-black/5 transition-transform duration-300 group-hover:scale-[1.03]"
                 />
               </div>
