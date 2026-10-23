@@ -1,45 +1,23 @@
-import type { ReactNode } from "react";
+import Image from "next/image";
 
-function Icono({ children }: { children: ReactNode }) {
-  return (
-    <svg viewBox="0 0 24 24" className="size-12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      {children}
-    </svg>
-  );
-}
-
-const funciones: { numero: string; titulo: string; texto: string; icono: ReactNode }[] = [
+const funciones: { numero: string; titulo: string; texto: string; imagen: { src: string; ancho: number; alto: number; alt: string } }[] = [
   {
     numero: "01",
     titulo: "Registro rápido",
     texto: "Anota un gasto en menos de 5 segundos desde el celular o el computador.",
-    icono: (
-      <Icono>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 8v8M8 12h8" />
-      </Icono>
-    ),
+    imagen: { src: "/funciones/registro.png", ancho: 863, alto: 777, alt: "Pantalla para registrar un gasto" },
   },
   {
     numero: "02",
     titulo: "Gráficos y reportes",
     texto: "Visualiza por categoría y compara mes a mes para detectar fugas de dinero.",
-    icono: (
-      <Icono>
-        <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
-      </Icono>
-    ),
+    imagen: { src: "/funciones/graficos.png", ancho: 1184, alto: 312, alt: "Gráficos de gastos por categoría y por mes" },
   },
   {
     numero: "03",
     titulo: "Ahorro y consejos con IA",
     texto: "Mira cuánto ahorras cada mes y recibe recomendaciones para gastar mejor.",
-    icono: (
-      <Icono>
-        <path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z" />
-        <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" />
-      </Icono>
-    ),
+    imagen: { src: "/funciones/ahorro.png", ancho: 1231, alto: 479, alt: "Pantalla Mi ahorro con consejos de inteligencia artificial" },
   },
 ];
 
@@ -58,11 +36,15 @@ export function Funciones() {
               key={f.titulo}
               className="group overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition-shadow hover:shadow-lg"
             >
-              <div
-                aria-hidden
-                className="flex h-44 items-center justify-center bg-menta text-brand-800 transition-transform duration-300 group-hover:scale-[1.02]"
-              >
-                <span className="grid size-24 place-items-center rounded-3xl bg-white shadow-md ring-1 ring-black/5">{f.icono}</span>
+              <div className="flex h-56 items-center justify-center bg-menta p-5">
+                <Image
+                  src={f.imagen.src}
+                  alt={f.imagen.alt}
+                  width={f.imagen.ancho}
+                  height={f.imagen.alto}
+                  sizes="(min-width: 768px) 30vw, 90vw"
+                  className="max-h-full w-auto max-w-full rounded-xl object-contain shadow-md ring-1 ring-black/5 transition-transform duration-300 group-hover:scale-[1.03]"
+                />
               </div>
               <div className="p-7">
                 <p className="text-sm font-bold tracking-widest text-brand-500">{f.numero}</p>
