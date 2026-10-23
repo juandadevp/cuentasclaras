@@ -4,8 +4,6 @@ import { FormularioContacto } from "@/components/home/FormularioContacto";
 
 export const metadata: Metadata = { title: "Contacto" };
 
-const integrantes = ["Juan David Plata Polania", "Jorge Alejandro Arias Vargas", "Cristian Alirio Ruiz Sarmiento"];
-
 export default function ContactoPage() {
   return (
     <>
@@ -23,23 +21,6 @@ export default function ContactoPage() {
           </div>
 
           <aside className="space-y-6">
-            <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
-              <h2 className="font-bold text-foreground">El equipo</h2>
-              <p className="mt-2 text-sm text-muted">Cuentas Claras es un proyecto de:</p>
-              <ul className="mt-3 space-y-1.5 text-[15px] font-medium text-foreground">
-                {integrantes.map((n) => (
-                  <li key={n}>{n}</li>
-                ))}
-              </ul>
-              <a
-                href="https://github.com/juandadevp/cuentasclaras"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 inline-block text-sm font-bold text-brand-700 hover:underline"
-              >
-                Ver el código en GitHub →
-              </a>
-            </div>
             <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
               <h2 className="font-bold text-foreground">¿Buscas una respuesta rápida?</h2>
               <p className="mt-2 text-sm text-muted">Revisa las preguntas frecuentes sobre registros, precios y consejos de ahorro.</p>
