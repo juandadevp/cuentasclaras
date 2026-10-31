@@ -23,7 +23,7 @@ Se copian de `.env.example` a `.env.local` (este archivo NO se sube a git). `NEX
 
 ## Organización del código
 - `src/app/(sitio)/`: páginas públicas (portada, login, registro, contacto, ayuda).
-- `src/app/panel/`: portal privado (inicio, registrar, gastos, recomendar, favoritos, ahorro). Cada carpeta puede traer su `actions.ts` (Server Actions).
+- `src/app/panel/`: portal privado (inicio, registrar, gastos, recomendar, favoritos, ahorro, presupuesto). Cada carpeta puede traer su `actions.ts` (Server Actions).
 - `src/app/auth/`: acciones y callback de autenticación.
 - `src/components/`: componentes de UI agrupados por zona (`home`, `layout`, `panel`, `auth`, `ui`).
 - `src/lib/`: lógica sin interfaz (validaciones, formato, consultas a Supabase en `*-servidor.ts`, `precios/` para el comparador).
