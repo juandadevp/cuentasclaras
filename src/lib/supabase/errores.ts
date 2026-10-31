@@ -17,6 +17,10 @@ export function traducirErrorAuth(error: Pick<AuthError, "code" | "message" | "s
       return "Hiciste demasiados intentos. Espera unos minutos e inténtalo de nuevo.";
     case "signup_disabled":
       return "El registro de nuevas cuentas está desactivado por ahora.";
+    case "same_password":
+      return "La nueva contraseña debe ser distinta de la anterior.";
+    case "otp_expired":
+      return "El enlace venció. Pide uno nuevo.";
     case "email_address_invalid":
       return "El correo no es válido o su dominio no está permitido.";
   }

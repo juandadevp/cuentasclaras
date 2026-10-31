@@ -2,12 +2,12 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseClave, supabaseConfigurado, supabaseUrl } from "./config";
 
-const RUTAS_SOLO_INVITADOS = ["/", "/login", "/registro"];
+const RUTAS_SOLO_INVITADOS = ["/", "/login", "/registro", "/recuperar"];
 const RUTAS_PRIVADAS = ["/panel"];
 
 /**
  * Refresca la sesión de Supabase en cada petición (renueva las cookies del token)
- * y protege las rutas: con sesión, la portada, /login y /registro llevan al panel; sin sesión, /panel lleva a /login.
+ * y protege las rutas: con sesión, la portada, /login, /registro y /recuperar llevan al panel; sin sesión, /panel lleva a /login.
  */
 export async function actualizarSesion(request: NextRequest) {
   let respuesta = NextResponse.next({ request });
