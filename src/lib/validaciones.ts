@@ -91,6 +91,37 @@ export function validarLogin(d: DatosLogin): ErroresLogin {
   return errores;
 }
 
+export interface DatosRecuperacion {
+  email: string;
+}
+
+export type ErroresRecuperacion = Partial<Record<keyof DatosRecuperacion, string>>;
+
+/** Paso 1 de recuperar la contraseña: solo se pide el correo. */
+export function validarRecuperacion(d: DatosRecuperacion): ErroresRecuperacion {
+  const email = validarEmail(d.email);
+  return email ? { email } : {};
+}
+
+export interface DatosNuevaClave {
+  clave: string;
+  confirmar: string;
+}
+
+export type ErroresNuevaClave = Partial<Record<keyof DatosNuevaClave, string>>;
+
+/** Paso 2: la nueva contraseña sigue exactamente las mismas reglas del registro. */
+export function validarNuevaClave(d: DatosNuevaClave): ErroresNuevaClave {
+  const errores: ErroresNuevaClave = {
+    clave: validarClave(d.clave),
+    confirmar: validarConfirmacion(d.clave, d.confirmar),
+  };
+  for (const k of Object.keys(errores) as (keyof DatosNuevaClave)[]) {
+    if (!errores[k]) delete errores[k];
+  }
+  return errores;
+}
+
 /** Normaliza un nombre: quita espacios sobrantes. */
 export function normalizarNombre(valor: string): string {
   return valor.trim().replace(/\s+/g, " ");
