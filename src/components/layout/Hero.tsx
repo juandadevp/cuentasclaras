@@ -2,8 +2,10 @@ import { ImagenDeFondo } from "@/components/ui/ImagenDeFondo";
 
 export function Hero() {
   return (
-    <section className="bg-menta">
-      <div className="mx-auto grid min-h-[calc(50vh-4.5rem)] max-w-7xl items-center gap-4 px-6 py-12 md:grid-cols-[0.85fr_1.15fr] lg:px-20">
+    <section className="relative overflow-hidden bg-menta">
+      <div aria-hidden className="absolute -right-24 -top-24 size-80 rounded-full bg-white/30" />
+      <div aria-hidden className="absolute -bottom-32 right-40 size-72 rounded-full bg-brand-500/10" />
+      <div className="relative mx-auto grid min-h-[calc(50vh-4.5rem)] max-w-7xl items-center gap-4 px-6 py-12 md:grid-cols-[0.85fr_1.15fr] lg:px-20">
         <div className="md:order-2">
           <h1 className="text-5xl font-extrabold leading-[1.03] tracking-tight text-foreground sm:text-6xl xl:text-[68px]">
             Tus gastos del mes,

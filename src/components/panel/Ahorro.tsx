@@ -1,43 +1,26 @@
-import Link from "next/link";
 import { connection } from "next/server";
-import { AsesorIA } from "@/components/panel/AsesorIA";
 import { Tarjeta, TituloPagina } from "@/components/panel/TituloPagina";
 import { cargarResumenAhorro } from "@/app/panel/ahorro/datos";
 import { formatearMoneda } from "@/lib/format";
 import { etiquetaCategoria, nombreDelMes } from "@/lib/gastos";
 
-/** Cuánto se ahorró (o gastó de más) cada mes y consejos de la IA. */
+/** Cuánto se ahorró (o gastó de más) cada mes frente al anterior. */
 export async function Ahorro() {
   await connection();
   const { resumen, error } = await cargarResumenAhorro();
   const primero = resumen.filas.findIndex((f) => f.total > 0);
   const filas = (primero === -1 ? [] : resumen.filas.slice(primero)).reverse();
-  const hayDatos = resumen.filas.some((f) => f.total > 0);
   const mejoran = resumen.categorias.filter((c) => c.anterior > c.actual).sort((a, b) => b.anterior - b.actual - (a.anterior - a.actual));
 
   return (
     <div className="mx-auto max-w-7xl">
-      <TituloPagina titulo="Mi ahorro" subtitulo="Compara cada mes con el anterior y recibe consejos para gastar mejor." />
+      <TituloPagina titulo="Mi ahorro" subtitulo="Compara cada mes con el anterior y mira cuánto has ahorrado." />
 
       {error && (
         <p role="alert" className="mb-6 rounded-xl bg-amber-50 px-5 py-4 text-sm text-amber-900">
           No pudimos cargar tus gastos. Revisa que las migraciones de Supabase estén ejecutadas.
         </p>
       )}
-
-      <Tarjeta titulo="Consejos con IA" className="mb-6">
-        {hayDatos ? (
-          <AsesorIA />
-        ) : (
-          <p className="text-sm text-muted">
-            Aún no hay gastos para analizar.{" "}
-            <Link href="/panel/registrar" className="font-bold text-brand-700 hover:underline">
-              Registra el primero
-            </Link>
-            .
-          </p>
-        )}
-      </Tarjeta>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Tarjeta titulo="Ahorro mes a mes">

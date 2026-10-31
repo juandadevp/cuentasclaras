@@ -9,7 +9,7 @@ export const siteConfig = {
 
 /** Enlaces de navegación compartidos por el menú y el pie de página. */
 export const enlacesPrincipales = [
-  { href: "/nosotros", etiqueta: "Nosotros" },
+  { href: "/contacto", etiqueta: "Contacto" },
   { href: "/#funciones", etiqueta: "Servicios" },
   { href: "/ayuda", etiqueta: "Ayuda" },
 ];
