@@ -15,9 +15,9 @@ const funciones: { numero: string; titulo: string; texto: string; imagen: { src:
   },
   {
     numero: "03",
-    titulo: "Ahorro y consejos con IA",
-    texto: "Mira cuánto ahorras cada mes y recibe recomendaciones para gastar mejor.",
-    imagen: { src: "/funciones/ahorro-recorte.png", ancho: 568, alto: 342, alt: "Pantalla Mi ahorro con consejos de inteligencia artificial" },
+    titulo: "Ahorro mes a mes",
+    texto: "Compara cada mes con el anterior y mira cuánto has ahorrado.",
+    imagen: { src: "/funciones/ahorro-recorte.png", ancho: 568, alto: 374, alt: "Pantalla Mi ahorro con la comparación mensual" },
   },
 ];
 

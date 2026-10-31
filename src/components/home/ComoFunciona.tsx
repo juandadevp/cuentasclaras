@@ -1,7 +1,7 @@
 const pasos = [
   { numero: "1", titulo: "Crea tu cuenta", texto: "Regístrate gratis con tu correo. Tu espacio es solo tuyo y nadie más ve tus datos." },
   { numero: "2", titulo: "Registra tus gastos", texto: "Anota en qué gastaste, cuánto y dónde. Si buscas el producto en el comparador, la compra se llena sola." },
-  { numero: "3", titulo: "Entiende y ahorra", texto: "Mira tus gastos por categoría, compara tus meses y recibe consejos para gastar mejor." },
+  { numero: "3", titulo: "Entiende y ahorra", texto: "Mira tus gastos por categoría, compara tus meses y mira cuánto ahorras." },
 ];
 
 export function ComoFunciona() {

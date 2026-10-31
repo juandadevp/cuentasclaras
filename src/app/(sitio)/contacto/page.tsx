@@ -88,7 +88,7 @@ export default function ContactoPage() {
 
             <div className="rounded-2xl bg-neutral-800 p-6 text-white shadow-sm">
               <h2 className="font-bold">¿Buscas una respuesta rápida?</h2>
-              <p className="mt-2 text-sm leading-relaxed text-neutral-300">Revisa las preguntas frecuentes sobre registros, precios y consejos de ahorro.</p>
+              <p className="mt-2 text-sm leading-relaxed text-neutral-300">Revisa las preguntas frecuentes sobre registros, precios y ahorro.</p>
               <Link
                 href="/ayuda"
                 className="mt-5 inline-flex items-center gap-2 rounded-[10px] bg-white px-4 py-2.5 text-sm font-bold text-neutral-900 transition-colors hover:bg-menta"

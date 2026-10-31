@@ -20,8 +20,8 @@ const items = [
     ),
   },
   {
-    titulo: "Consejos de ahorro con IA",
-    texto: "La inteligencia artificial analiza tus meses y te dice dónde puedes recortar y cuánto has ahorrado.",
+    titulo: "Mira cuánto ahorras cada mes",
+    texto: "Compara cada mes con el anterior y descubre en qué categorías gastas de más o de menos.",
     icono: (
       <Icono>
         <path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z" />

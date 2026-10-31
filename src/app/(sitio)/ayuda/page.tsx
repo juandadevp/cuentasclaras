@@ -8,7 +8,7 @@ const preguntas = [
   { p: "¿Quién puede ver mis gastos?", r: "Solo tú. Cada usuario tiene su propio espacio privado y nadie más puede ver tus datos." },
   { p: "¿Cómo registro un gasto?", r: "En el portal, entra a «Registrar gasto» y completa qué compraste, el valor, la fecha y la categoría. La tienda es opcional." },
   { p: "¿Cómo comparo precios de un producto?", r: "En «Recomendar compras» busca el producto. Verás el precio en distintas tiendas y puedes registrar la compra directamente." },
-  { p: "¿Qué es «Mi ahorro»?", r: "Compara cada mes con el anterior y te da consejos con inteligencia artificial para gastar mejor." },
+  { p: "¿Qué es «Mi ahorro»?", r: "Compara cada mes con el anterior y te muestra cuánto ahorraste o gastaste de más, en total y por categoría." },
   { p: "No me deja guardar un gasto, ¿qué hago?", r: "Si aparece el aviso «Falta crear la tabla de gastos» o «Falta actualizar la base de datos», faltan migraciones por ejecutar en Supabase." },
 ];
 
