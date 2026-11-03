@@ -26,6 +26,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Generar los tipos de rutas de Next
+        # PageProps y LayoutProps los genera Next; en un repositorio limpio no existen todavía.
+        run: npx next typegen
+
       - name: Revisar tipos
         run: npx tsc --noEmit
 
