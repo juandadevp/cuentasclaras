@@ -1,16 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { elegirDestino, rutaSiFallaElEnlace } from "@/lib/auth-destinos";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 
-/** A dónde puede llevar el enlace del correo. Solo rutas de esta lista: nunca una dirección que venga en la URL. */
-const DESTINOS_PERMITIDOS = ["/panel"];
-
-/** Destino del enlace que envía Supabase para confirmar el correo. */
+/** Destino del enlace que envía Supabase: confirmar el correo o recuperar la contraseña. */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const code = searchParams.get("code");
-  const pedido = searchParams.get("siguiente") ?? "";
-  const destino = DESTINOS_PERMITIDOS.includes(pedido) ? pedido : "/panel";
+  // Solo rutas de la lista cerrada: nunca una dirección que venga en la URL.
+  const destino = elegirDestino(searchParams.get("siguiente"));
 
   if (code && supabaseConfigurado()) {
     const supabase = await crearClienteServidor();
@@ -18,5 +16,6 @@ export async function GET(request: NextRequest) {
     if (!error) return NextResponse.redirect(`${origin}${destino}`);
   }
 
-  return NextResponse.redirect(`${origin}/login`);
+  // Un enlace vencido, ya usado o abierto en otro navegador vuelve a pedir uno nuevo.
+  return NextResponse.redirect(`${origin}${rutaSiFallaElEnlace(destino)}`);
 }

@@ -15,6 +15,16 @@ export function traducirErrorAuth(error: Pick<AuthError, "code" | "message" | "s
     case "over_email_send_rate_limit":
     case "over_request_rate_limit":
       return "Hiciste demasiados intentos. Espera unos minutos e inténtalo de nuevo.";
+    case "same_password":
+      return "La nueva contraseña debe ser distinta de la anterior.";
+    case "otp_expired":
+    case "session_expired":
+    case "session_not_found":
+    case "refresh_token_not_found":
+    case "bad_jwt":
+      return "El enlace venció. Pide uno nuevo.";
+    case "reauthentication_needed":
+      return "Por seguridad, pide un enlace nuevo para cambiar tu contraseña.";
     case "signup_disabled":
       return "El registro de nuevas cuentas está desactivado por ahora.";
     case "email_address_invalid":
