@@ -39,6 +39,52 @@ export function totalesPorMes(gastos: Gasto[], meses: string[]): { mes: string; 
   return meses.map((mes) => ({ mes, total: totales.get(mes) ?? 0 }));
 }
 
+/** "2026-10" → { mes, inicio: "2026-10-01", fin: "2026-11-01", anterior, siguiente }. Si no es válido usa el mes de `hoy`. */
+export function rangoDelMes(mesParam: string | undefined, hoy: string) {
+  const valido = mesParam && /^\d{4}-(0[1-9]|1[0-2])$/.test(mesParam) ? mesParam : hoy.slice(0, 7);
+  const [anio, mes] = valido.split("-").map(Number);
+  const siguiente = mes === 12 ? `${anio + 1}-01` : `${anio}-${pad(mes + 1)}`;
+  const anterior = mes === 1 ? `${anio - 1}-12` : `${anio}-${pad(mes - 1)}`;
+  return { mes: valido, inicio: `${valido}-01`, fin: `${siguiente}-01`, anterior, siguiente };
+}
+
+/** Gastos separados por categoría (solo las que tienen compras), de mayor a menor subtotal. */
+export function agruparPorCategoria(gastos: Gasto[]): { categoria: Categoria; lista: Gasto[]; subtotal: number }[] {
+  const grupos = new Map<Categoria, Gasto[]>();
+  for (const g of gastos) grupos.set(g.categoria, [...(grupos.get(g.categoria) ?? []), g]);
+  return [...grupos.entries()]
+    .map(([categoria, lista]) => ({ categoria, lista, subtotal: totalGastos(lista) }))
+    .sort((a, b) => b.subtotal - a.subtotal);
+}
+
+export interface FiltrosGastos {
+  /** true si se piden todos los gastos, sin límite de mes. */
+  todos: boolean;
+  /** Mes pedido (yyyy-mm), si es válido. */
+  mes?: string;
+  /** Texto a buscar dentro de la descripción (máximo 80 caracteres). */
+  q: string;
+  categoria?: Categoria;
+}
+
+/** Limpia los parámetros de la URL de «Mis gastos»: cada valor se valida antes de usarlo. */
+export function leerFiltros(params: Record<string, string | string[] | undefined>): FiltrosGastos {
+  const unico = (v: string | string[] | undefined) => (typeof v === "string" ? v : "");
+  const mes = unico(params.mes);
+  const categoria = unico(params.categoria);
+  return {
+    todos: mes === "todos",
+    mes: /^\d{4}-(0[1-9]|1[0-2])$/.test(mes) ? mes : undefined,
+    q: unico(params.q).trim().replace(/\s+/g, " ").slice(0, 80),
+    categoria: categorias.find((c) => c.valor === categoria)?.valor,
+  };
+}
+
+/** Escapa los comodines de LIKE (\\ % _) para que la búsqueda sea de texto literal. */
+export function escaparComodines(texto: string): string {
+  return texto.replace(/[\\%_]/g, (c) => `\\${c}`);
+}
+
 /** Fecha ISO (yyyy-mm-dd) de un instante, vista en la zona horaria de Colombia. */
 export function fechaIso(instante: Date): string {
   const partes = new Intl.DateTimeFormat("en-US", {

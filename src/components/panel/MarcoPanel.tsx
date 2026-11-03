@@ -30,11 +30,39 @@ const secciones: { titulo: string; enlaces: Enlace[] }[] = [
       },
     ],
   },
+  {
+    titulo: "Gastos",
+    enlaces: [
+      {
+        href: "/panel/registrar",
+        etiqueta: "Registrar gasto",
+        icono: (
+          <>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 8v8M8 12h8" />
+          </>
+        ),
+      },
+      {
+        href: "/panel/gastos",
+        etiqueta: "Mis gastos",
+        icono: (
+          <>
+            <path d="M8 6h13M8 12h13M8 18h13" />
+            <path d="M3 6h.01M3 12h.01M3 18h.01" />
+          </>
+        ),
+      },
+    ],
+  },
 ];
 
 /** Nombre de cada tramo de la ruta en las migas de pan. */
 const nombresRuta: Record<string, string> = {
   panel: "Panel",
+  registrar: "Registrar gasto",
+  gastos: "Mis gastos",
+  editar: "Editar",
 };
 
 const iconoMenu = <path d="M4 6h16M4 12h16M4 18h16" />;
