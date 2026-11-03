@@ -6,6 +6,8 @@ import {
   validarEmail,
   validarLogin,
   validarNombre,
+  validarNuevaClave,
+  validarRecuperacion,
   validarRegistro,
   validarTelefono,
 } from "@/lib/validaciones";
@@ -164,5 +166,62 @@ describe("validarLogin", () => {
     expect(validarLogin({ email: "ana", clave: "x" })).toEqual({
       email: "Ingresa un correo válido, por ejemplo nombre@correo.com.",
     });
+  });
+});
+
+describe("validarRecuperacion", () => {
+  it("acepta un correo válido", () => {
+    expect(validarRecuperacion({ email: "ana@correo.com" })).toEqual({});
+  });
+
+  it("pide el correo si está vacío", () => {
+    expect(validarRecuperacion({ email: "  " })).toEqual({ email: "Ingresa tu correo electrónico." });
+  });
+
+  it.each(["ana", "ana@", "ana@correo", "ana perez@correo.com"])("rechaza el correo %j", (email) => {
+    expect(validarRecuperacion({ email })).toEqual({ email: "Ingresa un correo válido, por ejemplo nombre@correo.com." });
+  });
+});
+
+describe("validarNuevaClave", () => {
+  it("acepta una contraseña válida y confirmada", () => {
+    expect(validarNuevaClave({ clave: "Abcdef12", confirmar: "Abcdef12" })).toEqual({});
+  });
+
+  it.each([
+    ["", "Crea una contraseña."],
+    ["Abcde12", "La contraseña necesita: mínimo 8 caracteres."],
+    ["abcdef12", "La contraseña necesita: una letra mayúscula."],
+    ["ABCDEF12", "La contraseña necesita: una letra minúscula."],
+    ["Abcdefgh", "La contraseña necesita: un número."],
+    ["Abc def12", "La contraseña no puede tener espacios."],
+    ["Aa1" + "x".repeat(62), "La contraseña es demasiado larga (máximo 64)."],
+  ])("rechaza la contraseña %j", (clave, mensaje) => {
+    expect(validarNuevaClave({ clave, confirmar: clave }).clave).toBe(mensaje);
+  });
+
+  it("acepta 64 caracteres", () => {
+    const clave = "Aa1" + "x".repeat(61);
+    expect(validarNuevaClave({ clave, confirmar: clave })).toEqual({});
+  });
+
+  it("pide confirmar si la confirmación está vacía", () => {
+    expect(validarNuevaClave({ clave: "Abcdef12", confirmar: "" })).toEqual({ confirmar: "Confirma tu contraseña." });
+  });
+
+  it("avisa si las contraseñas no coinciden", () => {
+    expect(validarNuevaClave({ clave: "Abcdef12", confirmar: "Abcdef13" })).toEqual({ confirmar: "Las contraseñas no coinciden." });
+  });
+
+  it("devuelve solo los campos con error", () => {
+    expect(Object.keys(validarNuevaClave({ clave: "abc", confirmar: "abc" }))).toEqual(["clave"]);
+  });
+
+  it("sigue exactamente las mismas reglas de contraseña que el registro", () => {
+    const claves = ["", "Ab1", "Abcde12", "abcdef12", "ABCDEF12", "Abcdefgh", "Abc def12", "Abcdef12", "Aa1" + "x".repeat(61), "Aa1" + "x".repeat(62), "Ñandú2026", "ÁÉÍÓÚ1aaa"];
+    for (const clave of claves) {
+      const registro = validarRegistro({ nombre: "Ana Pérez", email: "ana@correo.com", telefono: "3001234567", clave, confirmar: clave });
+      expect(validarNuevaClave({ clave, confirmar: clave }).clave).toBe(registro.clave);
+    }
   });
 });
