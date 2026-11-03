@@ -1,0 +1,25 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { MarcoSitio } from "@/components/layout/MarcoSitio";
+
+export const metadata: Metadata = { title: "Página no encontrada" };
+
+export default function NotFound() {
+  return (
+    <MarcoSitio>
+      <section className="flex min-h-[calc(100vh-4.5rem)] flex-col items-center justify-center px-6 py-16 text-center">
+        <p className="text-7xl font-extrabold tracking-tight text-brand-700">404</p>
+        <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground">Esta página aún no existe</h1>
+        <p className="mt-2 max-w-md text-muted">
+          Puede que el enlace esté mal escrito o que la sección todavía no esté disponible.
+        </p>
+        <Link
+          href="/"
+          className="mt-8 rounded-[10px] bg-brand-800 px-6 py-3 text-[15px] font-semibold text-brand-50 transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30"
+        >
+          Volver al inicio
+        </Link>
+      </section>
+    </MarcoSitio>
+  );
+}

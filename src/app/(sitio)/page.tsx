@@ -3,6 +3,7 @@ import { ComoFunciona } from "@/components/home/ComoFunciona";
 import { Diferenciales } from "@/components/home/Diferenciales";
 import { Funciones } from "@/components/home/Funciones";
 import { LlamadoFinal } from "@/components/home/LlamadoFinal";
+import { VistaPrevia } from "@/components/home/VistaPrevia";
 import { Hero } from "@/components/layout/Hero";
 import { siteConfig } from "@/config/site";
 
@@ -18,6 +19,7 @@ export default function Home() {
       <Funciones />
       <ComoFunciona />
       <Diferenciales />
+      <VistaPrevia />
       <LlamadoFinal />
     </>
   );
