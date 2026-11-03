@@ -1,7 +1,13 @@
 import Link from "next/link";
+import { MenuPerfil } from "@/components/auth/MenuPerfil";
+import { obtenerUsuario } from "@/lib/supabase/usuario";
 
-/** Parte derecha del menú para una persona sin sesión. Cuando exista la autenticación, aquí se muestra el menú de perfil. */
-export function AccionesSesion() {
+/** Parte derecha del menú: botones de acceso (sin sesión) o menú de perfil (con sesión). */
+export async function AccionesSesion() {
+  const usuario = await obtenerUsuario();
+
+  if (usuario) return <MenuPerfil nombre={usuario.nombre} email={usuario.email} oscuro />;
+
   return (
     <>
       <Link
