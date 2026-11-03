@@ -1,0 +1,172 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState, useTransition, type ChangeEvent, type FocusEvent, type FormEvent } from "react";
+import { actualizarGasto, crearGasto } from "@/app/panel/actions";
+import { Campo } from "@/components/ui/Campo";
+import { Selector } from "@/components/ui/Selector";
+import { categorias } from "@/config/site";
+import type { ResultadoGasto } from "@/lib/gastos-tipos";
+import { formatearMontoEscrito, validarGasto, type DatosGasto } from "@/lib/validaciones-gasto";
+import type { Gasto } from "@/types/gasto";
+
+const campos: (keyof DatosGasto)[] = ["descripcion", "monto", "categoria", "fecha", "tienda"];
+
+interface Props {
+  /** Fecha de hoy (yyyy-mm-dd) calculada en el servidor. */
+  hoy: string;
+  /** Si se pasa, el formulario edita ese gasto en lugar de crear uno nuevo. */
+  gasto?: Gasto;
+  /** Valores para rellenar un gasto nuevo (p. ej. al llegar desde otra pantalla). */
+  valoresIniciales?: Partial<DatosGasto>;
+}
+
+/**
+ * Formulario de gasto. Los valores iniciales solo se leen al montarse: quien lo use debe darle una `key`
+ * que cambie cuando cambien esos valores, para que el formulario se reinicie.
+ */
+export function FormularioGasto({ hoy, gasto, valoresIniciales }: Props) {
+  const router = useRouter();
+  const vacio: DatosGasto = { descripcion: "", monto: "", categoria: "", fecha: hoy, tienda: "" };
+  const [datos, setDatos] = useState<DatosGasto>(
+    gasto
+      ? {
+          descripcion: gasto.descripcion,
+          monto: formatearMontoEscrito(String(Math.round(gasto.monto))),
+          categoria: gasto.categoria,
+          fecha: gasto.fecha,
+          tienda: gasto.tienda ?? "",
+        }
+      : { ...vacio, ...valoresIniciales },
+  );
+  const [tocados, setTocados] = useState<Partial<Record<keyof DatosGasto, boolean>>>({});
+  const [intentoEnvio, setIntentoEnvio] = useState(false);
+  const [resultado, setResultado] = useState<ResultadoGasto>({});
+  const [guardado, setGuardado] = useState(false);
+  const [pendiente, iniciarTransicion] = useTransition();
+
+  const errores = validarGasto(datos, hoy);
+  const error = (c: keyof DatosGasto) => resultado.errores?.[c] ?? (tocados[c] || intentoEnvio ? errores[c] : undefined);
+
+  function cambiar(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    const { name, value } = e.target;
+    setDatos((d) => ({ ...d, [name]: name === "monto" ? formatearMontoEscrito(value) : value }));
+    setResultado({});
+    setGuardado(false);
+  }
+
+  function salir(e: FocusEvent<HTMLInputElement | HTMLSelectElement>) {
+    setTocados((t) => ({ ...t, [e.target.name]: true }));
+  }
+
+  function enviar(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIntentoEnvio(true);
+    const primero = campos.find((c) => errores[c]);
+    if (primero) {
+      (e.currentTarget.elements.namedItem(primero) as HTMLElement | null)?.focus();
+      return;
+    }
+
+    const formData = new FormData();
+    campos.forEach((c) => formData.set(c, datos[c]));
+    iniciarTransicion(async () => {
+      const r = gasto ? await actualizarGasto(gasto.id, formData) : await crearGasto(formData);
+      setResultado(r);
+      if (!r.ok) return;
+      if (gasto) {
+        router.push("/panel/gastos");
+        return;
+      }
+      setDatos(vacio);
+      setTocados({});
+      setIntentoEnvio(false);
+      setGuardado(true);
+    });
+  }
+
+  return (
+    <form onSubmit={enviar} noValidate className="space-y-4">
+      <Campo
+        etiqueta="¿En qué gastaste?"
+        name="descripcion"
+        placeholder="Ej. Supermercado"
+        maxLength={80}
+        value={datos.descripcion}
+        onChange={cambiar}
+        onBlur={salir}
+        error={error("descripcion")}
+      />
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Campo
+          etiqueta="Valor (COP)"
+          name="monto"
+          inputMode="numeric"
+          placeholder="25.000"
+          value={datos.monto}
+          onChange={cambiar}
+          onBlur={salir}
+          error={error("monto")}
+        />
+        <Campo
+          etiqueta="Fecha"
+          name="fecha"
+          type="date"
+          min="2000-01-01"
+          max={hoy}
+          value={datos.fecha}
+          onChange={cambiar}
+          onBlur={salir}
+          error={error("fecha")}
+        />
+      </div>
+
+      <Selector
+        etiqueta="Categoría"
+        name="categoria"
+        placeholder="Elige una categoría"
+        value={datos.categoria}
+        onChange={cambiar}
+        onBlur={salir}
+        error={error("categoria")}
+      >
+        {categorias.map((c) => (
+          <option key={c.valor} value={c.valor} className="text-foreground">
+            {c.etiqueta}
+          </option>
+        ))}
+      </Selector>
+
+      <Campo
+        etiqueta="Tienda (opcional)"
+        name="tienda"
+        placeholder="Ej. Alkosto"
+        maxLength={80}
+        value={datos.tienda}
+        onChange={cambiar}
+        onBlur={salir}
+        error={error("tienda")}
+      />
+
+      {resultado.mensaje ? (
+        <p role="alert" className="rounded-[10px] bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {resultado.mensaje}
+        </p>
+      ) : null}
+      {guardado ? (
+        <p role="status" className="rounded-[10px] bg-brand-100 px-4 py-3 text-sm font-medium text-brand-800">
+          ¡Gasto guardado!
+        </p>
+      ) : null}
+
+      <button
+        type="submit"
+        disabled={pendiente}
+        className="w-full rounded-[10px] bg-brand-800 px-5 py-3 text-[15px] font-semibold text-brand-50 transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30 disabled:cursor-not-allowed disabled:opacity-70"
+      >
+        {pendiente ? "Guardando…" : gasto ? "Guardar cambios" : "+ Guardar gasto"}
+      </button>
+    </form>
+  );
+}

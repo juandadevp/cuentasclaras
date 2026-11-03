@@ -2,10 +2,14 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { categorias } from "@/config/site";
 import {
+  agruparPorCategoria,
   coloresBase,
   coloresCategoria,
+  escaparComodines,
   fechaIso,
+  leerFiltros,
   mezclar,
+  rangoDelMes,
   resumirInicio,
   totalesPorMes,
   totalGastos,
@@ -191,5 +195,99 @@ describe("coloresCategoria", () => {
   it("usa colores base que existen como tokens en globals.css", () => {
     const css = readFileSync("src/app/globals.css", "utf8").toLowerCase();
     for (const hex of Object.values(coloresBase)) expect(css).toContain(hex);
+  });
+});
+
+describe("rangoDelMes", () => {
+  it("usa el mes pedido cuando es válido", () => {
+    expect(rangoDelMes("2026-03", "2026-11-03")).toEqual({
+      mes: "2026-03",
+      inicio: "2026-03-01",
+      fin: "2026-04-01",
+      anterior: "2026-02",
+      siguiente: "2026-04",
+    });
+  });
+
+  it("usa el mes de hoy si no se pide ninguno", () => {
+    expect(rangoDelMes(undefined, "2026-11-03").mes).toBe("2026-11");
+  });
+
+  it.each(["2026-13", "2026-00", "26-05", "mayo", "2026-5", ""])("usa el mes de hoy si %s no es válido", (valor) => {
+    expect(rangoDelMes(valor, "2026-11-03").mes).toBe("2026-11");
+  });
+
+  it("pasa de diciembre a enero del año siguiente", () => {
+    const r = rangoDelMes("2026-12", "2026-12-15");
+    expect(r.fin).toBe("2027-01-01");
+    expect(r.siguiente).toBe("2027-01");
+  });
+
+  it("pasa de enero a diciembre del año anterior", () => {
+    expect(rangoDelMes("2026-01", "2026-01-15").anterior).toBe("2025-12");
+  });
+});
+
+describe("agruparPorCategoria", () => {
+  it("devuelve una lista vacía sin gastos", () => {
+    expect(agruparPorCategoria([])).toEqual([]);
+  });
+
+  it("incluye solo las categorías con compras y calcula el subtotal", () => {
+    const lista = [gasto("ocio", 100, "2026-11-01"), gasto("ocio", 50, "2026-11-02"), gasto("salud", 400, "2026-11-02")];
+    const grupos = agruparPorCategoria(lista);
+    expect(grupos.map((g) => [g.categoria, g.subtotal, g.lista.length])).toEqual([
+      ["salud", 400, 1],
+      ["ocio", 150, 2],
+    ]);
+  });
+
+  it("ordena las secciones de mayor a menor subtotal", () => {
+    const lista = [gasto("ropa", 10, "2026-11-01"), gasto("vivienda", 900, "2026-11-01"), gasto("ocio", 300, "2026-11-01")];
+    expect(agruparPorCategoria(lista).map((g) => g.categoria)).toEqual(["vivienda", "ocio", "ropa"]);
+  });
+});
+
+describe("leerFiltros", () => {
+  it("sin parámetros no filtra nada", () => {
+    expect(leerFiltros({})).toEqual({ todos: false, mes: undefined, q: "", categoria: undefined });
+  });
+
+  it("entiende mes=todos", () => {
+    expect(leerFiltros({ mes: "todos" }).todos).toBe(true);
+  });
+
+  it("acepta un mes válido y descarta uno inválido", () => {
+    expect(leerFiltros({ mes: "2026-05" }).mes).toBe("2026-05");
+    expect(leerFiltros({ mes: "2026-15" }).mes).toBeUndefined();
+  });
+
+  it("acepta solo categorías de la lista", () => {
+    expect(leerFiltros({ categoria: "salud" }).categoria).toBe("salud");
+    expect(leerFiltros({ categoria: "inventada" }).categoria).toBeUndefined();
+  });
+
+  it("limpia la búsqueda: espacios sobrantes y máximo 80 caracteres", () => {
+    expect(leerFiltros({ q: "   pan    con   queso " }).q).toBe("pan con queso");
+    expect(leerFiltros({ q: "a".repeat(100) }).q).toHaveLength(80);
+  });
+
+  it("ignora valores repetidos en la URL (listas)", () => {
+    expect(leerFiltros({ q: ["a", "b"], mes: ["2026-05", "2026-06"] })).toEqual({
+      todos: false,
+      mes: undefined,
+      q: "",
+      categoria: undefined,
+    });
+  });
+});
+
+describe("escaparComodines", () => {
+  it("deja igual el texto sin comodines", () => {
+    expect(escaparComodines("pan")).toBe("pan");
+  });
+
+  it("antepone una barra a %, _ y la propia barra", () => {
+    expect(escaparComodines("100%_a\\b")).toBe("100\\%\\_a\\\\b");
   });
 });
