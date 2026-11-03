@@ -53,6 +53,16 @@ const secciones: { titulo: string; enlaces: Enlace[] }[] = [
           </>
         ),
       },
+      {
+        href: "/panel/presupuesto",
+        etiqueta: "Presupuesto",
+        icono: (
+          <>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 3v9h9" />
+          </>
+        ),
+      },
     ],
   },
 ];
@@ -62,6 +72,7 @@ const nombresRuta: Record<string, string> = {
   panel: "Panel",
   registrar: "Registrar gasto",
   gastos: "Mis gastos",
+  presupuesto: "Presupuesto",
   editar: "Editar",
 };
 
