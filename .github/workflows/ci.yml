@@ -1,0 +1,44 @@
+name: CI
+
+# Se ejecuta en cada pull request hacia main y en cada push a main.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Generar los tipos de rutas de Next
+        # PageProps y LayoutProps los genera Next; en un repositorio limpio no existen todavía.
+        run: npx next typegen
+
+      - name: Revisar tipos
+        run: npx tsc --noEmit
+
+      - name: Pruebas
+        run: npm test
+
+      - name: Compilar
+        run: npm run build
+        env:
+          # Valores de relleno: la compilación no se conecta a Supabase.
+          NEXT_PUBLIC_SUPABASE_URL: https://ejemplo.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ejemplo

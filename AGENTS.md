@@ -1,5 +1,7 @@
 # Cuentas Claras
 
+> **Estado: proyecto en reconstrucción.** La versión original (v1) está en la rama `legacy/v1`. Cada funcionalidad nueva se construye en su propia rama (`feat/NN-nombre`), con su prompt, su plan y las skills usadas, guardados en `docs/solicitudes/NN-nombre/`. Las secciones de «Organización del código» describen la meta; no todo existe todavía.
+
 Aplicación web para llevar el control de los gastos mensuales. Cada usuario tiene un panel privado donde registra gastos, los ve por categoría, compara sus meses, busca precios de productos en tiendas de Colombia y guarda favoritos. Es un solo repositorio: el frontend y el backend viven juntos en Next.js (el «backend» son las Server Actions y la conexión con Supabase).
 
 ## Stack
@@ -15,8 +17,9 @@ npm run build      # compilar para producción (detecta errores de tipos y de re
 npm run start      # servir lo compilado
 npm run lint       # ESLint
 npx tsc --noEmit   # revisar tipos
+npm test           # pruebas automáticas (vitest)
 ```
-No hay pruebas automáticas todavía: antes de dar algo por terminado corre `npm run lint` y `npm run build`.
+Antes de dar algo por terminado corre `npm run lint`, `npx tsc --noEmit`, `npm test` y `npm run build`. Las pruebas viven junto al código, en archivos `*.test.ts`; si cambias validaciones o cálculos de `src/lib/`, agrega o actualiza su prueba. GitHub Actions (`.github/workflows/ci.yml`) repite esas cuatro comprobaciones en cada pull request.
 
 ## Variables de entorno
 Se copian de `.env.example` a `.env.local` (este archivo NO se sube a git). `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` son públicas; `SERPAPI_API_KEY` es secreta y solo se usa en el servidor.
