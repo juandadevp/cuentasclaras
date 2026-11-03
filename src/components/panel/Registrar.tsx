@@ -4,17 +4,19 @@ import { AvisoPanel } from "@/components/panel/AvisoPanel";
 import { FormularioGasto } from "@/components/panel/FormularioGasto";
 import { TablaGastos } from "@/components/panel/TablaGastos";
 import { Tarjeta } from "@/components/panel/Tarjeta";
+import { ResumenCompra } from "@/components/panel/ResumenCompra";
 import { TituloPagina } from "@/components/panel/TituloPagina";
 import { mensajeDeErrorGasto } from "@/lib/gastos-errores";
 import { hoyIso } from "@/lib/gastos";
 import { ultimosGastos } from "@/lib/gastos-servidor";
 import { supabaseConfigurado } from "@/lib/supabase/config";
+import type { CompraRecomendada } from "@/lib/precios/compra";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 import type { DatosGasto } from "@/lib/validaciones-gasto";
 import type { Gasto } from "@/types/gasto";
 
-/** Pantalla «Registrar gasto»: formulario y los últimos gastos. */
-export async function Registrar({ valoresIniciales }: { valoresIniciales?: Partial<DatosGasto> }) {
+/** Pantalla «Registrar gasto»: formulario y los últimos gastos. Si llega desde «Recomendar compras», muestra el resumen de la compra. */
+export async function Registrar({ valoresIniciales, compra }: { valoresIniciales?: Partial<DatosGasto>; compra?: CompraRecomendada }) {
   // Siempre dinámico: depende de la sesión y de la fecha de hoy.
   await connection();
   const hoy = hoyIso();
@@ -34,7 +36,9 @@ export async function Registrar({ valoresIniciales }: { valoresIniciales?: Parti
 
       {aviso ? <AvisoPanel>{aviso}</AvisoPanel> : null}
 
-      <Tarjeta titulo="Nuevo gasto">
+      {compra ? <ResumenCompra compra={compra} /> : null}
+
+      <Tarjeta titulo={compra ? "Confirma y registra el gasto" : "Nuevo gasto"}>
         {/* La key reinicia el formulario cuando cambian los valores iniciales (p. ej. al llegar desde otra pantalla). */}
         <FormularioGasto key={JSON.stringify(valoresIniciales ?? {})} hoy={hoy} valoresIniciales={valoresIniciales} />
       </Tarjeta>

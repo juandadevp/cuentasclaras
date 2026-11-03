@@ -44,6 +44,16 @@ const secciones: { titulo: string; enlaces: Enlace[] }[] = [
         ),
       },
       {
+        href: "/panel/recomendar",
+        etiqueta: "Recomendar compras",
+        icono: (
+          <>
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </>
+        ),
+      },
+      {
         href: "/panel/gastos",
         etiqueta: "Mis gastos",
         icono: (
@@ -71,6 +81,7 @@ const secciones: { titulo: string; enlaces: Enlace[] }[] = [
 const nombresRuta: Record<string, string> = {
   panel: "Panel",
   registrar: "Registrar gasto",
+  recomendar: "Recomendar compras",
   gastos: "Mis gastos",
   presupuesto: "Presupuesto",
   editar: "Editar",
