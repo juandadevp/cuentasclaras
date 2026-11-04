@@ -4,6 +4,9 @@
 
 Aplicación web para llevar el control de los gastos mensuales. Cada usuario tiene un panel privado donde registra gastos, los ve por categoría, compara sus meses, busca precios de productos en tiendas de Colombia y guarda favoritos. Es un solo repositorio: el frontend y el backend viven juntos en Next.js (el «backend» son las Server Actions y la conexión con Supabase).
 
+## Arnés
+El mapa de la memoria, las skills, los subagentes, los permisos y la evidencia por módulo está en `docs/ARNES.md`. Antes de cerrar una rama usa el subagente `revisor-pull-request`; si toca tablas, acciones o autenticación, también `revisor-seguridad`.
+
 ## Stack
 - Next.js 16 (App Router, `cacheComponents` activo), React 19, TypeScript, Tailwind CSS 4.
 - Supabase: PostgreSQL + Auth, con seguridad por filas (RLS): cada usuario solo ve sus datos.
