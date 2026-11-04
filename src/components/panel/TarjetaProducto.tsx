@@ -1,19 +1,12 @@
 import Link from "next/link";
+import { IconoEstrella } from "@/components/panel/IconoEstrella";
+import { ImagenProducto } from "@/components/panel/ImagenProducto";
 import { formatearMoneda } from "@/lib/format";
 import type { Producto } from "@/lib/precios/agrupar";
 import { enlaceBusquedaTienda, enlaceRegistrar } from "@/lib/precios/compra";
 import type { Rubro } from "@/lib/precios/rubros";
 import type { Oferta } from "@/lib/precios/tipos";
 import { dividirTiendas, TIENDAS_VISIBLES } from "@/lib/precios/vista";
-
-const iconoCarrito = (
-  <svg viewBox="0 0 24 24" className="size-8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6 7h15l-1.5 8h-12z" />
-    <path d="M6 7 5 3H2" />
-    <circle cx="9" cy="19" r="1.5" />
-    <circle cx="18" cy="19" r="1.5" />
-  </svg>
-);
 
 interface PropsFila {
   oferta: Oferta;
@@ -65,10 +58,15 @@ interface Props {
   rubro: Rubro | null | undefined;
   /** true cuando se están viendo tiendas que no son del tipo de producto: se marcan. */
   marcarAjenas: boolean;
+  /** true si el producto está guardado en favoritos. */
+  favorito: boolean;
+  /** true mientras se guarda o se quita: la estrella no responde para no mezclar respuestas. */
+  guardando: boolean;
+  onFavorito: () => void;
 }
 
 /** Un producto, con su precio «desde» y el precio en cada tienda (hasta 3 a la vista y el resto en un desplegable). */
-export function TarjetaProducto({ producto, barata, buscado, rubro, marcarAjenas }: Props) {
+export function TarjetaProducto({ producto, barata, buscado, rubro, marcarAjenas, favorito, guardando, onFavorito }: Props) {
   const { primeras, otras } = dividirTiendas(producto.ofertas);
   const esMejor = barata ? producto.ofertas.includes(barata) : false;
   const fila = (o: Oferta, i: number) => (
@@ -86,18 +84,24 @@ export function TarjetaProducto({ producto, barata, buscado, rubro, marcarAjenas
   return (
     <li className={`flex min-w-0 flex-col rounded-2xl border bg-surface p-5 shadow-sm ${esMejor ? "border-brand-500 ring-2 ring-brand-500/20" : "border-border"}`}>
       <div className="flex items-start gap-4">
-        {producto.imagen ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={producto.imagen} alt="" loading="lazy" referrerPolicy="no-referrer" className="size-20 shrink-0 rounded-lg bg-white object-contain" />
-        ) : (
-          <span className="grid size-20 shrink-0 place-items-center rounded-lg bg-neutral-100 text-neutral-400" aria-hidden>
-            {iconoCarrito}
-          </span>
-        )}
+        <ImagenProducto src={producto.imagen} />
         <div className="min-w-0 flex-1">
           {esMejor ? <span className="mb-1.5 inline-block rounded-full bg-brand-800 px-2.5 py-0.5 text-xs font-bold text-white">Mejor precio</span> : null}
           <p className="line-clamp-3 break-words text-sm font-semibold text-foreground">{producto.titulo}</p>
         </div>
+        <button
+          type="button"
+          onClick={onFavorito}
+          disabled={guardando}
+          aria-pressed={favorito}
+          aria-label={favorito ? `Quitar ${producto.titulo} de favoritos` : `Guardar ${producto.titulo} en favoritos`}
+          title={favorito ? "Quitar de favoritos" : "Guardar en favoritos"}
+          className={`grid size-9 shrink-0 place-items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30 disabled:cursor-not-allowed disabled:opacity-60 ${
+            favorito ? "bg-accent/30 text-accent hover:bg-accent/50" : "text-neutral-400 hover:bg-neutral-100 hover:text-accent"
+          }`}
+        >
+          <IconoEstrella llena={favorito} />
+        </button>
       </div>
 
       <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted">Desde</p>

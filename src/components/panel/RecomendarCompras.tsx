@@ -1,9 +1,12 @@
 "use client";
 
-import { useMemo, useState, useTransition, type FormEvent } from "react";
+import Link from "next/link";
+import { useMemo, useOptimistic, useState, useTransition, type FormEvent } from "react";
+import { AvisoPanel } from "@/components/panel/AvisoPanel";
 import { TarjetaProducto } from "@/components/panel/TarjetaProducto";
+import { aplicarCambioFavorito, productoAFavorito, recortarClave, type ResultadoFavorito } from "@/lib/favoritos";
 import { formatearMoneda } from "@/lib/format";
-import { agruparProductos } from "@/lib/precios/agrupar";
+import { agruparProductos, type Producto } from "@/lib/precios/agrupar";
 import { listaRubros, rubros, type Rubro } from "@/lib/precios/rubros";
 import type { ResultadoBusqueda } from "@/lib/precios/tipos";
 import { BUSQUEDA_MAXIMA, BUSQUEDA_MINIMA } from "@/lib/precios/validar-busqueda";
@@ -19,6 +22,7 @@ import {
 
 const ejemplosGenerales = ["acetaminofén", "leche", "audífonos", "detergente", "taladro", "pañales"];
 const MENSAJE_SIN_CONEXION = "No pudimos conectar con el servicio de precios. Revisa tu conexión e inténtalo de nuevo.";
+const MENSAJE_FAVORITO_SIN_CONEXION = "No pudimos actualizar tus favoritos. Revisa tu conexión e inténtalo de nuevo.";
 
 const chip = (activo: boolean) =>
   `rounded-full px-4 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30 ${
@@ -35,12 +39,23 @@ const iconoLupa = (
 interface Props {
   /** Busca los precios en el servidor (la acción `buscarPrecios`). */
   buscar: (consulta: string, rubro: string) => Promise<ResultadoBusqueda>;
+  /** Guarda un producto en favoritos (la acción `guardarFavorito`). */
+  guardar: (producto: unknown) => Promise<ResultadoFavorito>;
+  /** Quita un producto de favoritos (la acción `quitarFavorito`). */
+  quitar: (clave: string) => Promise<ResultadoFavorito>;
+  /** Claves de los productos que la persona ya tiene en favoritos. */
+  favoritosIniciales: string[];
+  /** Aviso si no se pudieron leer los favoritos (por ejemplo, falta la migración). */
+  avisoFavoritos?: string;
+  /** Texto y tipo con los que arranca el buscador (por ejemplo, al llegar desde Favoritos). */
+  consultaInicial?: string;
+  tipoInicial?: Rubro | "";
 }
 
 /** Pantalla «Recomendar compras»: buscador, tipo de producto, resultados agrupados por producto y filtros. */
-export function RecomendarCompras({ buscar }: Props) {
-  const [consulta, setConsulta] = useState("");
-  const [rubro, setRubro] = useState<Rubro | "">("");
+export function RecomendarCompras({ buscar, guardar, quitar, favoritosIniciales, avisoFavoritos, consultaInicial = "", tipoInicial = "" }: Props) {
+  const [consulta, setConsulta] = useState(consultaInicial);
+  const [rubro, setRubro] = useState<Rubro | "">(tipoInicial);
   const [resultado, setResultado] = useState<ResultadoBusqueda | null>(null);
   const [buscado, setBuscado] = useState("");
   const [recibidoEn, setRecibidoEn] = useState(0);
@@ -48,6 +63,15 @@ export function RecomendarCompras({ buscar }: Props) {
   const [verOtras, setVerOtras] = useState(false);
   const [orden, setOrden] = useState<"asc" | "desc">("asc");
   const [pendiente, iniciarTransicion] = useTransition();
+
+  const detectado = resultado?.rubro ?? null;
+
+  // Favoritos: la estrella cambia al instante (estado optimista) y vuelve sola a como estaba si el guardado falla.
+  const clavesGuardadas = useMemo(() => new Set(favoritosIniciales), [favoritosIniciales]);
+  const [favoritos, aplicarOptimista] = useOptimistic(clavesGuardadas, aplicarCambioFavorito);
+  const [guardando, setGuardando] = useState<ReadonlySet<string>>(new Set());
+  const [avisoFavorito, setAvisoFavorito] = useState("");
+  const [, iniciarFavorito] = useTransition();
 
   function lanzarBusqueda(texto: string, tipo: Rubro | "") {
     const limpio = texto.trim();
@@ -67,13 +91,34 @@ export function RecomendarCompras({ buscar }: Props) {
     });
   }
 
+  function alternarFavorito(producto: Producto) {
+    const clave = recortarClave(producto.clave);
+    const activar = !favoritos.has(clave);
+    setAvisoFavorito("");
+    setGuardando((actual) => new Set(actual).add(clave));
+    iniciarFavorito(async () => {
+      aplicarOptimista({ clave, activo: activar });
+      let r: ResultadoFavorito;
+      try {
+        r = activar ? await guardar(productoAFavorito(producto, detectado)) : await quitar(clave);
+      } catch {
+        r = { ok: false, mensaje: MENSAJE_FAVORITO_SIN_CONEXION };
+      }
+      if (!r.ok) setAvisoFavorito(r.mensaje ?? MENSAJE_FAVORITO_SIN_CONEXION);
+      setGuardando((actual) => {
+        const nuevo = new Set(actual);
+        nuevo.delete(clave);
+        return nuevo;
+      });
+    });
+  }
+
   function enviar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     lanzarBusqueda(consulta, rubro);
   }
 
   // Todo lo que se muestra se calcula a partir del resultado y de los filtros: no se guarda aparte.
-  const detectado = resultado?.rubro ?? null;
   const todas = useMemo(() => resultado?.ofertas ?? [], [resultado]);
   const ajenas = useMemo(() => contarAjenas(todas), [todas]);
   const base = useMemo(() => ofertasVisibles(todas, { detectado, verOtras }), [todas, detectado, verOtras]);
@@ -84,6 +129,7 @@ export function RecomendarCompras({ buscar }: Props) {
 
   return (
     <div className="space-y-6">
+      {avisoFavoritos ? <AvisoPanel>{avisoFavoritos}</AvisoPanel> : null}
       <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
         <form onSubmit={enviar} className="grid gap-3 md:grid-cols-[1fr_16rem_auto]">
           <div className="relative">
@@ -173,6 +219,12 @@ export function RecomendarCompras({ buscar }: Props) {
               </p>
             ) : null}
 
+            {avisoFavorito ? (
+              <p role="alert" className="rounded-xl bg-rose-50 px-5 py-3 text-sm text-rose-700">
+                {avisoFavorito}
+              </p>
+            ) : null}
+
             {detectado ? (
               <div className="rounded-xl border border-brand-300 bg-brand-100/60 px-5 py-4 text-sm text-brand-800">
                 <p>
@@ -259,12 +311,26 @@ export function RecomendarCompras({ buscar }: Props) {
 
                 <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {productos.map((p) => (
-                    <TarjetaProducto key={p.clave} producto={p} barata={barata} buscado={buscado} rubro={detectado} marcarAjenas={Boolean(detectado)} />
+                    <TarjetaProducto
+                      key={p.clave}
+                      producto={p}
+                      barata={barata}
+                      buscado={buscado}
+                      rubro={detectado}
+                      marcarAjenas={Boolean(detectado)}
+                      favorito={favoritos.has(recortarClave(p.clave))}
+                      guardando={guardando.has(recortarClave(p.clave))}
+                      onFavorito={() => alternarFavorito(p)}
+                    />
                   ))}
                 </ul>
 
                 <p className="text-xs text-muted">
-                  Los precios vienen de los buscadores de compras y pueden cambiar o variar según tu ciudad. Confírmalos en la tienda antes de
+                  Toca la ★ de un producto para guardarlo en{" "}
+                  <Link href="/panel/favoritos" className="font-bold text-brand-700 hover:underline">
+                    Favoritos
+                  </Link>
+                  . Los precios vienen de los buscadores de compras y pueden cambiar o variar según tu ciudad. Confírmalos en la tienda antes de
                   comprar.
                 </p>
               </>
