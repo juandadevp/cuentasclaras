@@ -10,8 +10,7 @@
       "Bash(git status *)",
       "Bash(git diff *)",
       "Bash(git log *)",
-      "Bash(git branch *)",
-      "mcp__claude-code-remote__add_repo"
+      "Bash(git branch *)"
     ],
     "deny": [
       "Read(./.env)",
