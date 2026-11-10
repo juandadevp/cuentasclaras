@@ -25,6 +25,10 @@ const preguntas = [
     r: "En «Presupuesto» fijas un límite mensual para cada categoría. Te mostramos cuánto llevas gastado frente a ese límite y si vas bien, cerca o ya te pasaste.",
   },
   {
+    p: "¿Qué es «Mi ahorro»?",
+    r: "Compara cada mes con el anterior y te muestra cuánto gastaste de menos o de más, en total y por categoría. Si fijaste límites en «Presupuesto», también te dice cuánto te sobra de ellos. No incluye tus ingresos.",
+  },
+  {
     p: "Olvidé mi contraseña, ¿qué hago?",
     r: "En «Iniciar sesión» toca «¿Olvidaste tu contraseña?», escribe tu correo y te enviaremos un enlace para crear una nueva. Ábrelo en el mismo navegador y revisa también la carpeta de spam.",
   },

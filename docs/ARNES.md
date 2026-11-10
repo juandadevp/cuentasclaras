@@ -45,7 +45,7 @@ El hook `proteger-secretos.mjs` se ejecuta antes de cada lectura, edición o com
 El hook se probó con 17 casos (permitidos y bloqueados) y se corrigió un falso positivo que él mismo provocó: un documento que *mencionaba* un comando prohibido dentro de un `cat <<EOF` se bloqueaba como si fuera el comando.
 
 ## 3. Verificación
-- 25 archivos de prueba (`*.test.ts`) con vitest, junto al código que prueban. Ninguna prueba llama a una API real.
+- 27 archivos de prueba (`*.test.ts`) con vitest, junto al código que prueban. Ninguna prueba llama a una API real.
 - GitHub Actions (`ci.yml`) corre en cada pull request: `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, `npm test` y `npm run build`.
 
 ## 4. Proceso y evidencia por módulo
@@ -65,7 +65,7 @@ Cada funcionalidad se construyó en su propia rama, con un prompt (fórmula: *qu
 | 10 Detalles | `docs/solicitudes/10-detalles` | #25 |
 | 11 Recomendar compras | `docs/solicitudes/11-recomendar` | #26 |
 | 12 Favoritos | `docs/solicitudes/12-favoritos` | #27 |
-| 13 Mi ahorro | `docs/solicitudes/13-ahorro` | pendiente |
+| 13 Mi ahorro | `docs/solicitudes/13-ahorro` | #29 |
 
 Los dos primeros ejercicios del taller (presupuesto y recuperar contraseña) se hicieron antes en la versión original (rama `legacy/v1`, PR #11 y #12) y sus planes están en esa rama.
 
