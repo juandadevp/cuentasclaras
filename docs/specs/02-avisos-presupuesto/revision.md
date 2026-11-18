@@ -21,7 +21,7 @@
 | 1 | CA-5 no se cumplía en empates de porcentaje redondeado: se ordenaba por el porcentaje y no por la razón exacta gastado/límite. | **Aceptado.** Pruebas en `00f97c8` y arreglo en `c0b565f`. |
 | 2 | Faltaban `prompt.md`, `skills.md`, `revision.md`, marcar las tareas y la fila del README. | **Aceptado.** Creados al cierre. |
 | 3 | El cliente de Supabase se crea varias veces en `Inicio.tsx`. | **Descartado.** `crearClienteServidor` no hace red y el cambio sale del alcance de esta spec. |
-| 4 | Los enlaces repetidos «Ver en Presupuesto» no dicen la categoría a un lector de pantalla. | **Aceptado.** `aria-label` con la categoría en `c0b565f`. |
+| 4 | Los enlaces repetidos «Ver en Presupuesto» no dicen la categoría a un lector de pantalla. | **Aceptado.** `aria-label` con la categoría en `c0b565f`; luego se ajustó a «Ver en Presupuesto: categoría» para que contenga el texto visible (WCAG 2.5.3, etiqueta en el nombre). |
 | 5 | Una excepción en la consulta de límites tumbaría todo el inicio (CA-9). | **Aceptado.** `try/catch` en `c0b565f`. |
 | 6 | `bg-rose-50 text-rose-700` no son tokens de `globals.css`. | **Aceptado como deuda existente.** Se usan los mismos colores que «Presupuesto» para que las dos pantallas se vean igual; ampliar `globals.css` queda fuera de esta spec. |
 | 7 | No hay registro de quién aprobó el plan. | **Aceptado.** Anotado en `prompt.md`. |

@@ -23,7 +23,7 @@ export function AvisosPresupuesto({ avisos, mes }: { avisos: AvisoPresupuesto[];
             </span>
             <Link
               href={enlaceAPresupuesto(mes, aviso.categoria)}
-              aria-label={`Ver el presupuesto de ${etiquetaCategoria(aviso.categoria)}`}
+              aria-label={`Ver en Presupuesto: ${etiquetaCategoria(aviso.categoria)}`}
               className="text-sm font-semibold text-brand-700 hover:underline">
               Ver en Presupuesto
             </Link>

@@ -16,4 +16,4 @@
 - [X] T009 `revisor-pull-request` y `revisor-seguridad`; registrar qué se aceptó o se descartó.
 
 ## Fase 4: Cierre
-- [ ] T010 Pull request con la plantilla, CI en verde y fusión a `main`.
+- [X] T010 Pull request con la plantilla (#34), CI en verde y fusión a `main`.
