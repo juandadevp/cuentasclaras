@@ -5,15 +5,19 @@ import { Tarjeta } from "@/components/panel/Tarjeta";
 import { TituloPagina } from "@/components/panel/TituloPagina";
 import { ahorroContraPresupuesto, cambiosPorCategoria, categoriasQueBajaron, filasDeAhorro, type FilaAhorro } from "@/lib/ahorro";
 import { formatearMoneda } from "@/lib/format";
-import { coloresCategoria, etiquetaCategoria, hoyIso, nombreDelMes, rangoDelMes, totalesPorMes, ultimosMeses } from "@/lib/gastos";
+import { coloresCategoria, etiquetaCategoria, hoyIso, nombreDelMes, rangoDelMes, totalGastos, totalesPorMes, ultimosMeses } from "@/lib/gastos";
 import { mensajeDeErrorGasto } from "@/lib/gastos-errores";
 import { gastosEntre } from "@/lib/gastos-servidor";
+import { calcularAhorroReal, resumirIngresos } from "@/lib/ingresos";
+import { mensajeDeErrorIngreso } from "@/lib/ingresos-errores";
+import { ingresosEntre } from "@/lib/ingresos-servidor";
 import type { Presupuesto } from "@/lib/presupuestos";
 import { mensajeDeErrorPresupuesto } from "@/lib/presupuestos-errores";
 import { presupuestosDelMes } from "@/lib/presupuestos-servidor";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 import type { Gasto } from "@/types/gasto";
+import type { Ingreso } from "@/types/ingreso";
 
 const MESES_A_COMPARAR = 6;
 
@@ -34,16 +38,25 @@ export async function Ahorro() {
 
   let gastos: Gasto[] = [];
   let limites: Presupuesto[] = [];
+  let ingresosDelMes: Ingreso[] = [];
   let recortado = false;
+  let falloIngresos = false;
   const avisos: string[] = [];
   if (supabaseConfigurado()) {
     const supabase = await crearClienteServidor();
-    const [g, p] = await Promise.all([gastosEntre(supabase, `${meses[0]}-01`, rango.fin), presupuestosDelMes(supabase, rango.mes)]);
+    const [g, p, i] = await Promise.all([
+      gastosEntre(supabase, `${meses[0]}-01`, rango.fin),
+      presupuestosDelMes(supabase, rango.mes),
+      ingresosEntre(supabase, rango.inicio, rango.fin),
+    ]);
     gastos = g.gastos;
     limites = p.presupuestos;
+    ingresosDelMes = i.ingresos;
     recortado = g.recortado;
     if (g.error) avisos.push(mensajeDeErrorGasto(g.error));
     if (p.error) avisos.push(mensajeDeErrorPresupuesto(p.error));
+    falloIngresos = Boolean(i.error);
+    if (i.error) avisos.push(mensajeDeErrorIngreso(i.error));
   }
 
   // Todo sale de una sola consulta de gastos: se separan por mes aquí.
@@ -53,6 +66,9 @@ export async function Ahorro() {
   const cambios = cambiosPorCategoria(delMes, delAnterior);
   const bajaron = categoriasQueBajaron(cambios);
   const contraPresupuesto = ahorroContraPresupuesto(limites, delMes);
+  const ingresos = resumirIngresos(ingresosDelMes);
+  const gastadoDelMes = totalGastos(delMes);
+  const real = calcularAhorroReal(ingresos.total, gastadoDelMes, ingresos.cantidad);
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -64,6 +80,49 @@ export async function Ahorro() {
       {recortado ? (
         <AvisoPanel>Hay muchos gastos y solo contamos los 5.000 más recientes, así que algunos meses pueden salir incompletos.</AvisoPanel>
       ) : null}
+
+      <Tarjeta
+        titulo="Ahorro real del mes"
+        className="mb-6"
+        acciones={
+          <Link href="/panel/ingresos" className="text-sm font-bold text-brand-700 hover:underline">
+            Ir a Ingresos
+          </Link>
+        }
+      >
+        {falloIngresos ? (
+          <p className="text-sm text-muted">No pudimos cargar tus ingresos, por eso no calculamos el ahorro real. Inténtalo de nuevo.</p>
+        ) : real.estado === "sin-ingresos" ? (
+          <p className="text-sm text-muted">
+            No has registrado ingresos en {nombreDelMes(rango.mes).toLowerCase()}, así que no podemos calcular cuánto te quedó. Regístralos en{" "}
+            <Link href="/panel/ingresos" className="font-bold text-brand-700 hover:underline">
+              Ingresos
+            </Link>
+            .
+          </p>
+        ) : (
+          <dl className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-muted">Ingresos</dt>
+              <dd className="text-2xl font-extrabold text-foreground">{formatearMoneda(ingresos.total)}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-muted">Gastos</dt>
+              <dd className="text-2xl font-extrabold text-foreground">{formatearMoneda(gastadoDelMes)}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-muted">Ahorro real</dt>
+              <dd
+                className={`text-2xl font-extrabold ${real.estado === "sobra" ? "text-brand-700" : real.estado === "falta" ? "text-rose-600" : "text-muted"}`}
+              >
+                {real.estado === "sobra" ? `▼ Te sobran ${formatearMoneda(real.ahorro)}` : null}
+                {real.estado === "falta" ? `▲ Gastaste de más: ${formatearMoneda(-real.ahorro)}` : null}
+                {real.estado === "justo" ? "= Quedaste justo" : null}
+              </dd>
+            </div>
+          </dl>
+        )}
+      </Tarjeta>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Tarjeta titulo="Ahorro mes a mes">
@@ -173,7 +232,7 @@ export async function Ahorro() {
         )}
       </Tarjeta>
 
-      <p className="mt-6 text-xs text-muted">Mi ahorro compara tus gastos entre meses; no incluye tus ingresos.</p>
+      <p className="mt-6 text-xs text-muted">Mi ahorro compara tus gastos entre meses y, con tus ingresos registrados, muestra el ahorro real del mes.</p>
     </div>
   );
 }

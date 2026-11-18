@@ -26,7 +26,7 @@ const preguntas = [
   },
   {
     p: "¿Qué es «Mi ahorro»?",
-    r: "Compara cada mes con el anterior y te muestra cuánto gastaste de menos o de más, en total y por categoría. Si fijaste límites en «Presupuesto», también te dice cuánto te sobra de ellos. No incluye tus ingresos.",
+    r: "Compara cada mes con el anterior y te muestra cuánto gastaste de menos o de más, en total y por categoría. Si fijaste límites en «Presupuesto», también te dice cuánto te sobra de ellos. Si registras tus ingresos en «Ingresos», te muestra además el ahorro real del mes: lo que entró menos lo que gastaste.",
   },
   {
     p: "Olvidé mi contraseña, ¿qué hago?",
