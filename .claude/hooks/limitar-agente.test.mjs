@@ -36,6 +36,10 @@ test("probador: escribe pruebas y nada más", () => {
 test("probador: solo ejecuta pruebas", () => {
   permite("probador", "Bash", { command: "npm test" });
   permite("probador", "Bash", { command: "npx vitest run src/lib/ahorro.test.ts" });
+  permite("probador", "Bash", { command: "npm test -- src/lib/ahorro.test.ts" });
+  bloquea("probador", "Bash", { command: "npx vitest run --config otro.ts" });
+  bloquea("probador", "Bash", { command: "npm test -- --config otro.ts" });
+  bloquea("probador", "Bash", { command: "npx vitest run src/lib/ahorro.ts" });
   bloquea("probador", "Bash", { command: "npm run build" });
   bloquea("probador", "Bash", { command: "git push origin main" });
   bloquea("probador", "Bash", { command: "npm test && rm -rf src" });

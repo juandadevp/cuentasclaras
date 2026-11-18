@@ -64,7 +64,7 @@ El taller diseñó seis roles. Estos son los cambios al implementarlos, con lo q
 
 | Cambio | Por qué |
 |---|---|
-| Se agregó el hook `.claude/hooks/limitar-agente.mjs` para el `probador` y el `implementador`. | Al implementar vimos que el campo `tools` de un agente solo dice **qué herramientas** tiene, no sobre qué carpetas ni con qué comandos. Sin el hook, «el probador solo toca `*.test.ts`» era solo una instrucción. El hook lo hace cumplir y se probó con 5 pruebas (unas 40 acciones permitidas y bloqueadas) que corren en el CI. |
+| Se agregó el hook `.claude/hooks/limitar-agente.mjs` para el `probador` y el `implementador`. | Al implementar vimos que el campo `tools` de un agente solo dice **qué herramientas** tiene, no sobre qué carpetas ni con qué comandos. Sin el hook, «el probador solo toca `*.test.ts`» era solo una instrucción. El hook lo hace cumplir y se probó con 5 pruebas y 40 acciones permitidas y bloqueadas que corren en el CI. |
 | El orquestador **no** tiene un hook como los demás. | Es la sesión principal de Claude Code, no un subagente, y los `hooks` del frontmatter solo aplican a subagentes. Se limita con el modo plan (no edita hasta que una persona aprueba el plan), con las reglas y con los permisos de `.claude/settings.json`. Es una limitación real. |
 | Los dos revisores existentes recibieron `model` (`revisor-seguridad`: `opus`; `revisor-pull-request`: `haiku`). | En el diseño cada agente tenía modelo y razón; antes de esto heredaban el de la conversación. |
 | El `implementador` no escribe en `docs/`. | Las tareas se marcan y los documentos se actualizan desde el orquestador, para que el agente que escribe código no pueda marcarse a sí mismo como terminado. |

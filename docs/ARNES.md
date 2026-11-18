@@ -55,11 +55,13 @@ El hook `proteger-secretos.mjs` se probó con 17 casos (permitidos y bloqueados)
 
 ## 3. Verificación
 - 27 archivos de prueba (`*.test.ts`) con vitest, junto al código que prueban. Ninguna prueba llama a una API real.
-- 5 pruebas del hook `limitar-agente.mjs` (`node --test`), que prueban unas 40 acciones permitidas y bloqueadas.
+- 5 pruebas del hook `limitar-agente.mjs` (`node --test`), que prueban 40 acciones permitidas y bloqueadas.
 - GitHub Actions (`ci.yml`) corre en cada pull request: `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, `npm test`, las pruebas de los hooks y `npm run build`.
 
 ## 4. Proceso y evidencia por módulo
 Cada funcionalidad se construyó en su propia rama, con un prompt (fórmula: *qué quiero, para quién, contexto, formato y restricciones*), un plan generado en modo plan y un pull request. La evidencia está en `docs/solicitudes/NN-nombre/` (`prompt.md`, `plan.md`, `skills.md`).
+
+Las specs del proyecto integrador siguen el flujo spec → plan → tareas → pruebas → código → revisión → pull request, con su evidencia en `docs/specs/NN-nombre/` (`spec.md`, `plan.md`, `tasks.md`) y la tabla de pull requests del `README.md`.
 
 | Módulo | Carpeta de evidencia | Pull request |
 |---|---|---|
@@ -84,6 +86,6 @@ Los dos primeros ejercicios del taller (presupuesto y recuperar contraseña) se 
 - **Reconstrucción (rama principal)**: el proyecto se vació y se reconstruyó módulo por módulo con el arnés descrito aquí. Algunos errores del proceso quedaron registrados en el historial de Git, por ejemplo un módulo que se fusionó con archivos sin subir (corregido en el PR #23); de ahí salió el subagente `revisor-pull-request`.
 
 ## Cómo comprobar el arnés
-1. `npm install` y luego `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, `npm test` y `npm run build`.
+1. `npm install` y luego `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, `npm test`, `node --test ".claude/hooks/*.test.mjs"` y `npm run build`.
 2. En Claude Code, `/permissions` muestra las reglas de `.claude/settings.json`, y `/agents` y `/skills` los subagentes y las skills.
 3. Probar el hook: pedirle al agente que lea `.env.local`; la acción debe quedar bloqueada con el mensaje del arnés.

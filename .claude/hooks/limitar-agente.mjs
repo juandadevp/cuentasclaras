@@ -64,14 +64,21 @@ if (herramienta === "Bash") {
   // Nada de encadenar comandos, redirigir salidas ni sustituir comandos: así el permiso no se puede esquivar.
   if (/[;&|`<>]|\$\(|\n/.test(comando)) bloquear("no se encadenan comandos ni se redirigen salidas.");
 
-  const soloPruebas = [/^npm test( .*)?$/, /^npm run test( .*)?$/, /^npx vitest( run)?( [\w./*@:-]+)*$/];
+  // Las pruebas se ejecutan sin banderas (como --config, que podría cargar otro código): solo archivos *.test.ts.
+  const archivoDePrueba = String.raw`[\w./-]+\.test\.ts`;
+  const soloPruebas = [
+    /^npm test$/,
+    new RegExp(`^npm test -- (${archivoDePrueba})( ${archivoDePrueba})*$`),
+    /^npx vitest run$/,
+    new RegExp(`^npx vitest run (${archivoDePrueba})( ${archivoDePrueba})*$`),
+  ];
   const verificaciones = [/^npm run lint$/, /^npx next typegen$/, /^npx tsc --noEmit$/, /^npm run build$/];
 
   const permitidos = rol === "probador" ? soloPruebas : [...soloPruebas, ...verificaciones];
   if (!permitidos.some((patron) => patron.test(comando))) {
     bloquear(
       rol === "probador"
-        ? `solo ejecuta las pruebas (npm test o npx vitest run), no "${comando}".`
+        ? `solo ejecuta las pruebas (npm test o npx vitest run, con archivos *.test.ts y sin banderas), no "${comando}".`
         : `solo ejecuta pruebas, lint, tipos y build, no "${comando}".`,
     );
   }
