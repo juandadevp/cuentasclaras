@@ -1,4 +1,5 @@
 import type { Categoria } from "@/types/gasto";
+import type { TipoIngreso } from "@/types/ingreso";
 
 export const siteConfig = {
   nombre: "Cuentas Claras",
@@ -17,6 +18,13 @@ export const enlacesPrincipales = [
 export const enlacesCuenta = [
   { href: "/login", etiqueta: "Iniciar sesión" },
   { href: "/registro", etiqueta: "Crear cuenta" },
+];
+
+export const tiposIngreso: { valor: TipoIngreso; etiqueta: string }[] = [
+  { valor: "salario", etiqueta: "Salario" },
+  { valor: "ventas", etiqueta: "Ventas" },
+  { valor: "honorarios", etiqueta: "Honorarios" },
+  { valor: "otros", etiqueta: "Otros" },
 ];
 
 export const categorias: { valor: Categoria; etiqueta: string }[] = [
