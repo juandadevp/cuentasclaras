@@ -2,11 +2,16 @@ import Link from "next/link";
 import { connection } from "next/server";
 import type { ReactNode } from "react";
 import { AvisoPanel } from "@/components/panel/AvisoPanel";
+import { AvisosPresupuesto } from "@/components/panel/AvisosPresupuesto";
 import { BarrasMeses } from "@/components/panel/BarrasMeses";
 import { DonaCategorias } from "@/components/panel/DonaCategorias";
 import { Tarjeta } from "@/components/panel/Tarjeta";
 import { TituloPagina } from "@/components/panel/TituloPagina";
+import { avisosDePresupuesto } from "@/lib/avisos-presupuesto";
 import { formatearMoneda } from "@/lib/format";
+import type { Presupuesto } from "@/lib/presupuestos";
+import { mensajeDeErrorPresupuesto } from "@/lib/presupuestos-errores";
+import { presupuestosDelMes } from "@/lib/presupuestos-servidor";
 import { mensajeDeErrorGasto } from "@/lib/gastos-errores";
 import { etiquetaCategoria, hoyIso, nombreDelMes, rangoDelMes, resumirInicio, ultimosMeses } from "@/lib/gastos";
 import { gastosEntre } from "@/lib/gastos-servidor";
@@ -37,13 +42,34 @@ async function cargarGastos(hoy: string): Promise<{ gastos: Gasto[]; aviso?: str
   return { gastos, aviso: error ? mensajeDeErrorGasto(error) : undefined };
 }
 
+/** Límites del mes (de ellos salen los avisos de presupuesto). */
+async function cargarPresupuestos(
+  supabase: Awaited<ReturnType<typeof crearClienteServidor>> | undefined,
+  mes: string,
+): Promise<{ presupuestos: Presupuesto[]; aviso?: string }> {
+  if (!supabase) return { presupuestos: [] };
+  try {
+    const { presupuestos, error } = await presupuestosDelMes(supabase, mes);
+    return { presupuestos, aviso: error ? mensajeDeErrorPresupuesto(error) : undefined };
+  } catch {
+    return { presupuestos: [], aviso: "No pudimos cargar tus límites de presupuesto. Inténtalo de nuevo." };
+  }
+}
+
 /** Pantalla de inicio del panel: saludo, accesos rápidos, resumen del mes y gráficos. */
 export async function Inicio() {
   // La fecha de hoy y la sesión cambian en cada petición: nada de esto puede prerenderizarse.
   await connection();
   const hoy = hoyIso();
-  const [usuario, { gastos, aviso }] = await Promise.all([obtenerUsuario(), cargarGastos(hoy)]);
+  const supabase = supabaseConfigurado() ? await crearClienteServidor() : undefined;
+  const [usuario, { gastos, aviso }, { presupuestos, aviso: avisoLimites }] = await Promise.all([
+    obtenerUsuario(),
+    cargarGastos(hoy),
+    cargarPresupuestos(supabase, hoy.slice(0, 7)),
+  ]);
   const resumen = resumirInicio(gastos, hoy);
+  const gastadoPorCategoria = new Map(resumen.porCategoria.map((t) => [t.categoria, t.total]));
+  const avisos = avisosDePresupuesto(presupuestos, gastadoPorCategoria);
   const { mayor, variacion } = resumen;
 
   return (
@@ -54,6 +80,7 @@ export async function Inicio() {
       />
 
       {aviso ? <AvisoPanel>{aviso}</AvisoPanel> : null}
+      {avisoLimites ? <AvisoPanel>{avisoLimites}</AvisoPanel> : null}
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Link href="/panel/gastos" className={`${botonBase} bg-brand-700 text-white`}>
@@ -92,6 +119,8 @@ export async function Inicio() {
           detalle={mayor ? `${formatearMoneda(mayor.total)} este mes` : "Aún no hay datos"}
         />
       </div>
+
+      <AvisosPresupuesto avisos={avisos} mes={resumen.mes} />
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Tarjeta titulo="Gastos por categoría">
