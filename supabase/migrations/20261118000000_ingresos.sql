@@ -1,6 +1,9 @@
--- Ingresos de cada usuario (salario, ventas, honorarios u otros) para calcular el ahorro real.
 -- Ejecuta este script en Supabase: SQL Editor > New query > pegar > Run.
--- Se puede ejecutar más de una vez; también deja al día una tabla «ingresos» creada antes.
+-- Tabla de ingresos de cada usuario (salario, ventas, honorarios u otros) para calcular el ahorro real.
+-- Se puede ejecutar más de una vez: deja al día los check, los permisos y las tres políticas con nombre propio.
+-- Si ya existiera una tabla «ingresos» anterior, revisa sus políticas con:
+--   select policyname, cmd from pg_policies where tablename = 'ingresos';
+-- Deben salir exactamente 3: ver, crear y borrar.
 
 create table if not exists public.ingresos (
   id          uuid primary key default gen_random_uuid(),
@@ -17,7 +20,7 @@ comment on table public.ingresos is 'Ingresos registrados por cada usuario.';
 
 -- Reglas de los datos (se reemplazan para que queden iguales en una tabla nueva o vieja).
 alter table public.ingresos drop constraint if exists ingresos_descripcion_largo;
-alter table public.ingresos add constraint ingresos_descripcion_largo check (char_length(btrim(descripcion)) between 2 and 80);
+alter table public.ingresos add constraint ingresos_descripcion_largo check (descripcion = btrim(descripcion) and char_length(descripcion) between 2 and 80);
 
 alter table public.ingresos drop constraint if exists ingresos_tipo_valido;
 alter table public.ingresos add constraint ingresos_tipo_valido check (tipo in ('salario', 'ventas', 'honorarios', 'otros'));

@@ -40,6 +40,7 @@ export async function Ahorro() {
   let limites: Presupuesto[] = [];
   let ingresosDelMes: Ingreso[] = [];
   let recortado = false;
+  let falloIngresos = false;
   const avisos: string[] = [];
   if (supabaseConfigurado()) {
     const supabase = await crearClienteServidor();
@@ -54,6 +55,7 @@ export async function Ahorro() {
     recortado = g.recortado;
     if (g.error) avisos.push(mensajeDeErrorGasto(g.error));
     if (p.error) avisos.push(mensajeDeErrorPresupuesto(p.error));
+    falloIngresos = Boolean(i.error);
     if (i.error) avisos.push(mensajeDeErrorIngreso(i.error));
   }
 
@@ -88,7 +90,9 @@ export async function Ahorro() {
           </Link>
         }
       >
-        {real.estado === "sin-ingresos" ? (
+        {falloIngresos ? (
+          <p className="text-sm text-muted">No pudimos cargar tus ingresos, por eso no calculamos el ahorro real. Inténtalo de nuevo.</p>
+        ) : real.estado === "sin-ingresos" ? (
           <p className="text-sm text-muted">
             No has registrado ingresos en {nombreDelMes(rango.mes).toLowerCase()}, así que no podemos calcular cuánto te quedó. Regístralos en{" "}
             <Link href="/panel/ingresos" className="font-bold text-brand-700 hover:underline">
