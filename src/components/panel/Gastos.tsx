@@ -6,6 +6,7 @@ import { Tarjeta } from "@/components/panel/Tarjeta";
 import { TituloPagina } from "@/components/panel/TituloPagina";
 import { Selector } from "@/components/ui/Selector";
 import { categorias } from "@/config/site";
+import { enlaceExportarCsv } from "@/lib/exportar-csv";
 import { mensajeDeErrorGasto } from "@/lib/gastos-errores";
 import { hoyIso, nombreDelMes, rangoDelMes, totalGastos, type FiltrosGastos } from "@/lib/gastos";
 import { gastosFiltrados } from "@/lib/gastos-servidor";
@@ -78,7 +79,7 @@ export async function Gastos({ filtros }: { filtros: FiltrosGastos }) {
       ) : null}
 
       <Tarjeta className="mb-6">
-        <form action="/panel/gastos" method="get" className="grid gap-3 md:grid-cols-[1fr_14rem_auto_auto_auto]">
+        <form action="/panel/gastos" method="get" className="grid gap-3 md:grid-cols-[1fr_14rem_auto_auto_auto_auto]">
           <input type="hidden" name="mes" value={todos ? "todos" : rango.mes} />
           <div>
             <label className="sr-only" htmlFor="q">
@@ -100,6 +101,9 @@ export async function Gastos({ filtros }: { filtros: FiltrosGastos }) {
           <Link href="/panel/gastos?mes=todos" className={`${boton} bg-brand-500 text-white`}>
             Mostrar todo
           </Link>
+          <a href={enlaceExportarCsv(filtros, rango.mes)} download className={`${boton} border border-brand-700 bg-white text-brand-700`}>
+            Exportar CSV
+          </a>
           <Link href="/panel/registrar" className={`${boton} bg-accent text-brand-800`}>
             + Nuevo gasto
           </Link>
