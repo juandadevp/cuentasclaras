@@ -6,10 +6,10 @@ Este documento es el **mapa** de todo lo que rodea al agente (Claude Code) en es
 
 | Capa | Para qué sirve | Dónde está |
 |---|---|---|
-| **Guía** | Que el agente conozca el proyecto y sus reglas | `AGENTS.md`, `CLAUDE.md`, `.claude/skills/`, `.claude/agents/`, `.claude/commands/` |
-| **Control** | Que no pueda hacer lo que nunca debe hacerse | `.claude/settings.json` (permisos) y `.claude/hooks/proteger-secretos.mjs` |
-| **Verificación** | Que el trabajo se compruebe solo | pruebas con vitest (`npm test`) y `.github/workflows/ci.yml` |
-| **Proceso** | Que cada cambio sea revisable | prompt → plan → rama → pull request (`docs/solicitudes/`, `.github/pull_request_template.md`) |
+| **Guía** | Que el agente conozca el proyecto y sus reglas | `AGENTS.md`, `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`, `.claude/agents/`, `.claude/commands/` |
+| **Control** | Que no pueda hacer lo que nunca debe hacerse | `.claude/settings.json` (permisos) y `.claude/hooks/` (`proteger-secretos.mjs` y `limitar-agente.mjs`) |
+| **Verificación** | Que el trabajo se compruebe solo | pruebas con vitest (`npm test`), pruebas de los hooks y `.github/workflows/ci.yml` |
+| **Proceso** | Que cada cambio sea revisable | prompt → plan → rama → pull request (`docs/solicitudes/`), y para las specs: spec → plan → tareas → pruebas → código → revisión → pull request (`docs/specs/`, `.github/pull_request_template.md`) |
 
 ## 1. Guía
 
@@ -30,23 +30,33 @@ Este documento es el **mapa** de todo lo que rodea al agente (Claude Code) en es
 
 Revisión de seguridad: todas son archivos de texto sin scripts. De las de terceros se descartó `web-design-guidelines` porque descarga sus reglas de internet en cada uso.
 
-### Subagentes (`.claude/agents/`)
-- `revisor-seguridad`: revisa seguridad por filas, validación en servidor, redirecciones y manejo de claves.
-- `revisor-pull-request`: revisa que no falten archivos, pruebas ni documentación antes del pull request.
+### Reglas (`.claude/rules/`)
+Se cargan solas al tocar ciertos archivos: `pruebas.md`, `acciones-servidor.md`, `migraciones.md`, `pantallas-panel.md` y `flujo-y-git.md` (esta se aplica siempre).
 
-### Comando propio (`.claude/commands/`)
-- `/nueva-solicitud NN-nombre`: guía el flujo completo de una funcionalidad nueva.
+### Subagentes (`.claude/agents/`)
+- `explorador` (haiku): busca lo que ya existe para reutilizarlo. Solo lee.
+- `probador` (sonnet): escribe las pruebas primero (Red). Solo toca `*.test.ts`.
+- `implementador` (sonnet): escribe el código mínimo (Green). Solo toca `src/**` sin las pruebas y migraciones nuevas.
+- `revisor-seguridad` (opus): revisa seguridad por filas, validación en servidor, redirecciones y manejo de claves.
+- `revisor-pull-request` (haiku): revisa que no falten archivos, pruebas ni documentación antes del pull request.
+
+### Comandos propios (`.claude/commands/`)
+- `/nueva-spec NN-nombre`: guía una spec completa con el sistema de agentes (spec, plan, tareas, pruebas primero, código, revisores y pull request).
+- `/nueva-solicitud NN-nombre`: el flujo con el que se construyeron los módulos 1 a 13.
 
 ## 2. Control
 `.claude/settings.json` define lo que se puede ejecutar sin preguntar (lint, tipos, pruebas, build y lectura de git) y lo que está prohibido (leer o editar `.env`, `git push --force`, `git reset --hard`).
 
 El hook `proteger-secretos.mjs` se ejecuta antes de cada lectura, edición o comando y **cancela** la acción si intenta: leer archivos `.env` (excepto `.env.example`), hacer un push forzado, subir directo a `main`, usar `git reset --hard` o borrar carpetas raíz con `rm -rf`.
 
-El hook se probó con 17 casos (permitidos y bloqueados) y se corrigió un falso positivo que él mismo provocó: un documento que *mencionaba* un comando prohibido dentro de un `cat <<EOF` se bloqueaba como si fuera el comando.
+El hook `limitar-agente.mjs` lo usan el `probador` y el `implementador` desde el frontmatter de su archivo: solo corre mientras ese subagente está activo y hace cumplir sus carpetas (el probador solo `*.test.ts`; el implementador solo `src/**` sin pruebas y migraciones nuevas) y sus comandos. Se prueba con `node --test ".claude/hooks/*.test.mjs"` y esas pruebas corren en el CI. El orquestador, que es la sesión principal, no tiene ese hook: se limita con el modo plan, las reglas y los permisos.
+
+El hook `proteger-secretos.mjs` se probó con 17 casos (permitidos y bloqueados) y se corrigió un falso positivo que él mismo provocó: un documento que *mencionaba* un comando prohibido dentro de un `cat <<EOF` se bloqueaba como si fuera el comando.
 
 ## 3. Verificación
 - 27 archivos de prueba (`*.test.ts`) con vitest, junto al código que prueban. Ninguna prueba llama a una API real.
-- GitHub Actions (`ci.yml`) corre en cada pull request: `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, `npm test` y `npm run build`.
+- 5 pruebas del hook `limitar-agente.mjs` (`node --test`), que prueban unas 40 acciones permitidas y bloqueadas.
+- GitHub Actions (`ci.yml`) corre en cada pull request: `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, `npm test`, las pruebas de los hooks y `npm run build`.
 
 ## 4. Proceso y evidencia por módulo
 Cada funcionalidad se construyó en su propia rama, con un prompt (fórmula: *qué quiero, para quién, contexto, formato y restricciones*), un plan generado en modo plan y un pull request. La evidencia está en `docs/solicitudes/NN-nombre/` (`prompt.md`, `plan.md`, `skills.md`).
