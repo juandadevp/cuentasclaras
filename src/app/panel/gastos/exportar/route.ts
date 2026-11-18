@@ -15,11 +15,17 @@ function texto(mensaje: string, status: number) {
 /** Descarga en CSV los gastos que la persona está viendo (mismo mes, búsqueda y categoría). */
 export async function GET(request: Request) {
   const usuario = await obtenerUsuario();
-  if (codigoDeExportacion({ haySesion: Boolean(usuario), hayError: false, recortado: false }) === 401 || !usuario) {
+  if (!usuario) {
     return texto("Tu sesión expiró. Inicia sesión de nuevo.", 401);
   }
 
-  const filtros = leerFiltros(Object.fromEntries(new URL(request.url).searchParams));
+  const { searchParams } = new URL(request.url);
+  const parametros: Record<string, string | string[]> = {};
+  for (const clave of new Set(searchParams.keys())) {
+    const valores = searchParams.getAll(clave);
+    parametros[clave] = valores.length > 1 ? valores : valores[0];
+  }
+  const filtros = leerFiltros(parametros);
   const { todos, q, categoria } = filtros;
   const rango = rangoDelMes(todos ? undefined : filtros.mes, hoyIso());
 

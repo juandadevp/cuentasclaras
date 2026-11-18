@@ -8,7 +8,7 @@ const MES_VALIDO = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 /** Escapa un campo de texto para CSV: evita fórmulas de hoja de cálculo y protege comas, comillas y saltos de línea. */
 export function escaparCampoCsv(valor: string): string {
-  const seguro = /^[=+\-@\t\r]/.test(valor) ? `'${valor}` : valor;
+  const seguro = /^([\s﻿]*[=+\-@＝＋－＠]|[\t\r])/.test(valor) ? `'${valor}` : valor;
   return /[",\r\n]/.test(seguro) ? `"${seguro.replace(/"/g, '""')}"` : seguro;
 }
 
