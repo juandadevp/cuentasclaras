@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Tarjeta } from "@/components/panel/Tarjeta";
 import { descripcionDeAviso, enlaceAPresupuesto, type AvisoPresupuesto } from "@/lib/avisos-presupuesto";
-import { coloresCategoria } from "@/lib/gastos";
+import { coloresCategoria, etiquetaCategoria } from "@/lib/gastos";
 
 /** Límites del mes que están cerca de agotarse o ya se pasaron. No pinta nada si no hay avisos. */
 export function AvisosPresupuesto({ avisos, mes }: { avisos: AvisoPresupuesto[]; mes: string }) {
@@ -21,7 +21,10 @@ export function AvisosPresupuesto({ avisos, mes }: { avisos: AvisoPresupuesto[];
             >
               {aviso.estado === "excedido" ? "Excedido" : "Cerca del límite"}
             </span>
-            <Link href={enlaceAPresupuesto(mes, aviso.categoria)} className="text-sm font-semibold text-brand-700 hover:underline">
+            <Link
+              href={enlaceAPresupuesto(mes, aviso.categoria)}
+              aria-label={`Ver el presupuesto de ${etiquetaCategoria(aviso.categoria)}`}
+              className="text-sm font-semibold text-brand-700 hover:underline">
               Ver en Presupuesto
             </Link>
           </li>

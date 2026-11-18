@@ -25,10 +25,11 @@ export function avisosDePresupuesto(presupuestos: Presupuesto[], gastadoPorCateg
     if (estado === "bien") continue;
     avisos.push({ categoria: p.categoria, gastado, limite: p.monto, porcentaje, restante, estado });
   }
-  return avisos.sort(
+  // Razón exacta gastado/limite por multiplicación cruzada (no el porcentaje redondeado).
+  return [...avisos].sort(
     (a, b) =>
       Number(b.estado === "excedido") - Number(a.estado === "excedido") ||
-      b.porcentaje - a.porcentaje ||
+      b.gastado * a.limite - a.gastado * b.limite ||
       a.categoria.localeCompare(b.categoria),
   );
 }

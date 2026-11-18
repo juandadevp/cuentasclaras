@@ -48,8 +48,12 @@ async function cargarPresupuestos(
   mes: string,
 ): Promise<{ presupuestos: Presupuesto[]; aviso?: string }> {
   if (!supabase) return { presupuestos: [] };
-  const { presupuestos, error } = await presupuestosDelMes(supabase, mes);
-  return { presupuestos, aviso: error ? mensajeDeErrorPresupuesto(error) : undefined };
+  try {
+    const { presupuestos, error } = await presupuestosDelMes(supabase, mes);
+    return { presupuestos, aviso: error ? mensajeDeErrorPresupuesto(error) : undefined };
+  } catch {
+    return { presupuestos: [], aviso: "No pudimos cargar tus límites de presupuesto. Inténtalo de nuevo." };
+  }
 }
 
 /** Pantalla de inicio del panel: saludo, accesos rápidos, resumen del mes y gráficos. */
