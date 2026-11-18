@@ -18,4 +18,4 @@
 - [X] T011 `revisor-seguridad` (tabla, acciones y datos por usuario) y `revisor-pull-request`; registrar qué se aceptó o se descartó.
 
 ## Fase 4: Cierre
-- [ ] T012 Pull request con la plantilla, CI en verde y fusión a `main`.
+- [X] T012 Pull request con la plantilla (#35), CI en verde y fusión a `main`.

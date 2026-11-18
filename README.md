@@ -87,7 +87,7 @@ Los pull requests de las cinco specs se irán enlazando aquí cuando se fusionen
 |---|---|---|---|
 | 01-exportar-csv | [#33](https://github.com/juandadevp/cuentasclaras/pull/33) | `d112390` y `fcbfc75` | `docs/specs/01-exportar-csv/revision.md` |
 | 02-avisos-presupuesto | [#34](https://github.com/juandadevp/cuentasclaras/pull/34) | `0989b04` y `00f97c8` | `docs/specs/02-avisos-presupuesto/revision.md` |
-| 03-ingresos | _por hacer_ | | |
+| 03-ingresos | [#35](https://github.com/juandadevp/cuentasclaras/pull/35) | `aed284e` | `docs/specs/03-ingresos/revision.md` |
 | 04-metas-ahorro | _por hacer_ | | |
 | 05-resumen-anual | _por hacer_ | | |
 
