@@ -103,6 +103,51 @@ describe("avisosDePresupuesto: orden (CA-5)", () => {
   });
 });
 
+describe("avisosDePresupuesto: orden por razón exacta (CA-5, ronda de arreglos)", () => {
+  it("cercanos con el mismo porcentaje redondeado: gana la razón exacta (80,9 % antes que 80,1 %)", () => {
+    // ocio 801/1000 = 0,801; ropa 809/1000 = 0,809 → ropa tiene mayor razón.
+    const avisos = avisosDePresupuesto([limite("ocio", 1000), limite("ropa", 1000)], gastos(["ocio", 801], ["ropa", 809]));
+    expect(avisos.map((a) => [a.categoria, a.estado])).toEqual([
+      ["ropa", "cerca"],
+      ["ocio", "cerca"],
+    ]);
+  });
+
+  it("excedidos con el mismo porcentaje redondeado: gana la razón exacta (101,0 % antes que 100,4 %)", () => {
+    // ocio 1004/1000 = 1,004; ropa 1010/1000 = 1,010 → ropa tiene mayor razón.
+    const avisos = avisosDePresupuesto([limite("ocio", 1000), limite("ropa", 1000)], gastos(["ocio", 1004], ["ropa", 1010]));
+    expect(avisos.map((a) => [a.categoria, a.estado])).toEqual([
+      ["ropa", "excedido"],
+      ["ocio", "excedido"],
+    ]);
+  });
+
+  it("límites distintos con razón exactamente igual (450/500 y 900/1000): desempata por categoría ascendente", () => {
+    // Ambas valen 0,9. ropa llega primero en la lista, pero «ocio» va antes alfabéticamente.
+    const avisos = avisosDePresupuesto([limite("ropa", 500), limite("ocio", 1000)], gastos(["ropa", 450], ["ocio", 900]));
+    expect(avisos.map((a) => a.categoria)).toEqual(["ocio", "ropa"]);
+  });
+
+  it("el desempate alfabético no depende del orden de entrada con razones iguales", () => {
+    const avisos = avisosDePresupuesto([limite("ocio", 1000), limite("ropa", 500)], gastos(["ocio", 900], ["ropa", 450]));
+    expect(avisos.map((a) => a.categoria)).toEqual(["ocio", "ropa"]);
+  });
+
+  it("la razón se compara entre límites distintos: 460/500 (92 %) va antes que 85/100 (85 %) aunque gaste más en absoluto", () => {
+    // alimentacion sería primera alfabéticamente y llega primero, pero su razón 0,85 < 0,92.
+    const avisos = avisosDePresupuesto([limite("alimentacion", 100), limite("ropa", 500)], gastos(["alimentacion", 85], ["ropa", 460]));
+    expect(avisos.map((a) => a.categoria)).toEqual(["ropa", "alimentacion"]);
+  });
+
+  it("la razón exacta no cruza estados: un cercano 100 % va después de un excedido 100,4 %", () => {
+    const avisos = avisosDePresupuesto([limite("bebes", 1000), limite("ropa", 1000)], gastos(["bebes", 1000], ["ropa", 1004]));
+    expect(avisos.map((a) => [a.categoria, a.estado])).toEqual([
+      ["ropa", "excedido"],
+      ["bebes", "cerca"],
+    ]);
+  });
+});
+
 describe("descripcionDeAviso (CA-4, CA-8)", () => {
   const excedido: AvisoPresupuesto = {
     categoria: "alimentacion",
