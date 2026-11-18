@@ -16,4 +16,4 @@
 - [X] T009 `revisor-seguridad` (la ruta lee datos de la persona y genera archivos) y `revisor-pull-request`; registrar qué se aceptó o se descartó.
 
 ## Fase 4: Cierre
-- [ ] T010 Pull request con la plantilla, CI en verde y fusión a `main`.
+- [X] T010 Pull request con la plantilla (#33), CI en verde y fusión a `main`.

@@ -85,7 +85,11 @@ Los pull requests de las cinco specs se irán enlazando aquí cuando se fusionen
 
 | Spec | Pull request | Commit de las pruebas | Revisión |
 |---|---|---|---|
-| _por hacer_ | | | |
+| 01-exportar-csv | [#33](https://github.com/juandadevp/cuentasclaras/pull/33) | `d112390` y `fcbfc75` | `docs/specs/01-exportar-csv/revision.md` |
+| 02-avisos-presupuesto | _por hacer_ | | |
+| 03-ingresos | _por hacer_ | | |
+| 04-metas-ahorro | _por hacer_ | | |
+| 05-resumen-anual | _por hacer_ | | |
 
 ### Límites que reconocemos
 - No medimos la cobertura ni usamos *mutation testing* todavía.
