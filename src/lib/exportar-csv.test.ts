@@ -84,6 +84,51 @@ describe("escaparCampoCsv", () => {
     expect(escaparCampoCsv("a=b")).toBe("a=b");
     expect(escaparCampoCsv("pan-integral")).toBe("pan-integral");
   });
+
+  it("neutraliza una fórmula precedida de un espacio, con el prefijo antes del espacio", () => {
+    expect(escaparCampoCsv(" =1")).toBe("' =1");
+  });
+
+  it("neutraliza una fórmula precedida de varios espacios", () => {
+    expect(escaparCampoCsv("  @usuario")).toBe("'  @usuario");
+  });
+
+  it("neutraliza una fórmula precedida de un salto de línea y además envuelve en comillas", () => {
+    expect(escaparCampoCsv("\n=1+1")).toBe('"\'\n=1+1"');
+  });
+
+  it("neutraliza una fórmula precedida de tabulador, salto y espacio mezclados", () => {
+    expect(escaparCampoCsv("\t\n =cmd")).toBe("\"'\t\n =cmd\"");
+  });
+
+  it("neutraliza una fórmula precedida de una marca BOM", () => {
+    expect(escaparCampoCsv(`${BOM}=1`)).toBe(`'${BOM}=1`);
+  });
+
+  it.each([
+    ["＝1+1", "'＝1+1"],
+    ["＋1", "'＋1"],
+    ["－1", "'－1"],
+    ["＠usuario", "'＠usuario"],
+  ])("neutraliza el carácter de ancho completo en %j", (entrada, esperado) => {
+    expect(escaparCampoCsv(entrada)).toBe(esperado);
+  });
+
+  it("neutraliza ancho completo precedido de espacios", () => {
+    expect(escaparCampoCsv("  ＝1")).toBe("'  ＝1");
+  });
+
+  it("espacios iniciales seguidos de texto normal no llevan prefijo", () => {
+    expect(escaparCampoCsv("  hola")).toBe("  hola");
+  });
+
+  it("un texto solo de espacios no lleva prefijo", () => {
+    expect(escaparCampoCsv("   ")).toBe("   ");
+  });
+
+  it("un signo después de texto, aunque haya espacio antes, no lleva prefijo", () => {
+    expect(escaparCampoCsv("a =1")).toBe("a =1");
+  });
 });
 
 describe("gastosACsv", () => {
@@ -140,6 +185,16 @@ describe("gastosACsv", () => {
     expect(csv).toBe(
       `${BOM}${ENCABEZADO}\r\n2026-10-05,"Pan, ""integral""",Alimentación,'=HYPERLINK(x),125000\r\n`,
     );
+  });
+
+  it("un gasto con monto 0 termina la fila en ,0", () => {
+    const csv = gastosACsv([gasto({ monto: 0 })]);
+    expect(csv).toBe(`${BOM}${ENCABEZADO}\r\n2026-10-05,Mercado,Alimentación,Exito,0\r\n`);
+  });
+
+  it("una descripción ' =1+1' (espacio inicial) sale neutralizada en la fila", () => {
+    const csv = gastosACsv([gasto({ descripcion: " =1+1" })]);
+    expect(csv).toBe(`${BOM}${ENCABEZADO}\r\n2026-10-05,' =1+1,Alimentación,Exito,125000\r\n`);
   });
 
   it("una descripción con salto de línea \\r\\n va entre comillas dentro de la misma celda", () => {
