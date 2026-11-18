@@ -1,6 +1,6 @@
 ---
-description: Guía el flujo de una funcionalidad nueva: rama, prompt con la fórmula del taller, plan, evidencia y pull request.
-argument-hint: <NN-nombre> (por ejemplo 13-ahorro)
+description: "Guía el flujo de una funcionalidad nueva: rama, prompt con la fórmula del taller, plan, evidencia y pull request."
+argument-hint: "<NN-nombre> (por ejemplo 13-ahorro)"
 ---
 
 Vamos a construir la funcionalidad **$ARGUMENTS** siguiendo el flujo del proyecto. Explica cada paso en palabras simples y no avances sin mi confirmación.

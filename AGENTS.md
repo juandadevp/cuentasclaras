@@ -1,11 +1,20 @@
 # Cuentas Claras
 
-> **Estado: proyecto en reconstrucción.** La versión original (v1) está en la rama `legacy/v1`. Cada funcionalidad nueva se construye en su propia rama (`feat/NN-nombre`), con su prompt, su plan y las skills usadas, guardados en `docs/solicitudes/NN-nombre/`. Las secciones de «Organización del código» describen la meta; no todo existe todavía.
+> **Estado:** los módulos 1 a 13 ya están en `main`. La versión original (v1) está en la rama `legacy/v1`. Cada funcionalidad nueva se construye en su propia rama (`feat/NN-nombre`): los módulos con `docs/solicitudes/NN-nombre/` (prompt, plan y skills) y las specs del proyecto integrador con `docs/specs/NN-nombre/` (spec, plan y tareas).
 
 Aplicación web para llevar el control de los gastos mensuales. Cada usuario tiene un panel privado donde registra gastos, los ve por categoría, compara sus meses, busca precios de productos en tiendas de Colombia y guarda favoritos. Es un solo repositorio: el frontend y el backend viven juntos en Next.js (el «backend» son las Server Actions y la conexión con Supabase).
 
 ## Arnés
-El mapa de la memoria, las skills, los subagentes, los permisos y la evidencia por módulo está en `docs/ARNES.md`. Antes de cerrar una rama usa el subagente `revisor-pull-request`; si toca tablas, acciones o autenticación, también `revisor-seguridad`.
+El mapa de la memoria, las reglas, las skills, los subagentes, los permisos y la evidencia está en `docs/ARNES.md` y la guía de uso en el `README.md`.
+
+Las normas por tipo de archivo están en `.claude/rules/` (se cargan solas al tocar esos archivos). El trabajo se reparte entre el orquestador (Claude Code en modo plan, que no programa) y cinco subagentes de `.claude/agents/`:
+- `explorador`: busca lo que ya existe para reutilizarlo. Solo lee.
+- `probador`: escribe las pruebas primero (Red), sin ver el código. Solo toca `*.test.ts`.
+- `implementador`: escribe el código mínimo (Green). Solo toca `src/**` sin las pruebas y migraciones nuevas.
+- `revisor-pull-request`: antes de subir cualquier rama. Solo lee.
+- `revisor-seguridad`: si toca tablas, acciones o autenticación. Solo lee.
+
+Las carpetas y los comandos del `probador` y del `implementador` los hace cumplir el hook `.claude/hooks/limitar-agente.mjs`, no solo las instrucciones. Una spec nueva se arranca con `/nueva-spec NN-nombre`.
 
 ## Stack
 - Next.js 16 (App Router, `cacheComponents` activo), React 19, TypeScript, Tailwind CSS 4.
@@ -21,6 +30,7 @@ npm run start      # servir lo compilado
 npm run lint       # ESLint
 npx tsc --noEmit   # revisar tipos
 npm test           # pruebas automáticas (vitest)
+node --test ".claude/hooks/*.test.mjs"  # pruebas de los hooks del arnés
 ```
 Antes de dar algo por terminado corre `npm run lint`, `npx tsc --noEmit`, `npm test` y `npm run build`. Las pruebas viven junto al código, en archivos `*.test.ts`; si cambias validaciones o cálculos de `src/lib/`, agrega o actualiza su prueba. GitHub Actions (`.github/workflows/ci.yml`) repite esas cuatro comprobaciones en cada pull request.
 
@@ -36,6 +46,8 @@ Se copian de `.env.example` a `.env.local` (este archivo NO se sube a git). `NEX
 - `src/config/site.ts`: nombre del sitio, menú y lista de categorías de gasto.
 - `src/proxy.ts`: renueva la sesión de Supabase (en Next 16 reemplaza a `middleware`).
 - `supabase/migrations/`: cambios de la base de datos, en SQL, con fecha en el nombre. Se ejecutan a mano en el SQL Editor de Supabase.
+- `docs/specs/NN-nombre/`: la spec, el plan y las tareas de cada funcionalidad del proyecto integrador (la plantilla está en `docs/specs/_plantilla/`). `docs/solicitudes/` guarda lo de los módulos 1 a 13.
+- `.claude/`: la memoria operativa del agente: `rules/` (normas), `skills/`, `agents/`, `commands/`, `hooks/` y `settings.json` (permisos).
 
 Regla de dependencias: los componentes pueden usar `lib/` y `config/`; `lib/` no importa componentes.
 

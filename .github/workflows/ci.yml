@@ -36,6 +36,10 @@ jobs:
       - name: Pruebas
         run: npm test
 
+      - name: Pruebas de los hooks del arnés
+        # Comprueban que el hook limitar-agente.mjs bloquea lo que cada agente no puede hacer.
+        run: node --test ".claude/hooks/*.test.mjs"
+
       - name: Compilar
         run: npm run build
         env:
