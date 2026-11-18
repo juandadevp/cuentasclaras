@@ -27,3 +27,5 @@ Con los ingresos registrados, «Mi ahorro» ya muestra cuánto ahorró la person
 - **¿Dónde se ve?** En «Mi ahorro», debajo de «Ahorro real del mes»; no hay ruta ni enlace de menú nuevos.
 - **¿Cómo se cambia?** Con el mismo formulario: fijar de nuevo la meta del mes la actualiza.
 - **¿Qué pasa si el ahorro real es negativo?** El estado es «por debajo» y el porcentaje es 0.
+- **¿Se confirma antes de quitar la meta?** No: igual que los límites de presupuesto, se quita con un clic y se puede volver a fijar. Decidido tras el informe del `explorador`.
+- **¿Y si falla la carga de los ingresos?** La tarjeta no inventa un avance: dice que no pudo cargar los ingresos, como ya hace «Ahorro real del mes». El formulario de la meta sigue disponible. Decidido tras el informe del `explorador`.
