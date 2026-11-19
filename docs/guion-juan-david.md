@@ -1,8 +1,8 @@
-# Guion de Juan David Plata Polanía · 4 diapositivas · 5 minutos
+# Guion de Juan David Plata Polanía · 6 diapositivas · 7 minutos
 
 Es el guion para **hablar**, no para leer. Está escrito en frases cortas, con tus palabras habituales. En cada diapositiva primero dices lo que significa y después recorres lo que muestra, **elemento por elemento**, en el orden en que está en pantalla.
 
-Corresponde a la versión de la presentación que subiste (`…con_responsables.pptx`), donde tu parte son las diapositivas **1 a 4**. Las marcas **▶** son para quien maneja el computador.
+Corresponde a la versión de la presentación que subiste (`…con_responsables.pptx`), donde tu parte son las diapositivas **1 a 6** (las dos últimas, «Tecnologías» y «Proceso», se agregaron después). Las marcas **▶** son para quien maneja el computador.
 
 | Diapositiva | Tiempo |
 |---|---|
@@ -10,6 +10,8 @@ Corresponde a la versión de la presentación que subiste (`…con_responsables.
 | 2. Introducción | 1 min 15 s |
 | 3. El arnés | 2 min |
 | 4. Las skills | 1 min 5 s |
+| 5. Tecnologías | 1 min |
+| 6. El proceso | 1 min |
 
 ---
 
@@ -105,6 +107,38 @@ Corresponde a la versión de la presentación que subiste (`…con_responsables.
 >
 > Sin estas recetas, cada tabla o cada pantalla saldría distinta, y alguna podría quedar sin protección. Con ellas, siempre sale igual de segura.
 
+## Diapositiva 5 · Tecnologías que utilizamos (1 min)
+
+**Lo que muestra:** cuatro filas numeradas, cada una con una tecnología y para qué se usa.
+
+> Antes de pasar a cómo lo hicimos, les muestro **con qué herramientas lo hicimos**. Son cuatro grupos.
+>
+> **Uno, la aplicación:** Next.js 16, React 19, TypeScript y Tailwind CSS 4. Next.js nos da las páginas y las acciones del servidor; React los componentes; TypeScript nos avisa de errores antes de ejecutar; y Tailwind los estilos.
+>
+> **Dos, los datos y las cuentas:** Supabase. Es una base de datos PostgreSQL con **seguridad por filas**, que hace que cada persona vea solo lo suyo, y con inicio de sesión. Los cambios de la base de datos van en migraciones en SQL.
+>
+> **Tres, la calidad:** Vitest para las pruebas, ESLint para el estilo y el compilador de TypeScript para revisar los tipos. Todo eso se corre en cada cambio, y el CI lo repite en cada pull request.
+>
+> **Y cuatro, la IA y la entrega:** Claude Code, que es la herramienta de IA, trabajando con el arnés que ya vimos. Git guarda el historial y GitHub guarda las ramas y corre el CI con GitHub Actions.
+
+---
+
+## Diapositiva 6 · Cómo se hizo, de principio a fin (1 min)
+
+**Lo que muestra:** cuatro tarjetas con los pasos del proceso.
+
+> Y ahora **cómo fue el proceso**, de principio a fin. Fueron cuatro pasos.
+>
+> **Primero, armamos el arnés.** Antes de escribir ninguna funcionalidad dejamos listas la memoria, las reglas, las skills, los agentes y los hooks. Eso se fusionó en el pull request 32.
+>
+> **Segundo, una spec por funcionalidad.** Cada una tiene su propia rama, con criterios de aceptación numerados y un plan que una persona aprueba antes de escribir una sola línea de código.
+>
+> **Tercero, pruebas, código y revisión.** Primero se escriben las pruebas, después el código mínimo que las hace pasar, y al final dos revisores leen el resultado. Cada hallazgo se anota con su decisión: aceptado o descartado.
+>
+> **Y cuarto, el pull request y el CI.** Cada funcionalidad entra a la rama principal solo con el CI en verde. Fueron cinco pull requests, del 33 al 37.
+>
+> Ese recorrido lo repetimos cinco veces, y Cristian les cuenta ahora quién hace cada cosa dentro de él.
+
 **Para pasarle la palabra a Cristian:**
 
 > Hasta aquí es lo que rodea a la IA. Ahora **Cristian** les cuenta quién trabaja dentro de ese arnés.
@@ -124,4 +158,4 @@ Corresponde a la versión de la presentación que subiste (`…con_responsables.
 ## Antes de empezar
 - Cierra la pestaña `.env` del editor. **Nunca la abras ante el público**; si piden ver la configuración, muestra `.env.example`.
 - Ten abiertos de antemano: `AGENTS.md`, `.claude/rules/pruebas.md`, `.claude/settings.json`, `proteger-secretos.mjs` y la skill de migraciones, en ese orden.
-- Practica una vez con cronómetro: son 5 minutos, y la diapositiva 3 es la más larga.
+- Practica una vez con cronómetro: ahora son unos 7 minutos y la diapositiva 3 es la más larga. Con tus dos diapositivas nuevas la exposición completa pasa de 15 minutos; si hace falta recortar, abrevia la 5 y la 6 a 40 segundos cada una.
