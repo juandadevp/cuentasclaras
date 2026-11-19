@@ -70,7 +70,16 @@ El taller diseñó seis roles. Estos son los cambios al implementarlos, con lo q
 | El `implementador` no escribe en `docs/`. | Las tareas se marcan y los documentos se actualizan desde el orquestador, para que el agente que escribe código no pueda marcarse a sí mismo como terminado. |
 | El flujo ahora arranca con `/nueva-spec` y usa `docs/specs/` en vez de `docs/solicitudes/`. | El proyecto integrador pide spec, plan y tareas por funcionalidad. |
 
-Lo que descubramos al ejecutar las cinco specs se agrega a esta tabla.
+Lo que descubrimos al ejecutar las cinco specs:
+
+| Observación | Qué hicimos |
+|---|---|
+| Los permisos del `probador` dejaban pasar banderas de `vitest` como `--config` (podía correr un archivo que no era una prueba). | Se cerró el permiso a rutas `*.test.ts` y se agregaron pruebas al hook. |
+| Dos comandos (`nueva-solicitud` y `nueva-spec`) no cargaban por tener dos puntos sin comillas en el encabezado YAML. | Se pusieron comillas y se comprobó que cargan. |
+| El `implementador` se cortó una vez por el límite de uso del servicio. | Se retomó desde donde quedó, comprobando antes el trabajo parcial. El diseño por tareas pequeñas lo permitió. |
+| El orquestador resolvió mal un detalle y el `implementador` lo descubrió al ejecutar: en el resumen anual, `gastosEntre` excluye la fecha final, y pedir hasta el 31 de diciembre perdía ese día. | El código usa el 1 de enero siguiente y la corrección quedó anotada en `docs/specs/05-resumen-anual/revision.md`; el plan se dejó como se aprobó. |
+| Los revisores encontraron fallos reales que las pruebas no cubrían (por ejemplo, inyección en el CSV con espacios al inicio, un mensaje «sin ingresos» engañoso cuando la carga fallaba, o el aviso de error junto a «No tienes gastos»). | Cada uno se arregló con su ronda de pruebas y código; ver el `revision.md` de cada spec. |
+| El CI de GitHub a veces quedó «en progreso» mucho tiempo. | Se esperó y se revisó de nuevo. El pull request #34 se fusionó por orden expresa del equipo tras repetir las cuatro comprobaciones en local: es una excepción y la reconocemos como límite (la rama `main` no está protegida). |
 
 ### 5. Qué mecanismos de calidad aplicamos y dónde está su evidencia
 
@@ -81,7 +90,7 @@ Lo que descubramos al ejecutar las cinco specs se agrega a esta tabla.
 | **Revisión de cada pull request por los dos revisores**, con cada hallazgo aceptado o descartado | Los comentarios de cada pull request y la sección «Evidencia de calidad» de su descripción. |
 | **Hook de protección** (`proteger-secretos.mjs` y `limitar-agente.mjs`) probado | `.claude/hooks/*.test.mjs` y el paso «Pruebas de los hooks del arnés» del CI. |
 
-Los pull requests de las cinco specs se irán enlazando aquí cuando se fusionen.
+Los cinco pull requests están fusionados en `main`:
 
 | Spec | Pull request | Commit de las pruebas | Revisión |
 |---|---|---|---|
