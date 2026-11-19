@@ -2,6 +2,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { AvisoPanel } from "@/components/panel/AvisoPanel";
 import { Tarjeta } from "@/components/panel/Tarjeta";
+import { TarjetaMetaAhorro } from "@/components/panel/TarjetaMetaAhorro";
 import { TituloPagina } from "@/components/panel/TituloPagina";
 import { ahorroContraPresupuesto, cambiosPorCategoria, categoriasQueBajaron, filasDeAhorro, type FilaAhorro } from "@/lib/ahorro";
 import { formatearMoneda } from "@/lib/format";
@@ -11,6 +12,9 @@ import { gastosEntre } from "@/lib/gastos-servidor";
 import { calcularAhorroReal, resumirIngresos } from "@/lib/ingresos";
 import { mensajeDeErrorIngreso } from "@/lib/ingresos-errores";
 import { ingresosEntre } from "@/lib/ingresos-servidor";
+import { progresoMeta, type MetaAhorro } from "@/lib/metas-ahorro";
+import { mensajeDeErrorMeta } from "@/lib/metas-ahorro-errores";
+import { metaDelMes } from "@/lib/metas-ahorro-servidor";
 import type { Presupuesto } from "@/lib/presupuestos";
 import { mensajeDeErrorPresupuesto } from "@/lib/presupuestos-errores";
 import { presupuestosDelMes } from "@/lib/presupuestos-servidor";
@@ -39,15 +43,17 @@ export async function Ahorro() {
   let gastos: Gasto[] = [];
   let limites: Presupuesto[] = [];
   let ingresosDelMes: Ingreso[] = [];
+  let meta: MetaAhorro | null = null;
   let recortado = false;
   let falloIngresos = false;
   const avisos: string[] = [];
   if (supabaseConfigurado()) {
     const supabase = await crearClienteServidor();
-    const [g, p, i] = await Promise.all([
+    const [g, p, i, m] = await Promise.all([
       gastosEntre(supabase, `${meses[0]}-01`, rango.fin),
       presupuestosDelMes(supabase, rango.mes),
       ingresosEntre(supabase, rango.inicio, rango.fin),
+      metaDelMes(supabase, rango.mes),
     ]);
     gastos = g.gastos;
     limites = p.presupuestos;
@@ -55,6 +61,8 @@ export async function Ahorro() {
     recortado = g.recortado;
     if (g.error) avisos.push(mensajeDeErrorGasto(g.error));
     if (p.error) avisos.push(mensajeDeErrorPresupuesto(p.error));
+    meta = m.meta;
+    if (m.error) avisos.push(mensajeDeErrorMeta(m.error));
     falloIngresos = Boolean(i.error);
     if (i.error) avisos.push(mensajeDeErrorIngreso(i.error));
   }
@@ -69,6 +77,8 @@ export async function Ahorro() {
   const ingresos = resumirIngresos(ingresosDelMes);
   const gastadoDelMes = totalGastos(delMes);
   const real = calcularAhorroReal(ingresos.total, gastadoDelMes, ingresos.cantidad);
+  // Sin ingresos (o si falló su carga) el ahorro real es desconocido: no se inventa un avance.
+  const progreso = progresoMeta(real.estado === "sin-ingresos" || falloIngresos ? null : real.ahorro, meta?.monto ?? null);
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -123,6 +133,15 @@ export async function Ahorro() {
           </dl>
         )}
       </Tarjeta>
+
+      <TarjetaMetaAhorro
+        mes={nombreDelMes(rango.mes)}
+        mesIso={rango.mes}
+        hoy={hoy}
+        meta={meta}
+        progreso={progreso}
+        falloIngresos={falloIngresos}
+      />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Tarjeta titulo="Ahorro mes a mes">
