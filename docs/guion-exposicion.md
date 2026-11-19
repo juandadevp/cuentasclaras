@@ -19,7 +19,7 @@ Está pensado para contarlo con tus palabras, no para leer las diapositivas. Dur
 | 6 | `.claude/hooks/limitar-agente.mjs` y `.claude/settings.json` | El control que hace cumplir los límites, y sus pruebas (`limitar-agente.test.mjs`). |
 | 7 | `.claude/commands/nueva-spec.md` | El comando que arranca todo el flujo. |
 | 8 | `docs/specs/05-resumen-anual/` | Una spec completa: `spec.md`, `plan.md`, `tasks.md`, `prompt.md`, `skills.md`, `revision.md`. |
-| 9 | Terminal: `git log --oneline --grep="spec 05"` y `git log --oneline -6` | Las pruebas (Red) antes del código (Green). |
+| 9 | Terminal: `git log --oneline 6c6cac9^..505e8a5` (de la spec al último arreglo) | Las pruebas (Red) antes del código (Green). |
 | 10 | `src/lib/resumen-anual.test.ts` y luego `src/lib/resumen-anual.ts` | Una prueba escrita antes, y el código mínimo que la hace pasar. |
 | 11 | `.github/workflows/ci.yml` y la pestaña de Actions | El CI que repite lint, tipos, pruebas, hooks y build. |
 | 12 | `docs/specs/01-exportar-csv/revision.md` | Los hallazgos de los revisores con su decisión. |
