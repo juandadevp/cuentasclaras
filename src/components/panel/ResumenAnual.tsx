@@ -5,7 +5,7 @@ import { DonaCategorias } from "@/components/panel/DonaCategorias";
 import { Tarjeta } from "@/components/panel/Tarjeta";
 import { TituloPagina } from "@/components/panel/TituloPagina";
 import { formatearMoneda } from "@/lib/format";
-import { coloresCategoria, etiquetaCategoria, hoyIso, nombreDelMes } from "@/lib/gastos";
+import { coloresCategoria, etiquetaCategoria, hoyIso, mesCorto, nombreDelMes } from "@/lib/gastos";
 import { mensajeDeErrorGasto } from "@/lib/gastos-errores";
 import { gastosEntre } from "@/lib/gastos-servidor";
 import { ANIO_MINIMO, anioDeResumen, resumirAnio } from "@/lib/resumen-anual";
@@ -73,10 +73,10 @@ export async function ResumenAnual({ anio: anioParam }: Props) {
         <AvisoPanel key={aviso}>{aviso}</AvisoPanel>
       ))}
       {recortado ? (
-        <AvisoPanel>Tienes más de 5.000 gastos en {anio}: este resumen está incompleto.</AvisoPanel>
+        <AvisoPanel>Tienes 5.000 o más gastos en {anio}: este resumen está incompleto.</AvisoPanel>
       ) : null}
 
-      {resumen.cantidad === 0 ? (
+      {avisos.length > 0 ? null : resumen.cantidad === 0 ? (
         <Tarjeta>
           <div className="px-4 py-10 text-center">
             <p className="font-semibold text-foreground">No tienes gastos en {anio}</p>
@@ -113,7 +113,10 @@ export async function ResumenAnual({ anio: anioParam }: Props) {
                 {resumen.meses.map((m) => (
                   <li key={m.mes}>
                     <div className="flex items-baseline justify-between gap-3 text-sm">
-                      <span className="font-semibold text-foreground">{nombreDelMes(m.mes).split(" ")[0]}</span>
+                      <span className="font-semibold text-foreground">
+                        <span aria-hidden>{mesCorto(m.mes)}</span>
+                        <span className="sr-only">{nombreDelMes(m.mes)}</span>
+                      </span>
                       <span className="font-bold text-foreground">{formatearMoneda(m.total)}</span>
                     </div>
                     <div aria-hidden className="mt-1 h-2 overflow-hidden rounded-full bg-neutral-100">
