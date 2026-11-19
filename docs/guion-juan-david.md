@@ -1,0 +1,127 @@
+# Guion de Juan David Plata Polanía · 4 diapositivas · 5 minutos
+
+Es el guion para **hablar**, no para leer. Está escrito en frases cortas, con tus palabras habituales. En cada diapositiva primero dices lo que significa y después recorres lo que muestra, **elemento por elemento**, en el orden en que está en pantalla.
+
+Corresponde a la versión de la presentación que subiste (`…con_responsables.pptx`), donde tu parte son las diapositivas **1 a 4**. Las marcas **▶** son para quien maneja el computador.
+
+| Diapositiva | Tiempo |
+|---|---|
+| 1. Portada | 40 s |
+| 2. Introducción | 1 min 15 s |
+| 3. El arnés | 2 min |
+| 4. Las skills | 1 min 5 s |
+
+---
+
+## Diapositiva 1 · Portada (40 s)
+
+**Lo que muestra:** el título «Cuentas Claras», los tres nombres del equipo y la Fundación.
+
+> Buenos días, profe, buenos días a todos. Yo soy Juan David Plata, y con Jorge Arias y Cristian Ruiz les vamos a presentar el proyecto integrador.
+>
+> Nuestro proyecto se llama **Cuentas Claras**. Es una aplicación para llevar los gastos del mes. Pero lo que les vamos a contar hoy no es la aplicación en sí, sino **cómo usamos la inteligencia artificial para construirle cinco funcionalidades nuevas sin perder el control de lo que escribe**.
+>
+> Yo les voy a explicar el punto de partida y el arnés. Después Cristian cuenta los agentes, y Jorge las funcionalidades y la calidad.
+
+---
+
+## Diapositiva 2 · Introducción (1 min 15 s)
+
+**Lo que muestra:** un párrafo y tres tarjetas numeradas: el problema, la necesidad y la propuesta.
+
+> Empiezo por **de dónde partimos**.
+
+▶ Señalar el párrafo.
+
+> Cuentas Claras ya existía. Es una aplicación web hecha con **Next.js y Supabase**, donde cada persona entra a un panel privado y lleva sus gastos del mes. Sobre esa base construimos **cinco funcionalidades nuevas con ayuda de IA**.
+>
+> Y lo explico con tres ideas, que son estas tres tarjetas.
+
+▶ Señalar la tarjeta 1.
+
+> **Uno, el problema.** Si uno le pide código a la IA sin reglas, obtiene código que nadie revisa. Y cuando algo falla, es difícil explicar por qué se hizo así.
+
+▶ Señalar la tarjeta 2.
+
+> **Dos, la necesidad.** Que el agente sepa cómo es el proyecto, qué puede tocar y qué no, y cómo se comprueba lo que escribe. O sea, que no trabaje a ciegas.
+
+▶ Señalar la tarjeta 3.
+
+> **Tres, la propuesta.** Armar un **arnés**: memoria, reglas, skills, cinco agentes con permisos y un flujo que va desde la especificación hasta el pull request. Un arnés es todo lo que rodea a la IA para que trabaje como el equipo decidió. Eso es lo que sigue.
+
+---
+
+## Diapositiva 3 · El arnés (2 min)
+
+**Lo que muestra:** tres columnas: **Memoria y reglas**, **Skills** y **Permisos y hooks**, con cuatro puntos cada una.
+
+> Esta diapositiva es el mapa del arnés. Todo esto vive **en el repositorio**, no en la cabeza de nadie. Cualquier persona que llegue lo puede leer. Voy columna por columna.
+
+### Columna 1: Memoria y reglas («lo que lee al empezar»)
+
+▶ **ABRIR** `AGENTS.md` · **SEÑALAR** la sección «Lo que el agente NO debe hacer».
+
+> **Primero, la memoria.** Cada vez que la IA empieza una sesión, lee estos archivos: `AGENTS.md` y `CLAUDE.md`. Ahí está cómo se corre el proyecto, las convenciones y **lo que no debe hacer**. Por ejemplo: no subir claves, no tocar migraciones que ya se aplicaron y no hacer merge a la rama principal sin que nosotros lo pidamos.
+
+▶ **ABRIR** `.claude/rules/pruebas.md` · **SEÑALAR** «El resultado esperado se calcula a mano».
+
+> **Después, las reglas.** Son normas cortas que **se cargan solas según el tipo de archivo**. Tenemos reglas para migraciones, acciones del servidor, pantallas, pruebas y para el flujo con git. Esta es la de las pruebas, y dice algo clave: el resultado esperado se calcula a mano y no se copia de lo que devuelve el código, porque una prueba que repite al código no prueba nada.
+>
+> Y lo último de esta columna: todo el proyecto va **en español**, también los nombres y los mensajes de los commits.
+
+### Columna 2: Skills («procedimientos bajo demanda»)
+
+> **Segunda columna, las skills.** Son recetas que la IA **carga solo cuando la tarea las necesita**. Tenemos siete en la carpeta `.claude/skills/`, y el documento pide como mínimo tres. Además hay un comando propio, `/nueva-spec`, que arranca todo el flujo de una funcionalidad. Y el README explica para qué sirve cada skill. Las veo en detalle en la siguiente diapositiva.
+
+### Columna 3: Permisos y hooks («lo que lo verifica»)
+
+▶ **ABRIR** `.claude/settings.json` · **SEÑALAR** el bloque `deny`.
+
+> **Tercera columna, los permisos y los hooks.** `settings.json` dice qué comandos se pueden usar sin preguntar y cuáles están prohibidos: por ejemplo, leer el archivo de claves o hacer un push forzado.
+
+▶ **ABRIR** `.claude/hooks/proteger-secretos.mjs` · **SEÑALAR** la línea «No se leen ni se editan los archivos .env».
+
+> Un **hook** es un programa que se ejecuta antes de cada acción de la IA. Este, `proteger-secretos`, la cancela si intenta leer o mostrar un archivo `.env`, que es donde están las claves. Es la diferencia entre **pedirle** a la IA que no lo haga y **que no pueda hacerlo**.
+>
+> Hay otro hook, `limitar-agente`, que restringe qué carpetas puede tocar cada agente: el probador solo toca archivos de prueba y el implementador solo el código. Ese lo explica Cristian. Lo que sí quiero que se queden es que **los hooks tienen pruebas, y esas pruebas corren en el CI**.
+
+---
+
+## Diapositiva 4 · Las skills (1 min 5 s)
+
+**Lo que muestra:** cuatro filas numeradas, cada una con el nombre de una skill y para qué sirve.
+
+> Les cuento **para qué sirve cada skill**, o sea, qué problema resuelve.
+
+▶ **ABRIR** `.claude/skills/crear-migracion-supabase/SKILL.md` · **SEÑALAR** el paso 5.
+
+> **Primera: `crear-migracion-supabase`.** Cada vez que hay que crear una tabla, la receta obliga a que lleve seguridad por filas y un script que se pueda ejecutar dos veces. El resultado es que **nadie ve datos de otra persona**. Con esta skill nacieron las tablas de ingresos y de metas de ahorro.
+>
+> **Segunda: `crear-accion-servidor`.** Las acciones del servidor validan siempre en el servidor, comprueban que haya sesión y **toman el usuario de la sesión, nunca del formulario**. Así nadie puede hacerse pasar por otro.
+>
+> **Tercera: `crear-pantalla-panel`.** Cada pantalla nueva trae su enlace en el menú, un estado vacío y un aviso de error claro. Es para que todas las pantallas se comporten igual.
+>
+> **Y cuarta: `escribir-pruebas`.** Son pruebas con vitest, con el resultado esperado calculado a mano y escritas **antes** del código.
+>
+> Sin estas recetas, cada tabla o cada pantalla saldría distinta, y alguna podría quedar sin protección. Con ellas, siempre sale igual de segura.
+
+**Para pasarle la palabra a Cristian:**
+
+> Hasta aquí es lo que rodea a la IA. Ahora **Cristian** les cuenta quién trabaja dentro de ese arnés.
+
+---
+
+## Si te preguntan (respuestas cortas)
+
+| Pregunta | Respuesta |
+|---|---|
+| ¿Qué es un hook? | Un programa que se ejecuta antes de cada acción de la IA y puede cancelarla. El de secretos cancela cualquier intento de leer o mostrar un `.env`. |
+| ¿Cuál es la diferencia entre una regla y una skill? | La regla se carga sola según el tipo de archivo y dice **cómo debe ser** algo. La skill se carga cuando la tarea la necesita y dice **cómo hacerlo**, paso a paso. |
+| ¿Por qué `AGENTS.md` y `CLAUDE.md`? | `AGENTS.md` lo leen casi todas las herramientas de IA. `CLAUDE.md` lo importa y agrega instrucciones solo de Claude Code. |
+| ¿Las skills las escribieron ustedes? | Seis son del equipo. Una, `vercel-react-best-practices`, es de terceros y la revisamos antes de instalarla (es solo texto, sin scripts). |
+| ¿Cómo evitan que la IA vea las claves? | Con tres capas: el permiso `deny` en `settings.json`, el hook `proteger-secretos` y la regla de no leer `.env`. Además `.env.local` nunca se sube a git. |
+
+## Antes de empezar
+- Cierra la pestaña `.env` del editor. **Nunca la abras ante el público**; si piden ver la configuración, muestra `.env.example`.
+- Ten abiertos de antemano: `AGENTS.md`, `.claude/rules/pruebas.md`, `.claude/settings.json`, `proteger-secretos.mjs` y la skill de migraciones, en ese orden.
+- Practica una vez con cronómetro: son 5 minutos, y la diapositiva 3 es la más larga.
