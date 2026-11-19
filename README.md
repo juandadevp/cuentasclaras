@@ -89,7 +89,7 @@ Los pull requests de las cinco specs se irán enlazando aquí cuando se fusionen
 | 02-avisos-presupuesto | [#34](https://github.com/juandadevp/cuentasclaras/pull/34) | `0989b04` y `00f97c8` | `docs/specs/02-avisos-presupuesto/revision.md` |
 | 03-ingresos | [#35](https://github.com/juandadevp/cuentasclaras/pull/35) | `aed284e` | `docs/specs/03-ingresos/revision.md` |
 | 04-metas-ahorro | [#36](https://github.com/juandadevp/cuentasclaras/pull/36) | `45afc4c` | `docs/specs/04-metas-ahorro/revision.md` |
-| 05-resumen-anual | _por hacer_ | | |
+| 05-resumen-anual | [#37](https://github.com/juandadevp/cuentasclaras/pull/37) | `c3dcbd7` | `docs/specs/05-resumen-anual/revision.md` |
 
 ### Límites que reconocemos
 - No medimos la cobertura ni usamos *mutation testing* todavía.
