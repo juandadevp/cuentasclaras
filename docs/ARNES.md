@@ -54,14 +54,22 @@ El hook `limitar-agente.mjs` lo usan el `probador` y el `implementador` desde el
 El hook `proteger-secretos.mjs` se probó con 17 casos (permitidos y bloqueados) y se corrigió un falso positivo que él mismo provocó: un documento que *mencionaba* un comando prohibido dentro de un `cat <<EOF` se bloqueaba como si fuera el comando.
 
 ## 3. Verificación
-- 27 archivos de prueba (`*.test.ts`) con vitest, junto al código que prueban. Ninguna prueba llama a una API real.
+- 34 archivos de prueba (`*.test.ts`, 946 pruebas) con vitest, junto al código que prueban. Ninguna prueba llama a una API real.
 - 5 pruebas del hook `limitar-agente.mjs` (`node --test`), que prueban 40 acciones permitidas y bloqueadas.
 - GitHub Actions (`ci.yml`) corre en cada pull request: `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, `npm test`, las pruebas de los hooks y `npm run build`.
 
 ## 4. Proceso y evidencia por módulo
 Cada funcionalidad se construyó en su propia rama, con un prompt (fórmula: *qué quiero, para quién, contexto, formato y restricciones*), un plan generado en modo plan y un pull request. La evidencia está en `docs/solicitudes/NN-nombre/` (`prompt.md`, `plan.md`, `skills.md`).
 
-Las specs del proyecto integrador siguen el flujo spec → plan → tareas → pruebas → código → revisión → pull request, con su evidencia en `docs/specs/NN-nombre/` (`spec.md`, `plan.md`, `tasks.md`) y la tabla de pull requests del `README.md`.
+Las specs del proyecto integrador siguen el flujo spec → plan → tareas → pruebas → código → revisión → pull request, con su evidencia en `docs/specs/NN-nombre/` (`spec.md`, `plan.md`, `tasks.md`, `prompt.md`, `skills.md` y `revision.md`, que registra cada hallazgo de los revisores como aceptado o descartado) y la tabla de pull requests del `README.md`.
+
+| Spec | Carpeta de evidencia | Pull request |
+|---|---|---|
+| 01 Exportar CSV | `docs/specs/01-exportar-csv` | #33 |
+| 02 Avisos de presupuesto | `docs/specs/02-avisos-presupuesto` | #34 |
+| 03 Ingresos | `docs/specs/03-ingresos` | #35 |
+| 04 Metas de ahorro | `docs/specs/04-metas-ahorro` | #36 |
+| 05 Resumen anual | `docs/specs/05-resumen-anual` | #37 |
 
 | Módulo | Carpeta de evidencia | Pull request |
 |---|---|---|
