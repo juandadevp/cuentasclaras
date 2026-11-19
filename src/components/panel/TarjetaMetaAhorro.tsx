@@ -16,6 +16,8 @@ interface Props {
   progreso: ProgresoMeta;
   /** Si falló la carga de los ingresos, no se calcula el avance. */
   falloIngresos: boolean;
+  /** Si falló la carga de la meta, no se dice que no hay meta. */
+  falloMeta: boolean;
 }
 
 const estados: Record<EstadoMeta, { texto: string; barra: string }> = {
@@ -26,7 +28,8 @@ const estados: Record<EstadoMeta, { texto: string; barra: string }> = {
   superada: { texto: "Meta superada", barra: "bg-brand-500" },
 };
 
-function textoDelAvance(progreso: ProgresoMeta, falloIngresos: boolean) {
+function textoDelAvance(progreso: ProgresoMeta, falloIngresos: boolean, falloMeta: boolean) {
+  if (falloMeta) return "No pudimos cargar tu meta de ahorro. Inténtalo de nuevo.";
   if (progreso.estado === "sin-meta") return "Aún no fijas una meta para este mes.";
   if (falloIngresos) return "No pudimos cargar tus ingresos, por eso no calculamos tu avance.";
   switch (progreso.estado) {
@@ -42,8 +45,8 @@ function textoDelAvance(progreso: ProgresoMeta, falloIngresos: boolean) {
 }
 
 /** Meta de ahorro del mes: el avance dicho con texto y con una barra accesible, el formulario y el botón para quitarla. */
-export function TarjetaMetaAhorro({ mes, mesIso, hoy, meta, progreso, falloIngresos }: Props) {
-  const avance = textoDelAvance(progreso, falloIngresos);
+export function TarjetaMetaAhorro({ mes, mesIso, hoy, meta, progreso, falloIngresos, falloMeta }: Props) {
+  const avance = textoDelAvance(progreso, falloIngresos, falloMeta);
   const conBarra = meta !== null && !falloIngresos && progreso.porcentaje !== null;
   const ancho = Math.min(progreso.porcentaje ?? 0, 100);
   const estado = estados[progreso.estado];

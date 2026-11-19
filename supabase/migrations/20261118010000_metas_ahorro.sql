@@ -1,6 +1,6 @@
 -- Ejecuta este script en Supabase: SQL Editor > New query > pegar > Run.
 -- Metas de ahorro mensuales: cuánto quiere ahorrar cada usuario en un mes (una meta por usuario y mes).
--- Se puede ejecutar más de una vez: deja al día los check, los permisos y las cuatro políticas con nombre propio.
+-- Se puede ejecutar más de una vez: deja al día la restricción única, los check, los permisos y las cuatro políticas con nombre propio.
 -- Si ya existiera una tabla «metas_ahorro» anterior, revisa sus políticas con:
 --   select policyname, cmd from pg_policies where tablename = 'metas_ahorro';
 -- Deben salir exactamente 4: ver, crear, editar y borrar.
@@ -13,15 +13,16 @@ create table if not exists public.metas_ahorro (
   mes            date not null,
   monto          numeric(14, 2) not null,
   creado_en      timestamptz not null default now(),
-  actualizado_en timestamptz not null default now(),
-
-  -- Una sola meta por usuario y mes: fijarla de nuevo la actualiza.
-  constraint metas_ahorro_unico unique (user_id, mes)
+  actualizado_en timestamptz not null default now()
 );
 
 comment on table public.metas_ahorro is 'Meta de ahorro mensual que cada usuario fija (una por mes).';
 
 -- Reglas de los datos (se reemplazan para que queden iguales en una tabla nueva o vieja).
+-- Una sola meta por usuario y mes: fijarla de nuevo la actualiza.
+alter table public.metas_ahorro drop constraint if exists metas_ahorro_unico;
+alter table public.metas_ahorro add constraint metas_ahorro_unico unique (user_id, mes);
+
 alter table public.metas_ahorro drop constraint if exists metas_ahorro_mes_primer_dia;
 alter table public.metas_ahorro add constraint metas_ahorro_mes_primer_dia check (mes = date_trunc('month', mes)::date);
 

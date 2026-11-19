@@ -21,7 +21,7 @@ export function BotonQuitarMetaAhorro({ id }: { id: string }) {
         type="button"
         onClick={quitar}
         disabled={pendiente}
-        aria-label="Quitar la meta de ahorro"
+        aria-label="Quitar meta de ahorro"
         className="rounded-lg px-3 py-1.5 text-sm font-bold text-rose-600 transition-colors hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-rose-500/20 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {pendiente ? "Quitando…" : "Quitar meta"}

@@ -47,8 +47,8 @@ export async function quitarMetaAhorro(id: string): Promise<ResultadoMeta> {
   const { data: sesion } = await supabase.auth.getUser();
   if (!sesion.user) return { mensaje: MENSAJE_SESION };
 
-  // La seguridad por filas garantiza que solo se borren metas del propio usuario.
-  const { data, error } = await supabase.from("metas_ahorro").delete().eq("id", id).select("id");
+  // Se filtra también por el usuario de la sesión como segunda barrera, además de la seguridad por filas.
+  const { data, error } = await supabase.from("metas_ahorro").delete().eq("id", id).eq("user_id", sesion.user.id).select("id");
   if (error) return { mensaje: mensajeDeErrorMeta(error) };
   if (!data || data.length === 0) return { mensaje: "No encontramos esa meta." };
 

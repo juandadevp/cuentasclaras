@@ -46,6 +46,7 @@ export async function Ahorro() {
   let meta: MetaAhorro | null = null;
   let recortado = false;
   let falloIngresos = false;
+  let falloMeta = false;
   const avisos: string[] = [];
   if (supabaseConfigurado()) {
     const supabase = await crearClienteServidor();
@@ -62,6 +63,7 @@ export async function Ahorro() {
     if (g.error) avisos.push(mensajeDeErrorGasto(g.error));
     if (p.error) avisos.push(mensajeDeErrorPresupuesto(p.error));
     meta = m.meta;
+    falloMeta = Boolean(m.error);
     if (m.error) avisos.push(mensajeDeErrorMeta(m.error));
     falloIngresos = Boolean(i.error);
     if (i.error) avisos.push(mensajeDeErrorIngreso(i.error));
@@ -141,6 +143,7 @@ export async function Ahorro() {
         meta={meta}
         progreso={progreso}
         falloIngresos={falloIngresos}
+        falloMeta={falloMeta}
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
