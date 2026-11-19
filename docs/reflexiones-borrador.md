@@ -2,15 +2,15 @@
 
 > **Léanme antes de usar esto.** La reflexión tiene que ser **personal**: el documento dice que una reflexión que podría haber escrito cualquiera no cumple. Yo no conozco cómo usaba la IA cada uno antes del diplomado, así que esa parte (**Antes**) la dejé en blanco con ayudas para completarla con su experiencia real. Las partes **Ahora** y **Proceso** las redacté a partir de lo que de verdad pasó en este proyecto; léanlas y cambien lo que no piensen así, porque van firmadas con su nombre. Lo que no sientan suyo, bórrenlo.
 >
-> Reparto del tema (para que no suenen iguales): Jorge habla del arnés, Cristian de los agentes y Juan David de la calidad. Cada uno reflexiona sobre la parte que expone.
+> Reparto del tema (para que no suenen iguales): Juan David habla del arnés, Cristian de los agentes y Jorge de la calidad. Cada uno reflexiona sobre la parte que expone.
 >
 > Cada reflexión cabe en una página: tres en total, que es el máximo. Al terminar, junten las tres en un solo documento, con el nombre de cada uno como título, y expórtenlo a PDF.
 
 ---
 
-## Reflexión de Jorge
+## Reflexión de Juan David
 
-**Antes.** [COMPLETA con tu experiencia: ¿para qué usabas la IA antes del diplomado? ¿Pegabas código y esperabas que funcionara? ¿Qué te salió bien y qué te salió mal alguna vez? Cuenta una situación concreta, con tu nombre y tu proyecto.]
+**Antes.** [COMPLETA con tu experiencia: ¿cómo usabas la IA antes del diplomado, por ejemplo en tu práctica en Activa? ¿Qué hacías con lo que te devolvía: lo probabas, lo copiabas tal cual? Cuenta una situación concreta.]
 
 **Ahora.** Lo que más me cambió fue entender que la IA no sabe nada de mi proyecto hasta que yo se lo digo. En Cuentas Claras escribimos un archivo, `AGENTS.md`, con cómo se corre el proyecto, cómo se llaman las cosas y lo que no se debe tocar, y unas reglas y skills para las tareas que se repiten. Después de eso la IA dejó de inventar: cada tabla nacía con seguridad por filas y cada pantalla traía su estado vacío, sin que yo se lo repitiera. De ahora en adelante, antes de pedirle código a la IA voy a dedicar un rato a escribirle el contexto, como le explicaría el proyecto a alguien nuevo en el equipo.
 
@@ -28,9 +28,9 @@
 
 ---
 
-## Reflexión de Juan David
+## Reflexión de Jorge
 
-**Antes.** [COMPLETA con tu experiencia: ¿cómo usabas la IA antes del diplomado, por ejemplo en tu práctica en Activa? ¿Qué hacías con lo que te devolvía: lo probabas, lo copiabas tal cual? Cuenta una situación concreta.]
+**Antes.** [COMPLETA con tu experiencia: ¿para qué usabas la IA antes del diplomado? ¿Pegabas código y esperabas que funcionara? ¿Qué te salió bien y qué te salió mal alguna vez? Cuenta una situación concreta, con tu nombre y tu proyecto.]
 
 **Ahora.** Lo que me llevo es que confiar en el código de la IA no es una cuestión de fe, es una cuestión de comprobar. En este proyecto cada funcionalidad empezó con pruebas que fallaban, escritas antes del código, y terminó con revisores que reportaban lo que encontraban y con un CI que corría todo en cada pull request. Eso se ve en el historial: en la spec 5, el commit de las pruebas está antes que el del código. De ahora en adelante no voy a aceptar un cambio de la IA sin saber cómo lo voy a comprobar. Primero pienso la prueba y después pido el código.
 
