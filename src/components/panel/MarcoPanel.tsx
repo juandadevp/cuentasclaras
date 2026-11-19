@@ -79,6 +79,15 @@ const secciones: { titulo: string; enlaces: Enlace[] }[] = [
         ),
       },
       {
+        href: "/panel/resumen-anual",
+        etiqueta: "Resumen anual",
+        icono: (
+          <>
+            <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+          </>
+        ),
+      },
+      {
         href: "/panel/ingresos",
         etiqueta: "Ingresos",
         icono: (
@@ -111,6 +120,7 @@ const nombresRuta: Record<string, string> = {
   favoritos: "Favoritos",
   gastos: "Mis gastos",
   presupuesto: "Presupuesto",
+  "resumen-anual": "Resumen anual",
   ingresos: "Ingresos",
   ahorro: "Mi ahorro",
   editar: "Editar",
