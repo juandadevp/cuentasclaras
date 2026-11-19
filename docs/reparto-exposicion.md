@@ -1,12 +1,12 @@
 # Reparto de la exposición entre los tres
 
-Son 14 diapositivas y 15 minutos de exposición (más 5 de preguntas). Cada uno habla unos 5 minutos y muestra en el código **lo mismo que cuenta**, para que nadie tenga que explicar algo que no tocó. Es una propuesta: cámbienla si alguno domina más otra parte.
+Son 17 diapositivas y 15 minutos de exposición (más 5 de preguntas). Cada uno habla unos 5 minutos y muestra en el código **lo mismo que cuenta**, para que nadie tenga que explicar algo que no tocó. Es una propuesta: cámbienla si alguno domina más otra parte.
 
 | Quién | Diapositivas | Tiempo | Qué cuenta | Qué abre en el código (de `guia-archivos-exposicion.md`) |
 |---|---|---|---|---|
-| **Juan David** | 1 a 5 | 5 min | El proyecto, de dónde partimos, el arnés y las skills. | Archivos 1 a 6: `README.md`, `AGENTS.md`, `.claude/rules/pruebas.md`, la skill `crear-migracion-supabase`, `settings.json` y `proteger-secretos.mjs`. |
-| **Cristian** | 6 a 8 | 4 min | Los seis agentes, cómo se construye cada spec y qué cambió respecto del taller. | Archivos 7 a 10: `probador.md`, `implementador.md`, `limitar-agente.mjs` con sus pruebas, y `nueva-spec.md`. |
-| **Jorge** | 9 a 14 | 6 min | Las cinco specs, lo que falló, la calidad, las conclusiones y el cierre. | Archivos 11 a 20: la carpeta `docs/specs/05-resumen-anual/`, el historial de `git log`, `resumen-anual.test.ts` → `resumen-anual.ts`, `ci.yml` y la revisión de la spec 01. |
+| **Juan David** | 1 a 8 | 7 min (versión corta; 11 completa) | El proyecto, la aplicación, cómo está organizada, las tecnologías, el arnés, las siete skills y el proceso. | Archivos 1 a 6 (el guion completo está en `Guion_Juan_David.docx`): `README.md`, `AGENTS.md`, `.claude/rules/pruebas.md`, la skill `crear-migracion-supabase`, `settings.json` y `proteger-secretos.mjs`. |
+| **Cristian** | 9 a 11 | 4 min | Los seis agentes, cómo se construye cada spec y qué cambió respecto del taller. | Archivos 7 a 10: `probador.md`, `implementador.md`, `limitar-agente.mjs` con sus pruebas, y `nueva-spec.md`. |
+| **Jorge** | 12 a 17 | 6 min | Las cinco specs, lo que falló, la calidad, las conclusiones y el cierre. | Archivos 11 a 20: la carpeta `docs/specs/05-resumen-anual/`, el historial de `git log`, `resumen-anual.test.ts` → `resumen-anual.ts`, `ci.yml` y la revisión de la spec 01. |
 
 ## Cómo se reparten los dos guiones
 - **`guion-exposicion.md`** (lo que se dice): cada uno lee solo sus bloques.
