@@ -9,7 +9,7 @@ Corresponde a la versión de la presentación que subiste (`…con_responsables.
 | 1. Portada | 40 s |
 | 2. Introducción | 1 min 15 s |
 | 3. El arnés | 2 min |
-| 4. Las skills | 1 min 5 s |
+| 4. Las skills | 1 min 30 s |
 | 5. Tecnologías | 1 min |
 | 6. El proceso | 1 min |
 
@@ -73,7 +73,7 @@ Corresponde a la versión de la presentación que subiste (`…con_responsables.
 
 ### Columna 2: Skills («procedimientos bajo demanda»)
 
-> **Segunda columna, las skills.** Son recetas que la IA **carga solo cuando la tarea las necesita**. Tenemos siete en la carpeta `.claude/skills/`, y el documento pide como mínimo tres. Además hay un comando propio, `/nueva-spec`, que arranca todo el flujo de una funcionalidad. Y el README explica para qué sirve cada skill. Las veo en detalle en la siguiente diapositiva.
+> **Segunda columna, las skills.** Son recetas que la IA **carga solo cuando la tarea las necesita**. Tenemos siete en la carpeta `.claude/skills/`, y el documento pide como mínimo tres. Además hay un comando propio, `/nueva-spec`, que arranca todo el flujo de una funcionalidad. Y el README explica para qué sirve cada skill. Las veo una por una en la siguiente diapositiva.
 
 ### Columna 3: Permisos y hooks («lo que lo verifica»)
 
@@ -89,23 +89,29 @@ Corresponde a la versión de la presentación que subiste (`…con_responsables.
 
 ---
 
-## Diapositiva 4 · Las skills (1 min 5 s)
+## Diapositiva 4 · Las siete skills (1 min 30 s)
 
-**Lo que muestra:** cuatro filas numeradas, cada una con el nombre de una skill y para qué sirve.
+**Lo que muestra:** siete tarjetas con el nombre de cada skill y para qué sirve, en dos columnas, y una tarjeta final («i») que dice de dónde vienen.
 
-> Les cuento **para qué sirve cada skill**, o sea, qué problema resuelve.
+> Tenemos **siete skills**, y les cuento qué problema resuelve cada una. Las cuatro primeras, en la columna de la izquierda, son las que más usamos.
 
 ▶ **ABRIR** `.claude/skills/crear-migracion-supabase/SKILL.md` · **SEÑALAR** el paso 5.
 
-> **Primera: `crear-migracion-supabase`.** Cada vez que hay que crear una tabla, la receta obliga a que lleve seguridad por filas y un script que se pueda ejecutar dos veces. El resultado es que **nadie ve datos de otra persona**. Con esta skill nacieron las tablas de ingresos y de metas de ahorro.
+> **Uno, `crear-migracion-supabase`.** Cada vez que hay que crear una tabla, obliga a que lleve seguridad por filas y un script que se pueda ejecutar dos veces. El resultado es que **nadie ve datos de otra persona**. Con ella nacieron las tablas de ingresos y de metas de ahorro.
 >
-> **Segunda: `crear-accion-servidor`.** Las acciones del servidor validan siempre en el servidor, comprueban que haya sesión y **toman el usuario de la sesión, nunca del formulario**. Así nadie puede hacerse pasar por otro.
+> **Dos, `crear-accion-servidor`.** Valida siempre en el servidor y **toma el usuario de la sesión, nunca del formulario**.
 >
-> **Tercera: `crear-pantalla-panel`.** Cada pantalla nueva trae su enlace en el menú, un estado vacío y un aviso de error claro. Es para que todas las pantallas se comporten igual.
+> **Tres, `crear-pantalla-panel`.** Cada pantalla trae su enlace en el menú, un estado vacío y un aviso de error.
 >
-> **Y cuarta: `escribir-pruebas`.** Son pruebas con vitest, con el resultado esperado calculado a mano y escritas **antes** del código.
+> **Cuatro, `escribir-pruebas`.** Pruebas con vitest, con el resultado esperado calculado a mano.
 >
-> Sin estas recetas, cada tabla o cada pantalla saldría distinta, y alguna podría quedar sin protección. Con ellas, siempre sale igual de segura.
+> En la columna de la derecha están las otras tres. **`autenticacion-supabase`** cubre el registro, el inicio de sesión, recuperar la contraseña y cerrar sesión. **`integrar-api-externa`** es para usar servicios de terceros, como el de precios, dejando la clave solo en el servidor. Y **`vercel-react-best-practices`** son buenas prácticas de rendimiento de React y Next.js.
+>
+> Y fíjense en la última tarjeta: **seis skills las hicimos nosotros y una es de terceros**, y esa la revisamos antes de instalarla. Es solo texto, sin scripts.
+>
+> Sin estas recetas, cada tabla o cada pantalla saldría distinta y alguna podría quedar sin protección. Con ellas, siempre sale igual de segura.
+
+---
 
 ## Diapositiva 5 · Tecnologías que utilizamos (1 min)
 
