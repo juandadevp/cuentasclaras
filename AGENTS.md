@@ -1,6 +1,6 @@
 # Cuentas Claras
 
-> **Estado:** los módulos 1 a 13 ya están en `main`. La versión original (v1) está en la rama `legacy/v1`. Cada funcionalidad nueva se construye en su propia rama (`feat/NN-nombre`): los módulos con `docs/solicitudes/NN-nombre/` (prompt, plan y skills) y las specs del proyecto integrador con `docs/specs/NN-nombre/` (spec, plan y tareas).
+> **Estado:** los módulos 1 a 13 y las cinco specs del proyecto integrador (01 a 05) ya están en `main`. La versión original (v1) está en la rama `legacy/v1`. Cada funcionalidad nueva se construye en su propia rama (`feat/NN-nombre`): los módulos con `docs/solicitudes/NN-nombre/` (prompt, plan y skills) y las specs del proyecto integrador con `docs/specs/NN-nombre/` (spec, plan y tareas).
 
 Aplicación web para llevar el control de los gastos mensuales. Cada usuario tiene un panel privado donde registra gastos, los ve por categoría, compara sus meses, busca precios de productos en tiendas de Colombia y guarda favoritos. Es un solo repositorio: el frontend y el backend viven juntos en Next.js (el «backend» son las Server Actions y la conexión con Supabase).
 
